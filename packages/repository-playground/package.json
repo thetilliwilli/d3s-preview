@@ -1,0 +1,33 @@
+{
+ "name": "@d3s/repository-playground",
+ "version": "0.0.24",
+ "description": "",
+ "type": "module",
+ "main": "dist/index.js",
+ "types": "dist/index.d.ts",
+ "scripts": {
+  "build": "tsc",
+  "build-watch": "tsc -w"
+ },
+ "author": "",
+ "license": "ISC",
+ "dependencies": {
+  "@d3s/runtime": "0.0.24",
+  "adm-zip": "0.5.16",
+  "archiver": "6.0.1",
+  "cron": "3.1.6",
+  "exceljs": "4.4.0",
+  "json-2-csv": "5.0.1",
+  "luxon": "3.4.4",
+  "newman": "6.1.1",
+  "newman-reporter-htmlextra": "1.23.0",
+  "node-html-parser": "6.1.11",
+  "nodemailer": "6.9.9",
+  "openapi-to-postmanv2": "4.19.0",
+  "postgres": "3.4.4",
+  "socks-proxy-agent": "8.0.2",
+  "ta-math": "1.0.49",
+  "telegraf": "4.15.3",
+  "uuid": "9.0.1"
+ }
+}

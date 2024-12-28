@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "app.json",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\packages\\runtime-host-node\\src\\index.ts",
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ],
+            "env": {
+                // "NODE_TLS_REJECT_UNAUTHORIZED": "0",
+                // "VERBOSE": "true",
+                // "CERT":"../selfsigned",
+                "TLS":"false",
+                "AUTH":"false",
+                "WEB_CWD": "true",
+                "PORT": "5000"
+            },
+            "args": [
+                "app.json"
+            ],
+            // "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/ignore/apps",
+            // hack: https://github.com/microsoft/vscode/issues/102042#issuecomment-656402933
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/**",
+                "!**/node_modules/**"
+            ]
+        },
+        {
+            "name": "Launch File",
+            "program": "${file}",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node"
+        },
+    ]
+}

@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScanReport</title>
+
+    <link rel="icon" type="image/png"
+        href="data:image/png;base64,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" />
+    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/23.2.6/css/dx.light.css" />
+
+    <script>
+        const consoleWarnOriginal = console.warn;
+        console.warn = (function (...args) {
+            if ((args[0] + "").indexOf("W0019 - DevExtreme: Unable to Locate") === 0) return;
+            consoleWarnOriginal(...args);
+        }).bind(console);
+    </script>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/23.2.6/js/dx.all.js"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <style>
+        html,
+        body,
+        div.dx-viewport {
+            height: 100vh;
+        }
+
+        #gridContainer {
+            padding-left: 4px;
+            padding-right: 4px;
+            font-size: 12px;
+        }
+
+        html,
+        body,
+        div,
+        span,
+        applet,
+        object,
+        iframe,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        blockquote,
+        pre,
+        a,
+        abbr,
+        acronym,
+        address,
+        big,
+        cite,
+        code,
+        del,
+        dfn,
+        em,
+        img,
+        ins,
+        kbd,
+        q,
+        s,
+        samp,
+        small,
+        strike,
+        strong,
+        sub,
+        sup,
+        tt,
+        var,
+        b,
+        u,
+        i,
+        center,
+        dl,
+        dt,
+        dd,
+        ol,
+        ul,
+        li,
+        fieldset,
+        form,
+        label,
+        legend,
+        table,
+        caption,
+        tbody,
+        tfoot,
+        thead,
+        tr,
+        th,
+        td,
+        article,
+        aside,
+        canvas,
+        details,
+        embed,
+        figure,
+        figcaption,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        output,
+        ruby,
+        section,
+        summary,
+        time,
+        mark,
+        audio,
+        video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+
+        /* HTML5 display-role reset for older browsers */
+        article,
+        aside,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        section {
+            display: block;
+        }
+
+        body {
+            line-height: 1;
+        }
+
+        ol,
+        ul {
+            list-style: none;
+        }
+
+        blockquote,
+        q {
+            quotes: none;
+        }
+
+        blockquote:before,
+        blockquote:after,
+        q:before,
+        q:after {
+            content: '';
+            content: none;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dx-viewport demo-container">
+        <div id="gridContainer"></div>
+    </div>
+
+    <div id="tooltip">
+        <div id="tooltipText" style="text-wrap: wrap; text-align: left"></div>
+    </div>
+
+    <div id="popup"></div>
+
+    <script>
+
+        /**
+         * EndpointScanResult
+         * @typedef {Object} EndpointScanResult
+         * @property {string} guid
+         * @property {string} protocol
+         * @property {string} host
+         * @property {string} port
+         * @property {string} path
+         * @property {string} method
+         * @property {number} statusCode
+         * @property {string} statusText
+         * @property {string} contentType
+         * @property {number} size
+         * @property {number} time
+         * @property {string} headers
+         * @property {boolean} headersTruncated
+         * @property {string} body
+         * @property {boolean} bodyTruncated
+         * @property {string} authFail
+         * @property {string} error
+         * @property {boolean} risk
+         * @property {string} riskRequest
+         * @property {string} riskResponse
+         * @property {string} riskNote
+         */
+
+        /** @type EndpointScanResult[] */
+        let baseReport = [];
+
+        let reportItems = [];
+
+        const nodeGuid = new URL(window.location.href).searchParams.get('node');
+        let reportItemsUrl = `/data/${nodeGuid}/output/reports`;
+
+        let baseReportUrl = new URL(window.location.href).hash.slice(1).trim() === ""
+            ? null
+            : `/cwd/${new URL(window.location.href).hash.slice(1)}`;
+
+        window.tooltipEnabled = true;
+
+        //иначе всплывает два контекстных меню
+        window.oncontextmenu = e => e.preventDefault();
+
+
+        let fontSize = 12;
+
+        function saveFile(data, filename, type) {
+            var file = new Blob([data], { type: type });
+            if (window.navigator.msSaveOrOpenBlob) // IE10+
+                window.navigator.msSaveOrOpenBlob(file, filename);
+            else { // Others
+                var a = document.createElement("a"),
+                    url = URL.createObjectURL(file);
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function () {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 0);
+            }
+        }
+
+        function openMasterDetails(e) {
+            // what is going on here: https://supportcenter.devexpress.com/ticket/details/t633212/dxdatagrid-expand-collapse-a-detail-row-in-the-onrowclick
+            const key = e.component.getKeyByRowIndex(e.rowIndex);
+            const expanded = e.component.isRowExpanded(key);
+            if (expanded) {
+                if (e.rowType !== "detail")
+                    e.component.collapseRow(key);
+            } else {
+                e.component.expandRow(key);
+            }
+        }
+
+        function onCellClick(e) {
+            // e.rowIndex === -1 это пустое пространство между последней строчкой и footer'om, когда строчек меньше чем высота таблицы
+            if (e.rowIndex === -1 || e.column.type === "buttons" || e.column.type === "selection" || e.rowType === "totalFooter" || e.rowType === "header" || e.rowType === "detail")
+                return;
+
+            // переключаем boolean checkbox risk 
+            if (e.column.dataField === "risk") {
+                const dataGrid = e.component;
+                const checked = dataGrid.cellValue(e.rowIndex, e.column.dataField);
+                dataGrid.cellValue(e.rowIndex, e.column.dataField, !checked);
+                dataGrid.saveEditData();
+            }
+            else {
+                if (e.event.altKey) {
+                    const key = e.component.getKeyByRowIndex(e.rowIndex);
+                    if (e.component.isRowExpanded(key))
+                        e.component.collapseRow(key)
+                    else
+                        e.component.expandRow(key)
+                } else {
+                    e.component.editRow(e.rowIndex);
+                }
+            }
+        }
+
+
+        function onExporting(e) {
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("ScanResults");
+
+
+            e.component.beginUpdate();
+
+            const hiddenColumns = e.component
+                .getController("columns")
+                .getColumns()
+                .filter((x) => !x.visible)
+                .map((x) => x.index);
+
+            hiddenColumns.forEach(i => e.component.columnOption(i, "visible", true));
+
+            DevExpress.excelExporter
+                .exportDataGrid({
+                    component: e.component,
+                    worksheet,
+                    autoFilterEnabled: true,
+                })
+                .then(() => {
+                    workbook.xlsx.writeBuffer().then((buffer) => {
+                        saveAs(new Blob([buffer], { type: "application/octet-stream" }), "scan-results.xlsx");
+                    });
+                })
+                .finally(() => {
+                    hiddenColumns.forEach(i => e.component.columnOption(i, 'visible', false));
+                    e.component.endUpdate();
+                });
+        }
+
+        async function loadReportItems() {
+            return fetch(reportItemsUrl)
+                .then(x => x.json())
+                .then(reportUrls => reportUrls.map(reportUrl => ({
+                    value: `/cwd/${reportUrl}`,
+                    text: reportUrl.split("/").pop(),
+                })))
+        }
+
+        function getUrl(item) {
+            const port = item.port ? `:${item.port}` : "";
+            const url = `${item.protocol}://${item.host}${port}${item.path}`;
+            return url;
+        }
+
+        async function loadReport(report1, report2) {
+            baseReport = report2 === undefined
+                ? report1
+                : getDiffReport(report1, report2);
+
+            $("#gridContainer").dxDataGrid("instance").option('dataSource', baseReport);
+        }
+
+        function saveReportToFile() {
+            const data = JSON.stringify(baseReport);
+            saveFile(data, "report", "application/json");
+        }
+
+        function fetchTask(nodeGuid, inputs, output, outputNode) {
+            return fetch("/task", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "activationSignals": inputs.map(x => ({
+                        "nodeGuid": nodeGuid,
+                        "name": x.signal,
+                        "data": x.data,
+                        "signalType": "input"
+                    })),
+                    "resultSignal": {
+                        "nodeGuid": outputNode || nodeGuid,
+                        "name": output,
+                        "data": null,
+                        "signalType": "output"
+                    }
+                }),
+            })
+                .then(x => x.json());
+        }
+
+        (async function main() {
+
+            window.onbeforeunload = function (event) {
+                event.preventDefault();
+            };
+
+            reportItems = await loadReportItems();
+
+            $(async () => {
+
+                var toolTip = $("#tooltip").dxTooltip({}).dxTooltip("instance");
+
+                $("#gridContainer").dxDataGrid({
+                    dataSource: baseReport,
+                    keyExpr: "guid",
+                    showBorders: true,
+                    allowColumnResizing: true,
+                    columnAutoWidth: true,
+                    height: "100%",
+                    allowColumnReordering: true,
+                    headerFilter: { visible: true, search: { enabled: true } },
+                    paging: {
+                        pageSize: 10,
+                        enabled: true,
+                    },
+                    pager: {
+                        visible: true,
+                        allowedPageSizes: [10, 20, 50, 100, 1000],
+                        showPageSizeSelector: true,
+                        showNavigationButtons: true,
+                        displayMode: "compact",
+                    },
+                    stateStoring: {
+                        enabled: true,
+                    },
+                    sorting: {
+                        mode: 'multiple',
+                    },
+                    selection: {
+                        mode: "multiple",
+                        showCheckBoxesMode: "always",
+                    },
+                    columnChooser: {
+                        enabled: true,
+                    },
+                    export: {
+                        enabled: true,
+                        allowExportSelectedData: true,
+                    },
+                    scrolling: {
+                        useNative: true,
+                    },
+                    onExporting: onExporting,
+                    onCellClick: onCellClick,
+                    onContentReady: function (e) {
+                        e.component.columnOption("command:edit", "visible", false);
+                    },
+                    rowAlternationEnabled: true,
+                    columns: [
+                        { dataField: "guid", dataType: "string", width: 80 },
+                        { dataField: "protocol", dataType: "string", visible: false, },
+                        { dataField: "host", dataType: "string", },
+                        { dataField: "path", dataType: "string", headerFilter: { search: { enabled: true, }, }, },
+                        { dataField: "method", dataType: "string", },
+                        { dataField: "port", dataType: "port", visible: false, },
+                        { dataField: "code", dataType: "number", },
+                        { dataField: "status", dataType: "string", },
+                        { dataField: "type", dataType: "string", },
+                        { dataField: "size", dataType: "number", },
+                        { dataField: "time", dataType: "number", },
+                        { dataField: "headers", dataType: "string", visible: false, },
+                        { dataField: "body", dataType: "string", width: 160, visible: false, },
+                        { dataField: "error", dataType: "string", visible: false, },
+                        { dataField: "risk", dataType: "boolean", },
+                        { dataField: "riskRequest", dataType: "string", visible: false, },
+                        { dataField: "riskResponse", dataType: "string", visible: false, },
+                        { dataField: "riskNote", dataType: "string", visible: false, },
+                        { dataField: "diff", dataType: "string", visible: false, },
+                        {
+                            type: "buttons", buttons: [
+                                {
+                                    hint: "revalidate (aka execute additional checks)",
+                                    icon: "refresh",
+                                    onClick(e) {
+                                        /** @type EndpointScanResult */
+                                        const item = e.row.data;
+                                        const url = getUrl(item);
+
+                                        $(e.event.target).css("visibility", "hidden");
+                                        const parent = $(e.event.target).parent();
+                                        const loadingIndicator = $("<div class='button-indicator'></div>")
+                                            .dxLoadIndicator({ width: 18, height: 18 });
+                                        parent.append(loadingIndicator);
+
+                                        fetchTask(
+                                            "423f18ec-f4d3-4997-9bdb-22a7e7786492",
+                                            [
+                                                { signal: "url", data: url },
+                                                { signal: "init", data: item.method === "GET" ? {} : { "method": item.method, "headers": { "Content-Type": "application/json" }, "body": "{\"meta\":{},\"data\":{}}" } },
+                                                { signal: "fetch", data: null },
+                                            ],
+                                            "result"
+                                        )
+                                            .then(res => {
+                                                console.group(`${item.method} ${url}:`);
+                                                console.log(res);
+                                                console.groupEnd();
+                                            }).catch(e => {
+                                                console.error(`${item.method} ${url}:\n${e.message}`);
+                                            })
+                                            .finally(() => {
+                                                loadingIndicator.remove();
+                                                $(e.event.target).css("visibility", "visible");
+                                            });
+                                    },
+                                }
+                            ]
+                        },
+                    ],
+                    columnResizingMode: "widget",
+                    editing: {
+                        mode: 'popup',
+                        allowUpdating: true,
+                        popup: {
+                            title: 'Risk Rettings',
+                            showTitle: true,
+                        },
+                        form: {
+                            colCount: 1,
+                            items: [{
+                                itemType: 'group',
+                                items: [
+                                    { dataField: "risk", },
+                                    { dataField: "riskRequest", editorType: 'dxTextArea', editorOptions: { height: 100 }, },
+                                    { dataField: "riskResponse", editorType: 'dxTextArea', editorOptions: { height: 100 }, },
+                                    { dataField: "riskNote", editorType: 'dxTextArea', editorOptions: { height: 100 }, },
+                                ],
+                            },
+                            ],
+                        },
+                    },
+                    onContextMenuPreparing: function (e) {
+                        if (!e.items)
+                            e.items = [];
+
+                        if (e.row && e.row.rowType === "data") {
+                            /** @type EndpointScanResult */
+                            const item = e.row.data;
+                            const url = getUrl(item);
+
+                            const riskRequest = item.method === "GET"
+                                ? `curl ${url}`
+                                : `curl -X ${item.method} -H "Content-Type: application/json" -d '{"data":{}}' ${url}`;
+                            const key = e.component.getKeyByRowIndex(e.rowIndex);
+
+                            e.items.push(
+                                { text: "Expand", onItemClick: () => e.component.expandRow(key) },
+                                { text: "Collapse", onItemClick: () => e.component.collapseRow(key) },
+                                { text: "CopyUrl", onItemClick: () => navigator.clipboard.writeText(url) },
+                                { text: "CopyRequest", onItemClick: () => navigator.clipboard.writeText(riskRequest) },
+                                { text: "CopyGuid", onItemClick: () => navigator.clipboard.writeText(item.guid) },
+                                { text: "ConsoleLog", onItemClick: () => console.log(e.row.data) },
+                            );
+                        }
+                    },
+                    masterDetail: {
+                        enabled: false,
+                        template(container, options) {
+                            const { data } = options;
+                            /** @type EndpointScanResult */
+                            const item = data;
+
+                            container.append(`<div>ResponseBody ${item.bodyTruncated ? "(truncated)" : ""}:</div>`);
+                            const bodyEl = $("<textarea readonly style='width:100%;height: 200px;'>");
+                            bodyEl.text(item.body);
+
+                            container.append(bodyEl);
+
+                            container.append(`<br>`);
+
+                            container.append(`<div>Headers ${item.headersTruncated ? "(truncated)" : ""}:</div>`);
+                            const headersEl = $(`<textarea readonly style='width:100%;height: 200px;'>`);
+                            headersEl.text(item.headers);
+                            container.append(headersEl);
+                        },
+                    },
+                    toolbar: {
+                        items: [
+                            {
+                                location: 'before',
+                                widget: 'dxButton',
+                                options: {
+                                    hint: 'Reload',
+                                    icon: 'pulldown',
+                                    async onClick(e) {
+                                        loadReport(baseReport);
+                                    },
+                                },
+                            },
+                            {
+                                location: 'before',
+                                widget: 'dxButton',
+                                options: {
+                                    hint: 'Expand All',
+                                    icon: 'plus',
+                                    onClick(e) {
+                                        const dataGrid = $("#gridContainer").dxDataGrid('instance');
+                                        const expanding = e.component.option('hint') === 'Expand All';
+
+                                        if (expanding)
+                                            dataGrid.expandAll(-1);
+                                        else
+                                            dataGrid.collapseAll(-1);
+
+                                        e.component.option('hint', expanding ? 'Collapse All' : 'Expand All');
+                                        e.component.option('icon', expanding ? 'minus' : 'plus');
+                                    },
+                                },
+                            },
+                            {
+                                location: 'before',
+                                widget: 'dxButton',
+                                options: {
+                                    hint: 'Reset Table State',
+                                    icon: "arrowback",
+                                    onClick(e) {
+                                        const dataGrid = $("#gridContainer").dxDataGrid('instance');
+                                        dataGrid.state(null);
+                                    },
+                                },
+                            },
+                            {
+                                location: 'before',
+                                widget: 'dxButton',
+                                options: {
+                                    hint: 'Disable Tooltip',
+                                    icon: 'isblank',
+                                    onClick(e) {
+                                        const dataGrid = $("#gridContainer").dxDataGrid('instance');
+                                        const expanding = e.component.option('hint') === 'Enable Tooltip';
+
+                                        if (expanding)
+                                            window.tooltipEnabled = true;
+                                        else
+                                            window.tooltipEnabled = false;
+
+                                        e.component.option('hint', expanding ? 'Disable Tooltip' : 'Enable Tooltip');
+                                        e.component.option('icon', expanding ? 'isblank' : 'info');
+                                    },
+                                },
+                            },
+                            {
+                                location: 'before',
+                                widget: 'dxButton',
+                                options: {
+                                    hint: 'SaveFile',
+                                    icon: "download",
+                                    onClick: saveReportToFile,
+                                },
+                            },
+                            {
+                                location: 'before',
+                                widget: 'dxButton',
+                                options: {
+                                    hint: 'Delete Selected',
+                                    icon: 'trash',
+                                    onClick() {
+                                        const dataGrid = $("#gridContainer").dxDataGrid("instance");
+                                        const store = dataGrid.getDataSource().store();
+                                        const selectedGuids = dataGrid.getSelectedRowKeys();
+
+                                        let shouldShowConfirmatiom = false;
+                                        const endpointsFiltered = baseReport.filter(x => {
+                                            const doesInclude = selectedGuids.includes(x.guid);
+                                            if (doesInclude) {
+                                                if (x.risk === true || x.riskRequest !== "" || x.riskResponse !== "" || x.riskNote !== "") {
+                                                    shouldShowConfirmatiom = true;
+                                                }
+                                            }
+
+                                            return doesInclude === false;
+                                        });
+
+                                        if (shouldShowConfirmatiom) {
+                                            if (!window.confirm("Некоторые выбранные элементы содержат заполненые поля [risk, riskRequest, riskResponse, riskNote]. Эти данные будут потеряны. Вы всё равно хотите УДАЛИТЬ ВСЕ ВЫБРАННЫЕ ЭЛЕМЕНТЫ?"))
+                                                return;
+                                        }
+
+                                        baseReport = endpointsFiltered;
+                                        $("#gridContainer").dxDataGrid("instance").option('dataSource', baseReport);
+                                    },
+                                },
+                            },
+                            {
+                                location: 'before',
+                                widget: 'dxButton',
+                                options: {
+                                    hint: 'More text size',
+                                    icon: "growfont",
+                                    onClick(e) { $("#gridContainer").css('font-size', ++fontSize + 'px'); },
+                                },
+                            },
+                            {
+                                location: 'before',
+                                widget: 'dxButton',
+                                options: {
+                                    hint: 'Less text size',
+                                    icon: "shrinkfont",
+                                    onClick(e) { $("#gridContainer").css('font-size', --fontSize + 'px'); },
+                                },
+                            },
+                            {
+                                location: 'before',
+                                widget: 'dxButton',
+                                options: {
+                                    hint: "Сравнить два отчёта",
+                                    icon: "fields",
+                                    onClick(e) {
+                                        let report1 = "";
+                                        let report2 = "";
+                                        let includeSame = false;
+
+                                        $("#popup").dxPopup({
+                                            visible: true,
+                                            hideOnOutsideClick: true,
+                                            showTitle: true,
+                                            title: "Выберите отчёты для сравнения",
+                                            dragEnabled: false,
+                                            contentTemplate: (container) => {
+                                                container.append(
+                                                    $("<div />").dxSelectBox({
+                                                        label: "1ый отчёт",
+                                                        labelMode: "floating",
+                                                        width: "600",
+                                                        items: reportItems,
+                                                        valueExpr: 'value',
+                                                        displayExpr: 'text',
+                                                        onValueChanged(e) {
+                                                            report1 = e.value.replace("/cwd/", "");
+                                                        },
+                                                    }),
+                                                    $("<div />").dxSelectBox({
+                                                        label: "2ой отчёт",
+                                                        labelMode: "floating",
+                                                        width: "600",
+                                                        items: reportItems,
+                                                        valueExpr: 'value',
+                                                        displayExpr: 'text',
+                                                        onValueChanged(e) {
+                                                            report2 = e.value.replace("/cwd/", "");
+                                                        },
+                                                    }),
+                                                    $("<div />").dxCheckBox({
+                                                        onValueChanged: function (e) {
+                                                            includeSame = e.value;
+                                                        }
+                                                    }),
+                                                    $("<label />").text(" includeSame"),
+                                                    $("<hr />"),
+                                                    $("<div />").dxButton({
+                                                        text: 'Сравнить',
+                                                        onClick() {
+
+                                                            if (report1 === "" || report2 === "")
+                                                                return;
+
+                                                            const initOptions = {
+                                                                method: "POST",
+                                                                headers: {
+                                                                    "Content-Type": "application/json",
+                                                                },
+                                                                body: JSON.stringify({
+                                                                    "activationSignals": [
+                                                                        {
+                                                                            "nodeGuid": "842ab55b-0ae8-480d-b92d-a6fb5a9f1d5d",
+                                                                            "name": "report1",
+                                                                            "data": report1,
+                                                                            "signalType": "input"
+                                                                        },
+                                                                        {
+                                                                            "nodeGuid": "842ab55b-0ae8-480d-b92d-a6fb5a9f1d5d",
+                                                                            "name": "report2",
+                                                                            "data": report2,
+                                                                            "signalType": "input"
+                                                                        },
+                                                                        {
+                                                                            "nodeGuid": "842ab55b-0ae8-480d-b92d-a6fb5a9f1d5d",
+                                                                            "name": "includeSame",
+                                                                            "data": includeSame,
+                                                                            "signalType": "input"
+                                                                        },
+                                                                        {
+                                                                            "nodeGuid": "842ab55b-0ae8-480d-b92d-a6fb5a9f1d5d",
+                                                                            "name": "run",
+                                                                            "data": null,
+                                                                            "signalType": "input"
+                                                                        }
+                                                                    ],
+                                                                    "resultSignal": {
+                                                                        "nodeGuid": "842ab55b-0ae8-480d-b92d-a6fb5a9f1d5d",
+                                                                        "name": "output",
+                                                                        "data": null,
+                                                                        "signalType": "output"
+                                                                    }
+                                                                }),
+                                                            };
+
+                                                            fetchTask(
+                                                                "842ab55b-0ae8-480d-b92d-a6fb5a9f1d5d",
+                                                                [
+                                                                    { signal: "report1", data: report1 },
+                                                                    { signal: "report2", data: report2 },
+                                                                    { signal: "includeSame", data: includeSame },
+                                                                    { signal: "run", data: null },
+                                                                ],
+                                                                "output"
+                                                            )
+                                                                .then(res => {
+                                                                    const text = `Создан новый отчёт: ${res}`;
+                                                                    console.log(text);
+                                                                    container.append($("<p />").text(text));
+                                                                    reportItems.push({ value: `/cwd/${res}`, text: res.split("/").pop() });
+                                                                    $("#datagridToolbarReportsSelectBox").dxSelectBox("instance").option("items", reportItems);
+                                                                    fetch(`/`, {
+                                                                        method: 'POST',
+                                                                        headers: { "Content-Type": "application/json" },
+                                                                        body: JSON.stringify({
+                                                                            type: "SendSignalRequest",
+                                                                            nodeGuid: nodeGuid, // hack
+                                                                            name: "updateReports",
+                                                                            data: null,
+                                                                            signalType: "input",
+                                                                        })
+                                                                    }
+                                                                    );
+                                                                }).catch(e => {
+                                                                    console.error(e);
+                                                                });
+                                                        },
+                                                    })
+                                                );
+                                            },
+                                        });
+                                    },
+                                },
+                            },
+                            {
+                                location: 'before',
+                                widget: 'dxButton',
+                                options: {
+                                    hint: "Выгрузить риски в Jira'y",
+                                    icon: "textdocument",
+                                    onClick(e) {
+                                        fetchTask(
+                                            "96154c68-4f0c-4717-8d2d-5fd57c42f37b",
+                                            [
+                                                { signal: "report", data: baseReport.filter(x => x.risk) },
+                                                { signal: "run", data: null },
+                                            ],
+                                            "done",
+                                            "f74fb516-1941-47b2-adc2-459d3f7269cb",
+                                        )
+                                            .then(() => Promise.all([
+                                                fetch("/cwd/scanner/jira-issues.csv").then(x => x.blob()),
+                                                fetch("/cwd/scanner/jira-issues-config.txt").then(x => x.blob()),
+                                            ]))
+                                            .then(([blob1, blob2]) => {
+                                                console.log([blob1, blob2]);
+                                                saveFile(blob1, "jira-issues", "text/csv");
+                                                saveFile(blob2, "jira-issues-config", "text/plain");
+                                            }).catch(e => {
+                                                console.error(e);
+                                            })
+
+                                    },
+                                },
+                            },
+                            {
+                                location: 'before',
+                                widget: 'dxSelectBox',
+                                options: {
+                                    placeholder: 'Выберите отчёт',
+                                    width: "600",
+                                    items: reportItems,
+                                    valueExpr: 'value',
+                                    displayExpr: 'text',
+                                    async onValueChanged(e) {
+                                        baseReportUrl = e.value;
+                                        const baseReport = await fetch(baseReportUrl).then(x => x.json());
+                                        loadReport(baseReport);
+                                    },
+                                    elementAttr: {
+                                        id: "datagridToolbarReportsSelectBox",
+                                    }
+                                },
+                            },
+                            {
+                                location: 'before',
+                                template() {
+                                    return $('<input type="file">').on("change", function (e) {
+                                        var file = e.target.files[0];
+                                        if (!file) {
+                                            return;
+                                        }
+                                        var reader = new FileReader();
+                                        reader.onload = function (e) {
+                                            var contents = JSON.parse(e.target.result);
+                                            loadReport(contents);
+                                        };
+                                        reader.readAsText(file);
+                                    });
+                                }
+                            },
+                            'columnChooserButton',
+                            'exportButton',
+                        ],
+                    },
+                    summary: {
+                        totalItems: [
+                            { column: "guid", summaryType: "count", customizeText(e) { return e.value + "" } },
+                            { column: "protocol", summaryType: "custom" },
+                            { column: "host", summaryType: "custom" },
+                            { column: "path", summaryType: "custom" },
+                            { column: "method", summaryType: "custom" },
+                            { column: "code", summaryType: "custom" },
+                            { column: "status", summaryType: "custom" },
+                            { column: "type", summaryType: "custom" },
+                        ],
+                        calculateCustomSummary: function (options) {
+                            switch (options.summaryProcess) {
+                                case "start":
+                                    options.totalValue = new Set();
+                                    break;
+                                case "calculate":
+                                    options.totalValue.add(options.value);
+                                    break;
+                                case "finalize":
+                                    options.totalValue = options.totalValue.size;
+                                    break;
+                            }
+                        },
+                    },
+                    onRowPrepared: function (event) {
+                        if (event.rowType == 'data') {
+                            let backgroundColor = '';
+                            event.rowElement.mouseenter(function () {
+                                backgroundColor = event.rowElement.find('td').first().css('background-color');
+                                event.rowElement.find('td').css('background-color', 'MediumSeaGreen');
+                            });
+                            event.rowElement.mouseleave(function () {
+                                event.rowElement.find('td').css('background-color', backgroundColor);
+                                $("#tooltip").dxTooltip("hide");
+                            });
+                            event.rowElement.mousemove(function (mousemove) {
+                                if (window.tooltipEnabled) {
+
+                                    const tooltipContent = event.data.diffs.length === 0
+                                        ? $("<pre />").text(event.data.body)
+                                        : $("<table />").css({ "border": "1px solid black", "text-align": "left", "font-size": "larger", "text-wrap": "wrap" }).append(
+                                            ...event.data.diffs.map(
+                                                diff => $("<tr />").css({ "border": "1px solid black" }).append(
+                                                    $("<td />").css({ "align-content": "center", "padding-right": "4px" }).text(diff.attr.toUpperCase()),
+                                                    $("<td />").append(
+                                                        $("<div />").css({ "background-color": "rgba(211,211,211,0.5)" }).text(diff.prev),
+                                                        $("<div />").css({ "background-color": "rgba(60,179,113,0.5)" }).text(diff.next)
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                    toolTip.option("contentTemplate", function (container) {
+                                        return container.append(tooltipContent);
+                                    })
+                                    toolTip.show(event.rowElement);
+                                }
+                            })
+                        }
+                    },
+                    onCellPrepared(e) {
+                        if (e.rowType === "data" && e.column.dataField === "diff") {
+                            e.cellElement.css({
+                                "color": e.data.diff === "new" ? "#03a9f4" : e.data.diff === "changed" ? "crimson" : "grey",
+                            });
+                        }
+                    }
+                });
+
+                window.dataGrid = $("#gridContainer").dxDataGrid('instance');
+
+                // первоначальная загрузка данных
+                if (baseReportUrl !== null) {
+                    const baseReport = await fetch(baseReportUrl).then(x => x.json());
+                    loadReport(baseReport);
+                }
+
+            });
+
+        })();
+
+
+    </script>
+</body>
+
+</html>

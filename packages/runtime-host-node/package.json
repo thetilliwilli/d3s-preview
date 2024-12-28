@@ -1,0 +1,23 @@
+{
+ "name": "@d3s/runtime-host-node",
+ "version": "0.0.24",
+ "description": "",
+ "type": "module",
+ "main": "dist/index.js",
+ "types": "dist/index.d.ts",
+ "scripts": {
+  "build": "tsc",
+  "build-watch": "tsc -w"
+ },
+ "author": "",
+ "license": "ISC",
+ "dependencies": {
+  "@d3s/event": "0.0.24",
+  "@d3s/runtime": "0.0.24",
+  "@d3s/state": "0.0.24",
+  "@d3s/utils": "0.0.24",
+  "express": "4.18.2",
+  "socket.io": "4.7.2"
+ },
+ "bin": "dist/index.js"
+}

@@ -1,0 +1,15 @@
+#.vscode
+#ignore
+#todo
+#.git
+#**/node_modules
+#**/dist
+#Dockerfile
+#.dockerignore
+#.gitignore
+
+
+# локальные файлы неиспользуются, всё устанавливается из npm registry
+*
+# делаем исключение для сбилженных пакетов
+!artifacts

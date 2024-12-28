@@ -1,0 +1,16 @@
+{
+ "name": "@d3s/state",
+ "version": "0.0.24",
+ "description": "",
+ "main": "dist/index.js",
+ "types": "dist/index.d.ts",
+ "dependencies": {
+  "@d3s/utils": "0.0.24"
+ },
+ "scripts": {
+  "build": "tsc",
+  "build-watch": "tsc -w"
+ },
+ "author": "",
+ "license": "ISC"
+}

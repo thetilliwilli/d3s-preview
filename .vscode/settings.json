@@ -1,0 +1,7 @@
+{
+    "search.exclude": {
+        "*.d.ts": true,
+        "**/dist": true
+    },
+    "typescript.tsdk": "node_modules\\typescript\\lib"
+}

@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "sourceMap": true,
+    "declaration": true
+  },
+  "references": [
+    {"path": "../event"},
+    {"path": "../state"}
+  ]
+}

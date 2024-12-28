@@ -1,0 +1,17 @@
+{
+ "name": "@d3s/event",
+ "version": "0.0.24",
+ "description": "",
+ "main": "dist/index.js",
+ "types": "dist/index.d.ts",
+ "devDependencies": {},
+ "scripts": {
+  "build": "tsc",
+  "build-watch": "tsc -w"
+ },
+ "dependencies": {
+  "@d3s/state": "0.0.24"
+ },
+ "author": "",
+ "license": "ISC"
+}

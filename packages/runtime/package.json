@@ -1,0 +1,19 @@
+{
+ "name": "@d3s/runtime",
+ "version": "0.0.24",
+ "description": "",
+ "main": "dist/index.js",
+ "types": "dist/index.d.ts",
+ "scripts": {
+  "build": "tsc",
+  "build-watch": "tsc -w"
+ },
+ "author": "",
+ "license": "ISC",
+ "dependencies": {
+  "@d3s/event": "0.0.24",
+  "@d3s/state": "0.0.24",
+  "uuid": "9.0.1",
+  "genson-js": "^0.0.8"
+ }
+}
