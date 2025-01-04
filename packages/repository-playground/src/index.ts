@@ -92,3 +92,4 @@ export * from "./node/gitlab-lang-stats-report.js";
 export * from "./node/flat-object.js";
 export * from "./node/json-to-xlsx.js";
 export * from "./node/object-node.js";
+export * from "./node/ai.js";
