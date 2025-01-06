@@ -79,7 +79,7 @@
      "",
      null,
      null,
-     "const readline = require(\"node:readline\");\n\n\nconst rl = readline.createInterface({\n    input: process.stdin,\n    output: process.stdout,\n});\n\nrl.question(\"What is your name? \", (name) => {\n    console.log(`Hello ${name}`);\n    rl.close();\n    process.exit();\n});",
+     "const readline = require(\"node:readline\");\n\n\nconst rl = readline.createInterface({\n    input: process.stdin,\n    output: process.stdout,\n});\n\nrl.question(\"Как тебя зовут? \", (name) => {\n    console.log(`Hello ${name}`);\n    rl.close();\n    process.exit();\n});",
      false,
      null,
      {},
