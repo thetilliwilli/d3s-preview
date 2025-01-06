@@ -38,6 +38,13 @@ export class InvokeNodeRequest extends AbstractRequest {
   }
 }
 
+export class AddAiNodeRequest extends AbstractRequest {
+  public type = "AddAiNodeRequest" as const;
+  constructor(public prompt: string) {
+    super();
+  }
+}
+
 export class AddRepositoryItemsRequest extends AbstractRequest {
   public type = "AddRepositoryItemsRequest" as const;
   constructor(public nodeUris: string[]) {

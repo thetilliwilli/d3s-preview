@@ -35,6 +35,7 @@ export class NodeHost {
       resolveNode: this.resolveNode,
       logToHost: logToHost,
       dataService: this.dataService,
+      promptAi: this.getPromptResult,
     });
 
     ["SIGINT", "SIGTERM", "exit", "uncaughtException"].forEach((event) => {
@@ -66,6 +67,29 @@ export class NodeHost {
     const nodeResolver = new NodeResolver();
     const result = nodeResolver.resolve(nodeUri);
     return result;
+  }
+
+  public async getPromptResult(prompt: string) {
+    const result = await fetch(config.aiEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${config.aiToken}`,
+      },
+      body: JSON.stringify({
+        model: "meta-llama/Llama-3.3-70B-Instruct",
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        max_tokens: 5000,
+        stream: false,
+      }),
+    }).then((x) => x.json());
+
+    return result.choices[0].message.content as string;
   }
 
   private async webserverInit(port: number, host: string) {

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { tmpdir } from "os";
 import path from "path";
 import url from "url";
+import fs from "fs";
 
 const toNumber = (x: unknown) => {
   const castedX = Number.parseInt(x + "");
@@ -11,11 +12,17 @@ const toNumber = (x: unknown) => {
 const toString = (x: unknown) => (typeof x === "string" ? x : undefined);
 const toBoolean = (x: unknown) => (x === "true" ? true : x === "false" ? false : undefined);
 
+const cwd = process.cwd();
+
+try {
+  Object.entries(JSON.parse(fs.readFileSync(".env.json", "utf8"))).forEach(([name, value]) => {
+    process.env[name] = value as string | undefined;
+  });
+} catch (_) {}
+
 const designerDist =
   process.env["DESIGNER_DIST"] === undefined ? undefined : path.resolve(process.env["DESIGNER_DIST"]);
 const cert = process.env["CERT"] === undefined ? undefined : path.resolve(process.env["CERT"]);
-
-const cwd = process.cwd();
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 export const config = {
@@ -33,4 +40,10 @@ export const config = {
   repo: withDefault(toString, process.env["REPO"], undefined),
   verbose: withDefault(toBoolean, process.env["VERBOSE"], true),
   appLocation: path.join(cwd, withDefault(toString, process.argv[2], "app.json")),
+  aiEndpoint: withDefault(
+    toString,
+    process.env["AI_ENDPOINT"],
+    "https://api-inference.huggingface.co/models/meta-llama/Llama-3.3-70B-Instruct/v1/chat/completions"
+  ),
+  aiToken: withDefault(toString, process.env["AI_TOKEN"], ""),
 };

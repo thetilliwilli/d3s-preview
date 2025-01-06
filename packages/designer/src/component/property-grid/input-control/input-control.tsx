@@ -43,7 +43,7 @@ export const InputControl = ({ control }: { control: Control }) => {
   if (value === undefined)
     return (
       <div style={inputControlStyles}>
-        <InputLabel name={control.name} type="raw" dataKey={control.dataKey} />
+        <InputLabel name={control.name} type="raw" dataKey={control.dataKey} nodeGuid={control.nodeGuid} />
         <input value={"dataKey#" + control.dataKey} type="text" disabled />
       </div>
     );

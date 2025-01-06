@@ -59,7 +59,7 @@ export function toInputElement(
 
   switch (type) {
     case "string":
-      return <textarea {...attributes} defaultValue={serializedValueAsStringLimited} rows={1} />;
+      return <textarea {...attributes} defaultValue={serializedValueAsStringLimited} style={{resize:"none", overflow: "hidden", borderRadius:0 }} rows={1}  />;
     case "number":
       return <input {...attributes} defaultValue={serializedValue} type="number" />;
     case "object":

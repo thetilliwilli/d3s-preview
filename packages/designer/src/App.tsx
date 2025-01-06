@@ -6,6 +6,7 @@ import { PropertyEditor } from "./component/property-grid/property-editor";
 import { ResourceImporter } from "./component/resource-importer/resource-importer";
 import { RepositoryWindow } from "./component/property-grid/repository-window";
 import { EditViewWindow } from "./component/edit-view-window";
+import { AiWindow } from "./component/property-grid/ai-window";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <ResourceImporter />
       <BindingEditor />
       <RepositoryWindow />
+      <AiWindow />
       <EditViewWindow />
     </>
   );

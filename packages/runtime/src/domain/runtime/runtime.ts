@@ -12,6 +12,7 @@ export class Runtime extends EventEmitter {
   public resolveNode: (nodeUri: string) => Promise<NodeBuilder>;
   public logToHost: (log: any) => void;
   public data: IDataService;
+  public promptAi: (prompt: string) => Promise<string>;
   public state = new NetworkState();
   public nodes: Dictionary<RuntimeNode> = {};
   public instances: Dictionary<{ [key: string | number | symbol]: any }> = {};
@@ -22,6 +23,7 @@ export class Runtime extends EventEmitter {
     this.resolveNode = settings.resolveNode;
     this.logToHost = settings.logToHost;
     this.data = settings.dataService;
+    this.promptAi = settings.promptAi;
 
     this.handle = this.handle.bind(this);
     this.logSignal = this.logSignal.bind(this);

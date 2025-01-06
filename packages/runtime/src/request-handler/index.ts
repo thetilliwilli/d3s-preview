@@ -11,3 +11,4 @@ export * from "../request-handler/send-signal-request-handler";
 export * from "../request-handler/update-meta-request-handler";
 export * from "../request-handler/active-node-request-handler";
 export * from "../request-handler/invoke-node-request-handler";
+export * from "../request-handler/add-ai-node-request-handler";
