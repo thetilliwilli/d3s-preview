@@ -23,7 +23,7 @@
                 "AUTH":"false",
                 "WEB_CWD": "true",
                 "PORT": "5000",
-                "AI_ENDPOINT": "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-72B-Instruct/v1/chat/completions"
+                // "AI_ENDPOINT": "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-72B-Instruct/v1/chat/completions"
             },
             "args": [
                 "app.json"

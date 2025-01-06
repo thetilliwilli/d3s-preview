@@ -1,0 +1,18 @@
+{
+  "name": "@d3s/app",
+  "version": "0.0.24",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+   "build": "tsc",
+   "build-watch": "tsc -w"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+   "@d3s/runtime-host-node": "0.0.24"
+  },
+  "bin": "dist/index.js"
+ }
