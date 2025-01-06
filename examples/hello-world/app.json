@@ -1,31 +1,64 @@
 {
     "state": {
      "nodes": {
-      "71832c73-f11e-40d6-bc63-937a6c623aa1": {
+      "1bbdf434-79f3-438f-adea-ea0909222ee1": {
        "meta": {
-        "guid": "71832c73-f11e-40d6-bc63-937a6c623aa1",
-        "nodeUri": "@d3s/repository-playground.js",
-        "name": "helloWorld",
+        "guid": "1bbdf434-79f3-438f-adea-ea0909222ee1",
+        "nodeUri": "@d3s/repository-playground.entrypoint",
+        "name": "entrypoint",
         "position": {
-         "x": 80,
-         "y": 50
+         "x": 110,
+         "y": 90
         }
        },
        "state": {},
        "input": {
-        "script": 0,
-        "execOnInput": 1,
-        "exec": 2,
-        "_init": 3
+        "entry": 6,
+        "_init": 8
        },
        "output": {
-        "result": 4,
-        "error": 5
+        "event": 7
+       },
+       "active": true
+      },
+      "fb4d1241-77a2-48e1-ae3a-a8ee4fc05e40": {
+       "meta": {
+        "guid": "fb4d1241-77a2-48e1-ae3a-a8ee4fc05e40",
+        "nodeUri": "@d3s/repository-playground.js",
+        "name": "helloWorld",
+        "position": {
+         "x": 460,
+         "y": 90
+        }
+       },
+       "state": {},
+       "input": {
+        "script": 17,
+        "execOnInput": 18,
+        "exec": 7,
+        "_init": 23
+       },
+       "output": {
+        "result": 20,
+        "success": 21,
+        "error": 22
        },
        "active": true
       }
      },
-     "bindings": {},
+     "bindings": {
+      "b68fdb65-3aaa-4d2c-9c0c-bedda1840508": {
+       "guid": "b68fdb65-3aaa-4d2c-9c0c-bedda1840508",
+       "from": {
+        "node": "1bbdf434-79f3-438f-adea-ea0909222ee1",
+        "property": "event"
+       },
+       "to": {
+        "node": "fb4d1241-77a2-48e1-ae3a-a8ee4fc05e40",
+        "property": "exec"
+       }
+      }
+     },
      "repository": {}
     },
     "data": [
@@ -34,6 +67,27 @@
      null,
      null,
      {},
-     ""
+     "",
+     null,
+     null,
+     null,
+     0,
+     null,
+     null,
+     "input:",
+     null,
+     "",
+     null,
+     null,
+     "const readline = require(\"node:readline\");\n\n\nconst rl = readline.createInterface({\n    input: process.stdin,\n    output: process.stdout,\n});\n\nrl.question(\"What is your name? \", (name) => {\n    console.log(`Hello ${name}`);\n    rl.close();\n    process.exit();\n});",
+     false,
+     null,
+     {},
+     null,
+     "",
+     null,
+     null,
+     null,
+     null
     ]
    }
