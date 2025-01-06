@@ -16,7 +16,7 @@ import { NodeResolver } from "./node-resolver.js";
 import util from "util";
 
 function logToHost(message: string) {
-  if (config.verbose) console.log(message);
+  // if (config.verbose) console.log(message);
 }
 
 export class NodeHost {
@@ -294,7 +294,7 @@ export class NodeHost {
     });
 
     server.listen(port, host, () => {
-      console.log(`server.listen: ${config.tls ? "https" : "http"}://${config.token}@localhost:${config.port}`);
+      logToHost(`server.listen: ${config.tls ? "https" : "http"}://${config.token}@localhost:${config.port}`);
     });
   }
 }
