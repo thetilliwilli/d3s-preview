@@ -1,0 +1,39 @@
+{
+    "state": {
+     "nodes": {
+      "71832c73-f11e-40d6-bc63-937a6c623aa1": {
+       "meta": {
+        "guid": "71832c73-f11e-40d6-bc63-937a6c623aa1",
+        "nodeUri": "@d3s/repository-playground.js",
+        "name": "helloWorld",
+        "position": {
+         "x": 80,
+         "y": 50
+        }
+       },
+       "state": {},
+       "input": {
+        "script": 0,
+        "execOnInput": 1,
+        "exec": 2,
+        "_init": 3
+       },
+       "output": {
+        "result": 4,
+        "error": 5
+       },
+       "active": true
+      }
+     },
+     "bindings": {},
+     "repository": {}
+    },
+    "data": [
+     "const child_process = require(\"child_process\");\r\nconst whoami = child_process.execSync(\"whoami\");\r\nconsole.log(`Hello world: ${whoami}`);",
+     false,
+     null,
+     null,
+     {},
+     ""
+    ]
+   }
