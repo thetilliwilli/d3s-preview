@@ -47,5 +47,13 @@ export class LoadNetworkRequestHandler implements AbstractRequestHandler<LoadNet
     );
 
     app.state.repository = event.networkState.repository;
+
+    const entrypointNode = Object.values(app.state.nodes).find(
+      (node) => node.meta.nodeUri === "@d3s/repository-playground.entrypoint"
+    );
+
+    if (entrypointNode) {
+      await app.handle(new SendSignalRequest(entrypointNode.meta.guid, "entry", null, "input"));
+    }
   }
 }

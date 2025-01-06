@@ -9,6 +9,7 @@ export const js = new NodeBuilder()
   })
   .withOutput({
     result: {},
+    success: null,
     error: "",
   })
   .withHandler(({ input, output, signal, emit }) => {
@@ -20,6 +21,7 @@ export const js = new NodeBuilder()
         const require = createRequire(process.cwd() + "/index.js"); //fake url, ссылка на несуществующий файл в рабочей директории
         const changes = evaluate(vars, require, signal, input);
         Object.entries(changes).forEach((change: any) => emit(change[0], change[1]));
+        emit("success", null);
       } catch (e) {
         emit("error", e + "");
       }

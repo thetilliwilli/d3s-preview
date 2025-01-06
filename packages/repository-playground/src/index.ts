@@ -93,3 +93,7 @@ export * from "./node/flat-object.js";
 export * from "./node/json-to-xlsx.js";
 export * from "./node/object-node.js";
 export * from "./node/ai.js";
+export * from "./node/entrypoint.js";
+export * from "./node/process-exit.js";
+export * from "./node/prompt.js";
+export * from "./node/consoleLog.js";

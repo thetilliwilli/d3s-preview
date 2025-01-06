@@ -2,28 +2,32 @@
 import child_process from "child_process";
 import fs from "fs";
 import path from "path";
+import { createRequire } from "node:module";
 
 async function main() {
   const args = process.argv;
 
-  const appFile = (args[2] || "").trim();
+  const appUri = (args[2] || "").trim();
 
-  const fullUrl =
-    appFile.startsWith("file:") || appFile.startsWith("http:") || appFile.startsWith("https:")
-      ? appFile
-      : `file:${appFile}`;
+  // console.log(`resolved app url: ${appUri}`);
 
-  const response = await fetch(fullUrl);
-
-  if (!response.ok) throw new Error(`failed to fetch app url: ${fullUrl}`);
-
-  const fileContent = await response.text();
+  const fileContent = await (async () => {
+    try {
+      return appUri.startsWith("http:") || appUri.startsWith("https:")
+        ? fetch(appUri).then((x) => x.text())
+        : fs.promises.readFile(appUri, "utf8");
+    } catch (error) {
+      console.error(`failed to load app: ${appUri}`);
+      throw error;
+    }
+  })();
 
   fs.writeFileSync("app.json", fileContent);
 
-  const resolvedEntry = path.resolve("@d3s/runtime-host-node");
+  const require = createRequire(import.meta.url);
+  const resolvedEntry = require.resolve("@d3s/runtime-host-node");
 
-  console.log(`resolvedEntry: ${resolvedEntry}`);
+  // console.log(`resolvedEntry: ${resolvedEntry}`);
 
   child_process.fork(resolvedEntry, { env: process.env });
 }
