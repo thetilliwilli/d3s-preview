@@ -1,93 +1,75 @@
 {
-    "state": {
-     "nodes": {
-      "1bbdf434-79f3-438f-adea-ea0909222ee1": {
-       "meta": {
-        "guid": "1bbdf434-79f3-438f-adea-ea0909222ee1",
-        "nodeUri": "@d3s/repository-playground.entrypoint",
-        "name": "entrypoint",
-        "position": {
-         "x": 110,
-         "y": 90
-        }
-       },
-       "state": {},
-       "input": {
-        "entry": 6,
-        "_init": 8
-       },
-       "output": {
-        "event": 7
-       },
-       "active": true
-      },
-      "fb4d1241-77a2-48e1-ae3a-a8ee4fc05e40": {
-       "meta": {
-        "guid": "fb4d1241-77a2-48e1-ae3a-a8ee4fc05e40",
-        "nodeUri": "@d3s/repository-playground.js",
-        "name": "helloWorld",
-        "position": {
-         "x": 460,
-         "y": 90
-        }
-       },
-       "state": {},
-       "input": {
-        "script": 17,
-        "execOnInput": 18,
-        "exec": 7,
-        "_init": 23
-       },
-       "output": {
-        "result": 20,
-        "success": 21,
-        "error": 22
-       },
-       "active": true
-      }
-     },
-     "bindings": {
-      "b68fdb65-3aaa-4d2c-9c0c-bedda1840508": {
-       "guid": "b68fdb65-3aaa-4d2c-9c0c-bedda1840508",
-       "from": {
-        "node": "1bbdf434-79f3-438f-adea-ea0909222ee1",
-        "property": "event"
-       },
-       "to": {
-        "node": "fb4d1241-77a2-48e1-ae3a-a8ee4fc05e40",
-        "property": "exec"
-       }
-      }
-     },
-     "repository": {}
+ "state": {
+  "nodes": {
+   "1bbdf434-79f3-438f-adea-ea0909222ee1": {
+    "meta": {
+     "guid": "1bbdf434-79f3-438f-adea-ea0909222ee1",
+     "nodeUri": "@d3s/repository-playground.entrypoint",
+     "name": "entrypoint",
+     "position": {
+      "x": 110,
+      "y": 90
+     }
     },
-    "data": [
-     "const child_process = require(\"child_process\");\r\nconst whoami = child_process.execSync(\"whoami\");\r\nconsole.log(`Hello world: ${whoami}`);",
-     false,
-     null,
-     null,
-     {},
-     "",
-     null,
-     null,
-     null,
-     0,
-     null,
-     null,
-     "input:",
-     null,
-     "",
-     null,
-     null,
-     "const readline = require(\"node:readline\");\n\n\nconst rl = readline.createInterface({\n    input: process.stdin,\n    output: process.stdout,\n});\n\nrl.question(\"Как тебя зовут? \", (name) => {\n    console.log(`Hello ${name}`);\n    rl.close();\n    process.exit();\n});",
-     false,
-     null,
-     {},
-     null,
-     "",
-     null,
-     null,
-     null,
-     null
-    ]
+    "state": {},
+    "input": {
+     "entry": 0,
+     "_init": 1
+    },
+    "output": {
+     "event": 2
+    },
+    "active": true
+   },
+   "fb4d1241-77a2-48e1-ae3a-a8ee4fc05e40": {
+    "meta": {
+     "guid": "fb4d1241-77a2-48e1-ae3a-a8ee4fc05e40",
+     "nodeUri": "@d3s/repository-playground.js",
+     "name": "helloWorld",
+     "position": {
+      "x": 470,
+      "y": 90
+     }
+    },
+    "state": {},
+    "input": {
+     "script": 3,
+     "execOnInput": 4,
+     "exec": 2,
+     "_init": 5
+    },
+    "output": {
+     "result": 6,
+     "success": 7,
+     "error": 8
+    },
+    "active": true
    }
+  },
+  "bindings": {
+   "b68fdb65-3aaa-4d2c-9c0c-bedda1840508": {
+    "guid": "b68fdb65-3aaa-4d2c-9c0c-bedda1840508",
+    "from": {
+     "node": "1bbdf434-79f3-438f-adea-ea0909222ee1",
+     "property": "event"
+    },
+    "to": {
+     "node": "fb4d1241-77a2-48e1-ae3a-a8ee4fc05e40",
+     "property": "exec"
+    }
+   }
+  },
+  "repository": {}
+ },
+ "data": [
+  null,
+  null,
+  null,
+  "const readline = require(\"node:readline\");\n\n\nconst rl = readline.createInterface({\n    input: process.stdin,\n    output: process.stdout,\n});\n\nrl.question(\"What is your name? \", (name) => {\n    console.log(`Hello, ${name}!`);\n    rl.close();\n    process.exit();\n});",
+  false,
+  null,
+  {},
+  null,
+  ""
+ ]
+}
