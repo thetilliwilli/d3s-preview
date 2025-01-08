@@ -27,12 +27,12 @@
                 "AUTH": "false",
                 "WEB_CWD": "true",
                 "PORT": "5000",
-                // "AI_ENDPOINT": "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-72B-Instruct/v1/chat/completions"
+                "AI_ENDPOINT": "https://api.deepseek.com/chat/completions"
             },
             "args": [
                 "app.json"
             ],
-            "console": "integratedTerminal",
+            // "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/ignore/apps",
             // hack: https://github.com/microsoft/vscode/issues/102042#issuecomment-656402933
             "resolveSourceMapLocations": [

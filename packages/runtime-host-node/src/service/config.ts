@@ -39,7 +39,7 @@ export const config = {
   token: withDefault(toString, crypto.randomUUID(), crypto.randomUUID()),
   repo: withDefault(toString, process.env["REPO"], undefined),
   verbose: withDefault(toBoolean, process.env["VERBOSE"], true),
-  appLocation: path.join(cwd, withDefault(toString, process.argv[2], "app.json")),
+  appLocation: withDefault(toString, process.argv[2], "app.json"),
   aiEndpoint: withDefault(
     toString,
     process.env["AI_ENDPOINT"],

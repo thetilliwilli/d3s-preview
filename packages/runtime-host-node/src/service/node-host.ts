@@ -16,7 +16,7 @@ import { NodeResolver } from "./node-resolver.js";
 import util from "util";
 
 function logToHost(message: string) {
-  // if (config.verbose) console.log(message);
+  if (config.verbose) console.log(message);
 }
 
 export class NodeHost {
@@ -77,16 +77,24 @@ export class NodeHost {
         Authorization: `Bearer ${config.aiToken}`,
       },
       body: JSON.stringify({
-        model: "meta-llama/Llama-3.3-70B-Instruct",
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        max_tokens: 5000,
+        model: "deepseek-chat",
         stream: false,
+        messages: [
+          // { role: "system", content: "You are a helpful assistant." },
+          { role: "user", content: prompt },
+        ],
       }),
+      // body: JSON.stringify({
+      //   model: "meta-llama/Llama-3.3-70B-Instruct",
+      //   messages: [
+      //     {
+      //       role: "user",
+      //       content: prompt,
+      //     },
+      //   ],
+      //   max_tokens: 5000,
+      //   stream: false,
+      // }),
     }).then((x) => x.json());
 
     return result.choices[0].message.content as string;
