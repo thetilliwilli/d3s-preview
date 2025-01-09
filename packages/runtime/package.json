@@ -2,6 +2,7 @@
  "name": "@d3s/runtime",
  "version": "0.0.24",
  "description": "",
+ "type": "module",
  "main": "dist/index.js",
  "types": "dist/index.d.ts",
  "scripts": {
@@ -13,6 +14,7 @@
  "dependencies": {
   "@d3s/event": "0.0.24",
   "@d3s/state": "0.0.24",
+  "@d3s/runtime-host-node": "0.0.24",
   "uuid": "9.0.1",
   "genson-js": "^0.0.8"
  }

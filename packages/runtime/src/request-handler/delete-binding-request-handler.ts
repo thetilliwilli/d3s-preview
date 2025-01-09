@@ -1,6 +1,6 @@
 import { DeleteBindingRequest } from "@d3s/event";
-import { AbstractRequestHandler } from "./abstract-request-handler";
-import { AbstractRequestHandlerContext } from "./app-event-request-handler";
+import { AbstractRequestHandler } from "./abstract-request-handler.js";
+import { AbstractRequestHandlerContext } from "./app-event-request-handler.js";
 
 export class DeleteBindingRequestHandler implements AbstractRequestHandler<DeleteBindingRequest> {
   public async handle({ app, event }: AbstractRequestHandlerContext<DeleteBindingRequest>): Promise<void> {

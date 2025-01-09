@@ -15,17 +15,21 @@ import { InMemoryDataService } from "./data-service.js";
 import { NodeResolver } from "./node-resolver.js";
 import util from "util";
 
-function logToHost(message: string) {
-  if (config.verbose) console.log(message);
-}
+
 
 export class NodeHost {
   private appLocation = config.appLocation;
-  private dataService!: InMemoryDataService;
+  public dataService!: InMemoryDataService;
   private runtime!: Runtime;
 
+  constructor(){
+    this.resolveNode = this.resolveNode.bind(this);
+    this.logToHost = this.logToHost.bind(this);
+    this.getPromptResult = this.getPromptResult.bind(this);
+  }
+
   public async init() {
-    logToHost(JSON.stringify({ ...config, type: "config" }));
+    this.logToHost(JSON.stringify({ ...config, type: "config" }));
 
     const appStateWithData = this.getState();
 
@@ -33,7 +37,7 @@ export class NodeHost {
 
     this.runtime = new Runtime({
       resolveNode: this.resolveNode,
-      logToHost: logToHost,
+      logToHost: this.logToHost,
       dataService: this.dataService,
       promptAi: this.getPromptResult,
     });
@@ -67,6 +71,10 @@ export class NodeHost {
     const nodeResolver = new NodeResolver();
     const result = nodeResolver.resolve(nodeUri);
     return result;
+  }
+
+  public logToHost(message: string) {
+    if (config.verbose) console.log(message);
   }
 
   public async getPromptResult(prompt: string) {
@@ -291,7 +299,7 @@ export class NodeHost {
     });
 
     server.listen(port, host, () => {
-      logToHost(`server.listen: ${config.tls ? "https" : "http"}://${config.token}@localhost:${config.port}`);
+      this.logToHost(`server.listen: ${config.tls ? "https" : "http"}://${config.token}@localhost:${config.port}`);
     });
   }
 }

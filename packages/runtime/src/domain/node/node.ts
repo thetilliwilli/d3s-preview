@@ -1,6 +1,6 @@
 import { Dictionary } from "@d3s/utils";
-import { Reactor } from "./reactor";
-import { RunContext } from "./run-context";
+import { Reactor } from "./reactor.js";
+import { RunContext } from "./run-context.js";
 
 export class RuntimeNode {
   constructor(

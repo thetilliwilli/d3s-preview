@@ -1,10 +1,10 @@
 import { SendSignalRequest, eventNames } from "@d3s/event";
-import { RunContext } from "../domain/node/run-context";
-import { Signal } from "../domain/node/signal";
-import { Runtime } from "../domain/runtime/runtime";
-import { AbstractRequestHandler } from "./abstract-request-handler";
-import { AbstractRequestHandlerContext } from "./app-event-request-handler";
 import { NodeState } from "@d3s/state";
+import { RunContext } from "../domain/node/run-context.js";
+import { Signal } from "../domain/node/signal.js";
+import { Runtime } from "../domain/runtime/runtime.js";
+import { AbstractRequestHandler } from "./abstract-request-handler.js";
+import { AbstractRequestHandlerContext } from "./app-event-request-handler.js";
 
 export class SendSignalRequestHandler implements AbstractRequestHandler<SendSignalRequest> {
   public async handle({ app, event }: AbstractRequestHandlerContext<SendSignalRequest>): Promise<void> {

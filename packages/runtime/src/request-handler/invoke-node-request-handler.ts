@@ -1,8 +1,8 @@
 import { AddNodeRequest, DeleteNodeRequest, eventNames, InvokeNodeRequest, SendSignalRequest } from "@d3s/event";
-import { Signal } from "../domain/node/signal";
-import { GuidService } from "../service/guid-service";
-import { AbstractRequestHandler } from "./abstract-request-handler";
-import { AbstractRequestHandlerContext } from "./app-event-request-handler";
+import { Signal } from "../domain/node/signal.js";
+import { GuidService } from "../service/guid-service.js";
+import { AbstractRequestHandler } from "./abstract-request-handler.js";
+import { AbstractRequestHandlerContext } from "./app-event-request-handler.js";
 
 export class InvokeNodeRequestHandler implements AbstractRequestHandler<InvokeNodeRequest, any> {
   public async handle({ app, event }: AbstractRequestHandlerContext<InvokeNodeRequest>): Promise<any> {

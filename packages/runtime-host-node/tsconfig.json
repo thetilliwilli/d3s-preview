@@ -6,7 +6,6 @@
     "sourceMap": true
   },
   "references": [
-    {"path": "../runtime"},
     {"path": "../event"},
     {"path": "../state"},
     {"path": "../utils"},

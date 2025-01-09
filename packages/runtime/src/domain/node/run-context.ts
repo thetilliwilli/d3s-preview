@@ -1,6 +1,6 @@
 import { Dictionary } from "@d3s/utils";
-import { Signal } from "./signal";
-import { ReactorEmit } from "./reactor-emit";
+import { Signal } from "./signal.js";
+import { ReactorEmit } from "./reactor-emit.js";
 
 export class RunContext {
   constructor(

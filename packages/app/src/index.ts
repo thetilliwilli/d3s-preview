@@ -5,6 +5,7 @@ import os from "os";
 import { createRequire } from "node:module";
 import path from "node:path";
 import crypto from "node:crypto";
+import { Runtime } from "@d3s/runtime";
 
 // const entrypointCode = `import child_process from "child_process";
 // import { createRequire } from "node:module";
@@ -73,15 +74,16 @@ async function main() {
   // fs.writeFileSync(path.join(d3sRootDir, appWorkspace, "entrypoint.mjs"), entrypointCode);
 
   // saving app.json
-  const appJsonPath = path.join(d3sRootDir, appWorkspace, "app.json");
-  fs.writeFileSync(appJsonPath, appJsonContent);
+  // const appJsonPath = path.join(d3sRootDir, appWorkspace, "app.json");
+  // fs.writeFileSync(appJsonPath, appJsonContent);
 
   // запускаем runtime и передаем приложение
-  const require = createRequire(import.meta.url);
-  const runtimeModuleEntrypointResolved = require.resolve(path.join(d3sRootDir, "node_modules/@d3s/runtime-host-node"));
-  child_process.fork(runtimeModuleEntrypointResolved, [appJsonPath], { env: process.env, stdio: "inherit" });
+  // const require = createRequire(import.meta.url);
+  // const runtimeModuleEntrypointResolved = require.resolve(path.join(d3sRootDir, "node_modules/@d3s/runtime-host-node"));
+  // child_process.fork(runtimeModuleEntrypointResolved, [appJsonPath], { env: process.env, stdio: "inherit" });
   //#endregion
 
+  await new Runtime().run(appJson);
 }
 
 main();

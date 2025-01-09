@@ -1,10 +1,10 @@
 import { AddBindingRequest, AddEntityRequest, AddNodeRequest, DeleteNodeRequest } from "@d3s/event";
+import { AddBindingRequestHandler } from "./add-binding-request-handler.js";
+import { AddNodeRequestHandler } from "./add-node-request-handler.js";
+import { AbstractRequestHandler } from "./abstract-request-handler.js";
+import { AbstractRequestHandlerContext } from "./app-event-request-handler.js";
+import { DeleteNodeRequestHandler } from "./delete-node-request-handler.js";
 // import { xml2js } from "xml-js";
-import { AddBindingRequestHandler } from "./add-binding-request-handler";
-import { AddNodeRequestHandler } from "./add-node-request-handler";
-import { AbstractRequestHandler } from "./abstract-request-handler";
-import { AbstractRequestHandlerContext } from "./app-event-request-handler";
-import { DeleteNodeRequestHandler } from "./delete-node-request-handler";
 
 const nodeUriBase = "@d3s/repository-threat-modeler";
 const unknowEntityType = "ThreatEntityNode";

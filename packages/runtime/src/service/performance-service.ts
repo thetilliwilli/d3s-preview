@@ -1,5 +1,5 @@
 import { performance } from "perf_hooks";
-import { GuidService } from "./guid-service";
+import { GuidService } from "./guid-service.js";
 
 const getNewId = (
   (index) => () =>

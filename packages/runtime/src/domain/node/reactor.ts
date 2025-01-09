@@ -1,5 +1,5 @@
-import { ReactorEmit } from "./reactor-emit";
-import { Signal } from "./signal";
+import { ReactorEmit } from "./reactor-emit.js";
+import { Signal } from "./signal.js";
 
 export type Reactor<TState, TInput, TOutput, TSignalName extends keyof TInput = keyof TInput> = (ctx: {
   signal: Signal<TSignalName, TInput[TSignalName]>;

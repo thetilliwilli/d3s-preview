@@ -1,6 +1,6 @@
 import { Dictionary, deepCopy } from "@d3s/utils";
-import { RuntimeNode } from "./node";
-import { Reactor } from "./reactor";
+import { RuntimeNode } from "./node.js";
+import { Reactor } from "./reactor.js";
 
 export class NodeBuilder<TState = {}, TInput = {}, TOutput = {}> {
   private state: TState = {} as any;

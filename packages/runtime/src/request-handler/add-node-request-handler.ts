@@ -1,8 +1,8 @@
 import { AddNodeRequest, SendSignalRequest } from "@d3s/event";
 import { PositionState, getEmptyNodeState } from "@d3s/state";
-import { GuidService } from "../service/guid-service";
-import { AbstractRequestHandler } from "./abstract-request-handler";
-import { AbstractRequestHandlerContext } from "./app-event-request-handler";
+import { GuidService } from "../service/guid-service.js";
+import { AbstractRequestHandler } from "./abstract-request-handler.js";
+import { AbstractRequestHandlerContext } from "./app-event-request-handler.js";
 
 export class AddNodeRequestHandler implements AbstractRequestHandler<AddNodeRequest> {
   public async handle({ app, event }: AbstractRequestHandlerContext<AddNodeRequest>): Promise<void> {

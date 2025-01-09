@@ -8,6 +8,7 @@
   },
   "references": [
     {"path": "../event"},
-    {"path": "../state"}
+    {"path": "../state"},
+    {"path": "../runtime-host-node"},
   ]
 }
