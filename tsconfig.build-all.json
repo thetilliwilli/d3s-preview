@@ -3,6 +3,6 @@
   "references": [
     { "path": "./packages/runtime-host-node" },
     { "path": "./packages/repository-playground" },
-    { "path": "./packages/app" },
+    { "path": "./packages/cli" },
   ]
 }

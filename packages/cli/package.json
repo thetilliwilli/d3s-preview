@@ -1,5 +1,5 @@
 {
-  "name": "@d3s/app",
+  "name": "@d3s/cli",
   "version": "0.0.24",
   "description": "",
   "type": "module",
