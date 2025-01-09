@@ -14,8 +14,6 @@
  "dependencies": {
   "@d3s/event": "0.0.24",
   "@d3s/state": "0.0.24",
-  "@d3s/runtime-host-node": "0.0.24",
-  "uuid": "9.0.1",
-  "genson-js": "^0.0.8"
+  "@d3s/runtime-host-node": "0.0.24"
  }
 }
