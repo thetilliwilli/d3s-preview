@@ -83,7 +83,7 @@ async function main() {
   // child_process.fork(runtimeModuleEntrypointResolved, [appJsonPath], { env: process.env, stdio: "inherit" });
   //#endregion
 
-  await new Runtime().run(appJson);
+  // await new Runtime().run(appJson);
 }
 
 main();

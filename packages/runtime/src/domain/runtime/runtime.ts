@@ -1,4 +1,3 @@
-import { NodeHost } from "@d3s/runtime-host-node";
 import { AbstractRequest, eventNames } from "@d3s/event";
 import { NetworkState } from "@d3s/state";
 import { Dictionary, EventEmitter } from "@d3s/utils";
@@ -10,23 +9,21 @@ import { IDataService } from "./i-data-service.js";
 import { RuntimeSettings } from "./runtime-settings.js";
 
 export class Runtime extends EventEmitter {
-  // public resolveNode: (nodeUri: string) => Promise<NodeBuilder>;
-  // public logToHost: (log: any) => void;
-  // public data: IDataService;
-  // public promptAi: (prompt: string) => Promise<string>;
+  public resolveNode: (nodeUri: string) => Promise<NodeBuilder>;
+  public logToHost: (log: any) => void;
+  public data: IDataService;
+  public promptAi: (prompt: string) => Promise<string>;
   public state = new NetworkState();
   public nodes: Dictionary<RuntimeNode> = {};
   public instances: Dictionary<{ [key: string | number | symbol]: any }> = {};
 
-  public host!: NodeHost;
-  constructor(/* settings: RuntimeSettings */) {
+  constructor(settings: RuntimeSettings) {
     super();
 
-    // const settings = 
-    // this.resolveNode = settings.resolveNode;
-    // this.logToHost = settings.logToHost;
-    // this.data = settings.dataService;
-    // this.promptAi = settings.promptAi;
+    this.resolveNode = settings.resolveNode;
+    this.logToHost = settings.logToHost;
+    this.data = settings.dataService;
+    this.promptAi = settings.promptAi;
 
     this.handle = this.handle.bind(this);
     this.logSignal = this.logSignal.bind(this);
@@ -37,7 +34,6 @@ export class Runtime extends EventEmitter {
     this.toJSON.bind(this);
   }
 
-  public async run(app:any) : Promise<void> {}
   public async handle(request: AbstractRequest): Promise<any> {
     try {
       //@ts-ignore
@@ -65,7 +61,7 @@ export class Runtime extends EventEmitter {
         ["nodes", dataRequest.nodeGuid, dataRequest.scope, dataRequest.property].join("/"),
         "/"
       );
-      const data = this.host.dataService.get(dataKey);
+      const data = this.data.get(dataKey);
       return data;
     } catch (error) {
       console.error(error);
@@ -75,7 +71,7 @@ export class Runtime extends EventEmitter {
   public toJSON() {
     return {
       state: this.state,
-      data: this.host.dataService,
+      data: this.data,
     };
   }
 
@@ -90,6 +86,6 @@ export class Runtime extends EventEmitter {
       dataString.length > logLength ? dataString.slice(0, logLength) + "..." : dataString
     ).slice(1, -1);
     const reaction = `[${shortUri}: "${shortName}"].${signal.type}.${signal.name} (${shortDataString})`;
-    this.host.logToHost(`${shortGuid} ${reaction}`);
+    this.logToHost(`${shortGuid} ${reaction}`);
   }
 }

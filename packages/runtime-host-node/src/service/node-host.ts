@@ -15,18 +15,10 @@ import { InMemoryDataService } from "./data-service.js";
 import { NodeResolver } from "./node-resolver.js";
 import util from "util";
 
-
-
 export class NodeHost {
   private appLocation = config.appLocation;
-  public dataService!: InMemoryDataService;
+  private dataService!: InMemoryDataService;
   private runtime!: Runtime;
-
-  constructor(){
-    this.resolveNode = this.resolveNode.bind(this);
-    this.logToHost = this.logToHost.bind(this);
-    this.getPromptResult = this.getPromptResult.bind(this);
-  }
 
   public async init() {
     this.logToHost(JSON.stringify({ ...config, type: "config" }));
@@ -56,6 +48,10 @@ export class NodeHost {
     await this.webserverInit(config.port, config.host);
   }
 
+  public logToHost(message: string) {
+    if (config.verbose) console.log(message);
+  }
+
   private getState(): AppStateWithData {
     return this.appLocation && existsSync(this.appLocation)
       ? JSON.parse(readFileSync(this.appLocation, "utf8"))
@@ -71,10 +67,6 @@ export class NodeHost {
     const nodeResolver = new NodeResolver();
     const result = nodeResolver.resolve(nodeUri);
     return result;
-  }
-
-  public logToHost(message: string) {
-    if (config.verbose) console.log(message);
   }
 
   public async getPromptResult(prompt: string) {
@@ -129,7 +121,7 @@ export class NodeHost {
     });
 
     socketIoServer.on("connect", (socket) => {
-      logToHost(JSON.stringify({ type: "socketConnection", status: "connected", socketId: socket.id }));
+      this.logToHost(JSON.stringify({ type: "socketConnection", status: "connected", socketId: socket.id }));
 
       // первичная синхронизация состояния
       // чтобы вернуть начальное состояние приложения при подключение нового клиента
@@ -147,7 +139,7 @@ export class NodeHost {
       });
 
       socket.on("disconnect", (reason) => {
-        logToHost(JSON.stringify({ type: "socketConnection", status: "disconnected", socketId: socket.id, reason }));
+        this.logToHost(JSON.stringify({ type: "socketConnection", status: "disconnected", socketId: socket.id, reason }));
       });
     });
 

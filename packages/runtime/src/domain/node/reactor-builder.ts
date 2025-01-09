@@ -1,4 +1,4 @@
-import { Reactor } from "./reactor";
+import { Reactor } from "./reactor.js";
 
 export interface ReactorBuilder<TState, TInput, TOutput> {
   handlerMap(handlerMap: {
