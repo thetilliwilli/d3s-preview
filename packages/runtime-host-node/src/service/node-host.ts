@@ -84,17 +84,6 @@ export class NodeHost {
           { role: "user", content: prompt },
         ],
       }),
-      // body: JSON.stringify({
-      //   model: "meta-llama/Llama-3.3-70B-Instruct",
-      //   messages: [
-      //     {
-      //       role: "user",
-      //       content: prompt,
-      //     },
-      //   ],
-      //   max_tokens: 5000,
-      //   stream: false,
-      // }),
     }).then((x) => x.json());
 
     return result.choices[0].message.content as string;
