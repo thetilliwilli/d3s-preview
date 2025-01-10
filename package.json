@@ -7,7 +7,8 @@
     "build-watch-all": "tsc -b --clean tsconfig.build-all.json & tsc -b -w tsconfig.build-all.json",
     "bwa": "npm run build-watch-all",
     "docker": "powershell ./ignore/scripts/build-and-publish.ps1",
-    "version-up": "node scripts/version-up.mjs"
+    "version-up": "node scripts/version-up.mjs",
+    "npm-publish": "node scripts/npm-publish.mjs"
   },
   "author": "",
   "license": "ISC",
