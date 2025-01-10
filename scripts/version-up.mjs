@@ -14,7 +14,7 @@ import { execSync } from "child_process";
 //     "packages/cli/package.json",
 // ];
 // const files = execSync(`npx -c 'echo %cd%' -ws`)
-const packages = JSON.parse(execSync(`npm query .workspace`).toString("utf8")).map(x => ({
+const packageFiles = JSON.parse(execSync(`npm query .workspace`).toString("utf8")).map(x => ({
     version: x.version,
     path: path.join(x.path, "package.json"),
 }));
@@ -26,6 +26,12 @@ const packages = JSON.parse(execSync(`npm query .workspace`).toString("utf8")).m
 //checking all versions are the same
 // const areAllSameVersion = new Set(packages.map(x => x.version)).size === 1;
 
+const previousVersions = [...new Set(packageFiles.map(x => x.version))];
+if (previousVersions.length > 1)
+    console.warn(`Warning not all packages have the same previous version`);
+console.log(`previousVersions: ${JSON.stringify(previousVersions)}`);
+// if(previousVersions.length === 1)
+//     console.log()
 // if(new Set(packages.map(x=>x.version)).size === 1){
 //     console.log(`All packages have the same version = ${packages[0].version}. next version will be `);
 // }
@@ -44,13 +50,13 @@ const packages = JSON.parse(execSync(`npm query .workspace`).toString("utf8")).m
 // }
 
 // const nextVersion = version || packages[0].version.split(".").map((x, i) => i === 2 ? (Number.parseInt(x) + 1) + "" : x).join(".")
-const nextVersion = packages[0].version.split(".").map((x, i) => i === 2 ? (Number.parseInt(x) + 1) + "" : x).join(".");
+const nextVersion = packageFiles[0].version.split(".").map((x, i) => i === 2 ? (Number.parseInt(x) + 1) + "" : x).join(".");
 
 console.log(`setting new version: ${nextVersion}`);
 console.log(`...`);
 
-files.forEach(file => {
-    const json = JSON.parse(fs.readFileSync(file, "utf8"));
+packageFiles.forEach(packageFile => {
+    const json = JSON.parse(fs.readFileSync(packageFile.path, "utf8"));
 
     json.version = nextVersion;
 
@@ -61,7 +67,7 @@ files.forEach(file => {
                 json.dependencies[key] = nextVersion;
             });
 
-    fs.writeFileSync(file, JSON.stringify(json, null, " "));
+    fs.writeFileSync(packageFile.path, JSON.stringify(json, null, " "));
 });
 
 console.log(`new version applied`);
