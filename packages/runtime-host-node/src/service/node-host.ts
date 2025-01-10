@@ -1,7 +1,7 @@
-import { AbstractRequest, LoadNetworkRequest, SendSignalRequest, eventNames } from "@d3s/event";
-import { NodeBuilder, Runtime, Signal } from "@d3s/runtime";
+import { AbstractRequest, eventNames } from "@d3s/event";
+import { NodeBuilder, Runtime } from "@d3s/runtime";
 import { AppStateWithData, DataKey } from "@d3s/state";
-import { throttle } from "@d3s/utils";
+import { EventEmitter, throttle } from "@d3s/utils";
 import bodyParser from "body-parser";
 import express from "express";
 import { existsSync, readFileSync, writeFileSync } from "fs";
@@ -9,21 +9,27 @@ import { createServer } from "http";
 import { createServer as httpsCreateServer } from "https";
 import readline from "node:readline";
 import { Server } from "socket.io";
+import util from "util";
 import { AuthService } from "./auth-service.js";
 import { config } from "./config.js";
 import { InMemoryDataService } from "./data-service.js";
 import { NodeResolver } from "./node-resolver.js";
-import util from "util";
 
 export class NodeHost {
   private appLocation = config.appLocation;
   private dataService!: InMemoryDataService;
   private runtime!: Runtime;
 
+  public communication = {
+    incoming: new EventEmitter(),
+    outcoming: new EventEmitter(),
+  };
+
   constructor() {
     console.log(`NOdeHost constructor`);
   }
-  public async init(runtime: Runtime, dataService:InMemoryDataService) {
+
+  public async init(runtime: Runtime, dataService: InMemoryDataService) {
     console.log(`NOdeHost init`);
     // return;
     this.logToHost(JSON.stringify({ ...config, type: "config" }));
@@ -137,12 +143,14 @@ export class NodeHost {
 
       socket.on("message", (appEvent: AbstractRequest) => {
         // hack: дублирование кода как в express.post()
-        this.runtime.handle(appEvent);
+        // this.runtime.handle(appEvent);
+        this.communication.incoming.emit("/websocket/message", appEvent);
       });
 
       socket.on("/getData", (dataKey: DataKey, callback) => {
-        const data = this.dataService.get(dataKey);
-        callback(data);
+        // const data = this.dataService.get(dataKey);
+        // callback(data);
+        this.communication.incoming.emit("/websocket/getDataByDataKey", dataKey, callback);
       });
 
       socket.on("disconnect", (reason) => {
@@ -186,29 +194,42 @@ export class NodeHost {
         "Content-Type": "text/event-stream; charset=utf-8",
       });
 
-      const { nodeGuid, scope, property } = req.params;
-      const isDataOnly = "dataOnly" in req.query;
-
-      if (scope === "input") {
-        this.runtime.on(eventNames.inboundSignal, (signal) => {
-          if (signal.nodeGuid === nodeGuid && property === signal.name) {
-            const data = isDataOnly ? getNodeData(this.runtime, nodeGuid, scope, property) : signal;
-            const dataString = JSON.stringify(data);
-            res.write(`data: ${dataString}\n\n`);
-          }
-        });
-      }
-
       // TODO исправить - листенеры должны отсоединться при по окончанию соеденинияя - чтобы не весели бесконечно
-      if (scope === "output") {
-        this.runtime.on(eventNames.outboundSignal, (signal) => {
-          if (signal.nodeGuid === nodeGuid && property === signal.name) {
-            const data = isDataOnly ? getNodeData(this.runtime, nodeGuid, scope, property) : signal;
-            const dataString = JSON.stringify(data);
-            res.write(`data: ${dataString}\n\n`);
-          }
-        });
-      }
+      this.communication.incoming.emit("/rest/channelEventStream", {
+        emitEventData: (eventData: string) => {
+          res.write(`data: ${eventData}\n\n`);
+        },
+        request: {
+          nodeGuid: req.params.nodeGuid,
+          scope: req.params.scope,
+          property: req.params.property,
+          isDataOnly: "dataOnly" in req.query,
+        },
+      });
+
+      // const { nodeGuid, scope, property } = req.params;
+      // const isDataOnly = "dataOnly" in req.query;
+
+      // if (scope === "input") {
+      //   this.runtime.on(eventNames.inboundSignal, (signal) => {
+      //     if (signal.nodeGuid === nodeGuid && property === signal.name) {
+      //       const data = isDataOnly ? getNodeData(this.runtime, nodeGuid, scope, property) : signal;
+      //       const dataString = JSON.stringify(data);
+      //       res.write(`data: ${dataString}\n\n`);
+      //     }
+      //   });
+      // }
+
+      // // TODO исправить - листенеры должны отсоединться при по окончанию соеденинияя - чтобы не весели бесконечно
+      // if (scope === "output") {
+      //   this.runtime.on(eventNames.outboundSignal, (signal) => {
+      //     if (signal.nodeGuid === nodeGuid && property === signal.name) {
+      //       const data = isDataOnly ? getNodeData(this.runtime, nodeGuid, scope, property) : signal;
+      //       const dataString = JSON.stringify(data);
+      //       res.write(`data: ${dataString}\n\n`);
+      //     }
+      //   });
+      // }
 
       res.on("close", () => {
         res.end();
@@ -226,7 +247,8 @@ export class NodeHost {
       .on("line", (line) => {
         try {
           const request = JSON.parse(line);
-          this.runtime.handle(request);
+          this.communication.incoming.emit("/stdin/request", request);
+          // this.runtime.handle(request);
         } catch (_) {}
       });
 
@@ -235,49 +257,76 @@ export class NodeHost {
     //
     app.use(bodyParser.json());
 
-    app.post("/task", async (req, res) => {
-      const listener = (signal: Signal) => {
-        if (signal.nodeGuid === req.body.resultSignal.nodeGuid && signal.name === req.body.resultSignal.name) {
-          this.runtime.off(eventNames.outboundSignal, listener);
-          res.end(JSON.stringify(signal.data));
-        }
-      };
+    app.post("/task", (req, res) => {
+      this.communication.incoming.emit("/rest/task", {
+        task: req.body,
+        emitTaskResult: (result: any) => {
+          res.end(JSON.stringify(result));
+        },
+      });
 
-      this.runtime.on(eventNames.outboundSignal, listener);
+      // const listener = (signal: Signal) => {
+      //   if (signal.nodeGuid === req.body.resultSignal.nodeGuid && signal.name === req.body.resultSignal.name) {
+      //     this.runtime.off(eventNames.outboundSignal, listener);
+      //     res.end(JSON.stringify(signal.data));
+      //   }
+      // };
 
-      for (const inputSignal of req.body.activationSignals) {
-        inputSignal.type = "SendSignalRequest";
-        await this.runtime.handle(inputSignal);
-      }
+      // this.runtime.on(eventNames.outboundSignal, listener);
+
+      // for (const inputSignal of req.body.activationSignals) {
+      //   inputSignal.type = "SendSignalRequest";
+      //   await this.runtime.handle(inputSignal);
+      // }
     });
 
-    app.post("/invoke", async (req, res) => {
-      try {
-        const result = await this.runtime.handle(req.body);
-        res.send({ result });
-      } catch (error) {
-        res.send({ error: util.inspect(error) });
-      }
+    app.post("/invoke", (req, res) => {
+      this.communication.incoming.emit("/rest/invokeAndWaitResult", {
+        request: req.body,
+        emitTaskResult: (result: any) => {
+          if (result.error) result.error = util.inspect(result.error);
+          res.send(result);
+        },
+      });
+
+      // try {
+      //   const result = await this.runtime.handle(req.body);
+      //   res.send({ result });
+      // } catch (error) {
+      //   res.send({ error: util.inspect(error) });
+      // }
     });
 
     // для интеграции с wallarm
-    app.post("/signal/:nodeGuid/:scope/:property", async (req, res) => {
+    // мы не может управлять кастомным форматом данных которые отправляет Wallarm
+    // поэтому под него нужен кастомнй ендпоинт
+    app.post("/signal/:nodeGuid/:scope/:property", (req, res) => {
       if (req.params.scope === "input") {
         res.send({ ok: true });
-        const signal = new SendSignalRequest(req.params.nodeGuid, req.params.property, req.body, "input");
-        this.runtime.handle(signal);
+        // const signal = new SendSignalRequest(req.params.nodeGuid, req.params.property, req.body, "input");
+        // this.runtime.handle(signal);
+        this.communication.incoming.emit("/rest/invokeCustomWallarmIntergration", {
+          nodeGuid: req.params.nodeGuid,
+          property: req.params.property,
+          wallarmSignal: req.body,
+        });
       }
     });
 
-    app.post("*", async (req, res) => {
-      res.send({ ok: true });
-      this.runtime.handle(req.body);
+    app.post("*", (req, res) => {
+      this.communication.incoming.emit("/rest/request", req.body);
+      // res.send({ ok: true });
+      // this.runtime.handle(req.body);
     });
 
-    app.get("/data/:nodeGuid/:scope/:property", async (req, res) => {
-      const data = await this.runtime.getData(req.params);
-      res.type("application/json");
-      res.send(JSON.stringify(data));
+    app.get("/data/:nodeGuid/:scope/:property", (req, res) => {
+      this.communication.incoming.emit("/rest/getData", {params: req.body, returnData:(data:any)=>{
+        res.type("application/json");
+        res.send(JSON.stringify(data));
+      }});
+      // const data = await this.runtime.getData(req.params);
+      // res.type("application/json");
+      // res.send(JSON.stringify(data));
     });
 
     //

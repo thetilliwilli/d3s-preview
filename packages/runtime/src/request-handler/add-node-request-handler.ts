@@ -5,7 +5,7 @@ import { AbstractRequestHandler } from "./abstract-request-handler.js";
 import { AbstractRequestHandlerContext } from "./app-event-request-handler.js";
 
 export class AddNodeRequestHandler implements AbstractRequestHandler<AddNodeRequest> {
-  public async handle({ app, event }: AbstractRequestHandlerContext<AddNodeRequest>): Promise<void> {
+  public async handle({ app, event }: AbstractRequestHandlerContext<AddNodeRequest>): Promise<any> {
     const guid = event.guid || GuidService.getGuid();
     const nodeUri = event.nodeUri;
 

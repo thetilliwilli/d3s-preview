@@ -15,7 +15,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\packages\\runtime-host-node\\src\\index.ts",
+            "program": "${workspaceFolder}\\packages\\cli\\src\\index.ts",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ],
@@ -30,7 +30,8 @@
                 "AI_ENDPOINT": "https://api.deepseek.com/chat/completions"
             },
             "args": [
-                "app.json"
+                "app.json",
+                "dev"
             ],
             // "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/ignore/apps",

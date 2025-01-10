@@ -1,14 +1,13 @@
-import { AbstractRequest, eventNames, LoadNetworkRequest } from "@d3s/event";
+import { AbstractRequest, eventNames, LoadNetworkRequest, SendSignalRequest } from "@d3s/event";
 import { AppStateWithData, NetworkState } from "@d3s/state";
 import { Dictionary, EventEmitter } from "@d3s/utils";
 import * as requestHandlerMap from "../../request-handler/index.js";
-import { RuntimeNode } from "../node/node.js";
+import { InMemoryDataService } from "../../service/data-service.js";
+import { NodeResolver } from "../../service/node-resolver.js";
 import { NodeBuilder } from "../node/node-builder.js";
+import { RuntimeNode } from "../node/node.js";
 import { Signal } from "../node/signal.js";
 import { IDataService } from "./i-data-service.js";
-import { RuntimeSettings } from "./runtime-settings.js";
-import { NodeResolver } from "../../service/node-resolver.js";
-import { InMemoryDataService } from "../../service/data-service.js";
 
 export class Runtime extends EventEmitter {
   // public resolveNode!: (nodeUri: string) => Promise<NodeBuilder>;
@@ -72,11 +71,105 @@ export class Runtime extends EventEmitter {
 
     const { NodeHost } = await import("@d3s/runtime-host-node");
     const nodeHost = new NodeHost();
+    nodeHost.communication.incoming.on("/websocket/message", (appEvent: AbstractRequest) => {
+      this.handle(appEvent);
+    });
+    nodeHost.communication.incoming.on("/websocket/getDataByDataKey", (dataKey, callback) => {
+      const data = this.data.get(dataKey);
+      callback(data);
+    });
+    nodeHost.communication.incoming.on("/stdin/request", (request) => {
+      this.handle(request);
+    });
+    nodeHost.communication.incoming.on("/rest/request", (request) => {
+      this.handle(request);
+    });
+    // TODO исправить - листенеры должны отсоединться при по окончанию соеденинияя - чтобы не весели бесконечно
+    nodeHost.communication.incoming.on("/rest/channelEventStream", ({ emitEventData, request }) => {
+      const { nodeGuid, scope, property, isDataOnly } = request;
+
+      this.on(scope === "input" ? eventNames.inboundSignal : eventNames.outboundSignal, (signal) => {
+        if (signal.nodeGuid === nodeGuid && property === signal.name) {
+          const data = isDataOnly ? this.getNodeData(nodeGuid, scope, property) : signal;
+          const dataString = JSON.stringify(data);
+          emitEventData(dataString);
+        }
+      });
+
+      // if (scope === "input") {
+      //   this.on(eventNames.inboundSignal, (signal) => {
+      //     if (signal.nodeGuid === nodeGuid && property === signal.name) {
+      //       const data = isDataOnly ? this.getNodeData(nodeGuid, scope, property) : signal;
+      //       const dataString = JSON.stringify(data);
+      //       emitEventData(dataString);
+      //       // res.write(`data: ${dataString}\n\n`);
+      //     }
+      //   });
+      // }
+
+      // // TODO исправить - листенеры должны отсоединться при по окончанию соеденинияя - чтобы не весели бесконечно
+      // if (scope === "output") {
+      //   this.on(eventNames.outboundSignal, (signal) => {
+      //     if (signal.nodeGuid === nodeGuid && property === signal.name) {
+      //       const data = isDataOnly ? this.getNodeData(nodeGuid, scope, property) : signal;
+      //       const dataString = JSON.stringify(data);
+      //       emitEventData(dataString);
+      //       // res.write(`data: ${dataString}\n\n`);
+      //     }
+      //   });
+      // }
+    });
+
+    nodeHost.communication.incoming.on("/rest/task", async ({ task, emitTaskResult }) => {
+      const listener = (signal: Signal) => {
+        if (signal.nodeGuid === task.resultSignal.nodeGuid && signal.name === task.resultSignal.name) {
+          this.off(eventNames.outboundSignal, listener);
+          emitTaskResult(signal.data);
+          // res.end(JSON.stringify(signal.data));
+        }
+      };
+
+      this.on(eventNames.outboundSignal, listener);
+
+      for (const inputSignal of task.activationSignals) {
+        inputSignal.type = "SendSignalRequest";
+        await this.handle(inputSignal);
+      }
+    });
+
+    nodeHost.communication.incoming.on("/rest/invokeAndWaitResult", async ({ request, emitTaskResult }) => {
+      const result = await this.handle(request);
+      emitTaskResult(result);
+      // try {
+      //   const result = await this.handle(request);
+      //   emitTaskResult({ result });
+      //   // res.send({ result });
+      // } catch (error) {
+      //   res.send({ error: util.inspect(error) });
+      // }
+    });
+
+    nodeHost.communication.incoming.on(
+      "/rest/invokeCustomWallarmIntergration",
+      ({ nodeGuid, property, wallarmSignal }) => {
+        this.handle(new SendSignalRequest(nodeGuid, property, wallarmSignal, "input"));
+      }
+    );
+
+    nodeHost.communication.incoming.on("/rest/getData", async ({ params, returnData }) => {
+      const data = await this.getData(params);
+      returnData(data);
+    });
+
     //@ts-ignore
     await nodeHost.init(this, this.data);
   }
 
-  public async handle(request: AbstractRequest): Promise<any> {
+  private getNodeData(nodeGuid: string, scope: string, property: string): any {
+    return (scope === "input" ? this.state.nodes[nodeGuid].input : this.state.nodes[nodeGuid].output)[property];
+  }
+
+  public async handle(request: AbstractRequest) {
     try {
       //@ts-ignore
       const RequestHandlerClass = requestHandlerMap[request.type + "Handler"];
@@ -85,9 +178,10 @@ export class Runtime extends EventEmitter {
       const result = await requestHandler.handle({ app: this, event: request });
       const newStateStr = JSON.stringify(this.state);
       if (newStateStr !== oldStateStr) this.emit(eventNames.state, this.state); // TODO для уменьшения колва сериализаций, переделать на отправку newStateStr
-      return result;
+      return { result };
     } catch (error) {
       console.error(error);
+      return { error };
     }
   }
 

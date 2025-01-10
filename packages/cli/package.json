@@ -13,6 +13,5 @@
  "license": "ISC",
  "bin": "dist/index.js",
  "dependencies": {
-  "@d3s/runtime": "0.0.26"
  }
 }
