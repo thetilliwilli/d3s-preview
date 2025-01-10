@@ -10,7 +10,7 @@ import { pathToFileURL } from "url";
 const runtimeSpecifier = "@d3s/runtime";
 
 async function main() {
-  console.log(`starting app`);
+  // console.log(`starting app`);
   const args = process.argv;
 
   const appUri = (args[2] || "").trim();

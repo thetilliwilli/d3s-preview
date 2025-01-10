@@ -10,20 +10,16 @@ import { RuntimeNode } from "../node/node.js";
 import { Signal } from "../node/signal.js";
 
 export class Runtime extends EventEmitter {
-  // public resolveNode!: (nodeUri: string) => Promise<NodeBuilder>;
   public async resolveNode(nodeUri: string): Promise<NodeBuilder> {
     const nodeResolver = new NodeResolver();
     const result = nodeResolver.resolve(nodeUri);
     return result;
   }
 
-  // public logToHost!: (log: any) => void;
   public logToHost(message: string) {
-    // if (config.verbose) console.log(message);
     console.log(message);
   }
   public data!: InMemoryDataService;
-  // public promptAi!: (prompt: string) => Promise<string>;
   public async promptAi(prompt: string) {
     throw new Error(`not implemetned`);
     const result = await fetch("config.aiEndpoint", {
@@ -48,16 +44,12 @@ export class Runtime extends EventEmitter {
   public nodes: Dictionary<RuntimeNode> = {};
   public instances: Dictionary<{ [key: string | number | symbol]: any }> = {};
 
-  constructor(/* settings: RuntimeSettings */ private runtimeSpecifier?: "node" | "web") {
+  constructor(private runtimeSpecifier?: "node" | "web") {
     super();
   }
 
   public async init(appStateWithData: AppStateWithData) {
-    // this.resolveNode = nodeHost.resolveNode;
-    // this.logToHost = nodeHost.logToHost;
-    // this.data = nodeHost.dataService;
     this.data = new InMemoryDataService(appStateWithData.data);
-    // this.promptAi = nodeHost.promptAi;
 
     this.handle = this.handle.bind(this);
     this.logSignal = this.logSignal.bind(this);
@@ -69,7 +61,6 @@ export class Runtime extends EventEmitter {
 
     await this.handle(new LoadNetworkRequest(appStateWithData.state));
 
-    // const { NodeHost } = await import("@d3s/runtime-host-node");
     const nodeHost = new NodeHost();
     //#region ==============> INCOMING host -> runtime
     nodeHost.communication.incoming.on("/websocket/message", (appEvent: AbstractRequest) => {
@@ -100,29 +91,6 @@ export class Runtime extends EventEmitter {
           emitEventData(dataString);
         }
       });
-
-      // if (scope === "input") {
-      //   this.on(eventNames.inboundSignal, (signal) => {
-      //     if (signal.nodeGuid === nodeGuid && property === signal.name) {
-      //       const data = isDataOnly ? this.getNodeData(nodeGuid, scope, property) : signal;
-      //       const dataString = JSON.stringify(data);
-      //       emitEventData(dataString);
-      //       // res.write(`data: ${dataString}\n\n`);
-      //     }
-      //   });
-      // }
-
-      // // TODO исправить - листенеры должны отсоединться при по окончанию соеденинияя - чтобы не весели бесконечно
-      // if (scope === "output") {
-      //   this.on(eventNames.outboundSignal, (signal) => {
-      //     if (signal.nodeGuid === nodeGuid && property === signal.name) {
-      //       const data = isDataOnly ? this.getNodeData(nodeGuid, scope, property) : signal;
-      //       const dataString = JSON.stringify(data);
-      //       emitEventData(dataString);
-      //       // res.write(`data: ${dataString}\n\n`);
-      //     }
-      //   });
-      // }
     });
 
     nodeHost.communication.incoming.on("/rest/task", async ({ task, emitTaskResult }) => {
@@ -130,7 +98,6 @@ export class Runtime extends EventEmitter {
         if (signal.nodeGuid === task.resultSignal.nodeGuid && signal.name === task.resultSignal.name) {
           this.off(eventNames.outboundSignal, listener);
           emitTaskResult(signal.data);
-          // res.end(JSON.stringify(signal.data));
         }
       };
 
@@ -145,13 +112,6 @@ export class Runtime extends EventEmitter {
     nodeHost.communication.incoming.on("/rest/invokeAndWaitResult", async ({ request, emitTaskResult }) => {
       const result = await this.handle(request);
       emitTaskResult(result);
-      // try {
-      //   const result = await this.handle(request);
-      //   emitTaskResult({ result });
-      //   // res.send({ result });
-      // } catch (error) {
-      //   res.send({ error: util.inspect(error) });
-      // }
     });
 
     nodeHost.communication.incoming.on(
@@ -168,7 +128,10 @@ export class Runtime extends EventEmitter {
     //#endregion
 
     //#region ==============> OUTCOMING runtime -> host
-    nodeHost.communication.outcoming.emit(eventNames.state, this.state);
+    this.on(eventNames.state, () => {
+      nodeHost.communication.outcoming.emit(eventNames.state, this.state);
+      // nodeHost.communication.outcoming.emit(eventNames.outboundSignal, outboundSignal);
+    });
     this.on(eventNames.outboundSignal, (outboundSignal) => {
       nodeHost.communication.outcoming.emit(eventNames.outboundSignal, outboundSignal);
     });
@@ -177,14 +140,12 @@ export class Runtime extends EventEmitter {
     });
     this.data.on(eventNames.data, ({ key, value }) => {
       const dataChannel = `${eventNames.data}/${key}`;
-      // socketIoServer.emit(dataChannel, value);
-      // this.saveState();
-      nodeHost.communication.outcoming.emit(eventNames.inboundSignal, dataChannel, value);
+      nodeHost.communication.outcoming.emit(eventNames.data, dataChannel, value);
     });
     //#endregion
 
     //@ts-ignore
-    await nodeHost.init(this, this.data);
+    await nodeHost.init();
   }
 
   private getNodeData(nodeGuid: string, scope: string, property: string): any {
