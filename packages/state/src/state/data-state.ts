@@ -1,3 +1,1 @@
-import { DataKey } from "./data-key";
-
-export type DataState = [DataKey, unknown][];
+export type DataState = unknown[];

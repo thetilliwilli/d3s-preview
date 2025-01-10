@@ -25,7 +25,7 @@ class SocketClientService extends EventEmitter {
     if (!this.isInitted) {
       this.socket.connect();
 
-      this.socket.on(eventNames.state, (networkState: NetworkState) => {
+      this.socket.on(eventNames.networkState, (networkState: NetworkState) => {
         store.dispatch(networkSlice.actions.replaceState(networkState));
       });
 

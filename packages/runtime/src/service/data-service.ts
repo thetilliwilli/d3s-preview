@@ -5,7 +5,7 @@ import { EventEmitter } from "@d3s/utils";
 export class InMemoryDataService extends EventEmitter {
   private items: Map<DataKey, unknown>;
 
-  constructor(items: any[]) {
+  constructor(items: unknown[]) {
     super();
     this.items = new Map(items.map((value, index)=>[index,value]));
   }
@@ -29,7 +29,7 @@ export class InMemoryDataService extends EventEmitter {
     return this.items.get(key);
   }
 
-  public toJSON() {
+  public getState() {
     return Array.from(this.items.values());
   }
 }

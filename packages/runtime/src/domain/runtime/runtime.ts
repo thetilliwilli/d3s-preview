@@ -40,16 +40,18 @@ export class Runtime extends EventEmitter {
 
     return result.choices[0].message.content as string;
   }
-  public state = new NetworkState();
+  public get state(): NetworkState {
+    return this.appState.state;
+  }
   public nodes: Dictionary<RuntimeNode> = {};
   public instances: Dictionary<{ [key: string | number | symbol]: any }> = {};
 
-  constructor(private runtimeSpecifier?: "node" | "web") {
+  constructor(private appState: AppStateWithData) {
     super();
   }
 
-  public async init(appStateWithData: AppStateWithData) {
-    this.data = new InMemoryDataService(appStateWithData.data);
+  public async init() {
+    this.data = new InMemoryDataService(this.appState.data);
 
     this.handle = this.handle.bind(this);
     this.logSignal = this.logSignal.bind(this);
@@ -57,9 +59,9 @@ export class Runtime extends EventEmitter {
     this.on(eventNames.inboundSignal, this.logSignal);
     this.on(eventNames.outboundSignal, this.logSignal);
 
-    this.toJSON.bind(this);
+    // this.toJSON.bind(this);
 
-    await this.handle(new LoadNetworkRequest(appStateWithData.state));
+    await this.handle(new LoadNetworkRequest(this.appState.state));
 
     const nodeHost = new NodeHost();
     //#region ==============> INCOMING host -> runtime
@@ -128,9 +130,8 @@ export class Runtime extends EventEmitter {
     //#endregion
 
     //#region ==============> OUTCOMING runtime -> host
-    this.on(eventNames.state, () => {
-      nodeHost.communication.outcoming.emit(eventNames.state, this.state);
-      // nodeHost.communication.outcoming.emit(eventNames.outboundSignal, outboundSignal);
+    this.on(eventNames.networkState, () => {
+      nodeHost.communication.outcoming.emit(eventNames.networkState, this.state);
     });
     this.on(eventNames.outboundSignal, (outboundSignal) => {
       nodeHost.communication.outcoming.emit(eventNames.outboundSignal, outboundSignal);
@@ -160,7 +161,7 @@ export class Runtime extends EventEmitter {
       const oldStateStr = JSON.stringify(this.state);
       const result = await requestHandler.handle({ app: this, event: request });
       const newStateStr = JSON.stringify(this.state);
-      if (newStateStr !== oldStateStr) this.emit(eventNames.state, this.state); // TODO для уменьшения колва сериализаций, переделать на отправку newStateStr
+      if (newStateStr !== oldStateStr) this.emit(eventNames.networkState, this.state); // TODO для уменьшения колва сериализаций, переделать на отправку newStateStr
       return { result };
     } catch (error) {
       console.error(error);
@@ -187,10 +188,10 @@ export class Runtime extends EventEmitter {
     }
   }
 
-  public toJSON() {
+  public getAppState(): AppStateWithData {
     return {
       state: this.state,
-      data: this.data,
+      data: this.data.getState(),
     };
   }
 

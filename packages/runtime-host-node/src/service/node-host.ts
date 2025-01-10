@@ -209,8 +209,8 @@ export class NodeHost {
     //
     //==============> OUTCOME runtime->webserver
     //
-    this.communication.outcoming.on(eventNames.state, (networkState) => {
-      socketIoServer.emit(eventNames.state, networkState);
+    this.communication.outcoming.on(eventNames.networkState, (networkState) => {
+      socketIoServer.emit(eventNames.networkState, networkState);
     });
     this.communication.outcoming.on(eventNames.outboundSignal, (outboundSignal) => {
       socketIoServer.emit(eventNames.outboundSignal, outboundSignal);

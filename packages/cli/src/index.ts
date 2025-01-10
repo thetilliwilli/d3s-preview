@@ -32,52 +32,52 @@ async function main() {
   const packageJson = appJson["package.json"];
   //#endregion
 
-  if(isDev){
-  //#region DevRun
-  const { Runtime } = await import(runtimeSpecifier);
-  const runtime = new Runtime("node");
-  await runtime.init(appJson);
-  //#endregion
-  }
-  else {
-  //#region ProductionRun
-  let lastExecSyncResult = "";
+  if (isDev) {
+    //#region DevRun
+    const { Runtime } = await import(runtimeSpecifier);
+    const runtime = new Runtime(appJson);
+    await runtime.init();
+    //#endregion
+  } else {
+    //#region ProductionRun
+    let lastExecSyncResult = "";
 
-  // make d3s root folder
-  const d3sRootDir = path.join(os.tmpdir(), "d3s");
-  fs.mkdirSync(d3sRootDir, { recursive: true });
+    // make d3s root folder
+    const d3sRootDir = path.join(os.tmpdir(), "d3s");
+    fs.mkdirSync(d3sRootDir, { recursive: true });
 
-  lastExecSyncResult = child_process
-    .execSync(`npm init --yes`, { cwd: d3sRootDir, stdio: "inherit" })
-    ?.toString("utf8");
+    lastExecSyncResult = child_process
+      .execSync(`npm init --yes`, { cwd: d3sRootDir, stdio: "inherit" })
+      ?.toString("utf8");
 
-  const appGuid = crypto.randomUUID(); // fs.mkdtempSync("app-");
-  const appWorkspace = `apps/${appGuid}`;
-  lastExecSyncResult = child_process
-    .execSync(`npm init --yes -w ${appWorkspace}`, { cwd: d3sRootDir, stdio: "inherit" })
-    ?.toString("utf8");
+    const appGuid = crypto.randomUUID(); // fs.mkdtempSync("app-");
+    const appWorkspace = `apps/${appGuid}`;
+    lastExecSyncResult = child_process
+      .execSync(`npm init --yes -w ${appWorkspace}`, { cwd: d3sRootDir, stdio: "inherit" })
+      ?.toString("utf8");
 
-  // заменяем package.json файл из скаченного app.json и делаем "npm i"
-  const updatedPackageJson = {
-    ...packageJson,
-    private: true,
-    name: `${packageJson.name}-${appGuid}`,
-    originalName: packageJson.name,
-  };
-  console.log(`updatedPackageJson:\n${JSON.stringify(updatedPackageJson)}`);
-  fs.writeFileSync(path.join(d3sRootDir, appWorkspace, "package.json"), JSON.stringify(updatedPackageJson));
-  lastExecSyncResult = child_process
-    .execSync(`npm i -w ${appWorkspace}`, { cwd: d3sRootDir, stdio: "inherit" })
-    ?.toString("utf8");
+    // заменяем package.json файл из скаченного app.json и делаем "npm i"
+    const updatedPackageJson = {
+      ...packageJson,
+      private: true,
+      name: `${packageJson.name}-${appGuid}`,
+      originalName: packageJson.name,
+    };
+    console.log(`updatedPackageJson:\n${JSON.stringify(updatedPackageJson)}`);
+    fs.writeFileSync(path.join(d3sRootDir, appWorkspace, "package.json"), JSON.stringify(updatedPackageJson));
+    lastExecSyncResult = child_process
+      .execSync(`npm i -w ${appWorkspace}`, { cwd: d3sRootDir, stdio: "inherit" })
+      ?.toString("utf8");
 
-  // проверить на что если версия будет отличаться здесь должен подтянуть локальную версию из node_modules самомго аппа а не родительской общей папки
-  const runtimeModulePath = pathToFileURL(createRequire(path.join(d3sRootDir, appWorkspace, "fake-entrypoint-index.js")).resolve(runtimeSpecifier)).toString();
-  const { Runtime } = await import(runtimeModulePath);
+    // проверить на что если версия будет отличаться здесь должен подтянуть локальную версию из node_modules самомго аппа а не родительской общей папки
+    const runtimeModulePath = pathToFileURL(
+      createRequire(path.join(d3sRootDir, appWorkspace, "fake-entrypoint-index.js")).resolve(runtimeSpecifier)
+    ).toString();
+    const { Runtime } = await import(runtimeModulePath);
 
-  const runtime = new Runtime("node");
-  await runtime.init(appJson);
-  //#endregion
-  
+    const runtime = new Runtime(appJson);
+    await runtime.init();
+    //#endregion
   }
 }
 

@@ -1,6 +1,6 @@
 export const eventNames = {
   //todo: hack: refactoring: необходимо отрефакторить механизм передачи состояния приложения, и сигналов
-  state: "/state",
+  networkState: "/networkState",
   outboundSignal: "/outboundSignal",
   inboundSignal: "/inboundSignal",
   appEvent: "/appEvent",
