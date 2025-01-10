@@ -12,8 +12,8 @@
  "author": "",
  "license": "ISC",
  "dependencies": {
+  "@d3s/runtime-host-node": "0.0.26",
   "@d3s/event": "0.0.26",
-  "@d3s/state": "0.0.26",
-  "@d3s/runtime-host-node": "0.0.26"
+  "@d3s/state": "0.0.26"
  }
 }

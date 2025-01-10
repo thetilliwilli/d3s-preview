@@ -1,7 +1,7 @@
-import { DataKey } from "@d3s/state";
-import { IDataService } from "@d3s/runtime";
-import { EventEmitter } from "@d3s/utils";
 import { eventNames } from "@d3s/event";
+import { DataKey } from "@d3s/state";
+import { EventEmitter } from "@d3s/utils";
+import { IDataService } from "../domain/runtime/i-data-service.js";
 
 export class InMemoryDataService extends EventEmitter implements IDataService {
   private items: Map<DataKey, unknown>;

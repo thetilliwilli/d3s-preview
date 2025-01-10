@@ -7,8 +7,8 @@
     "declaration": true
   },
   "references": [
-    {"path": "../event"},
-    {"path": "../state"},
     {"path": "../runtime-host-node"},
+    {"path": "../event"},
+    {"path": "../state"}
   ]
 }

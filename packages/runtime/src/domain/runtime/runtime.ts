@@ -10,7 +10,6 @@ import { RuntimeNode } from "../node/node.js";
 import { Signal } from "../node/signal.js";
 
 export class Runtime extends EventEmitter {
-  
   // public resolveNode!: (nodeUri: string) => Promise<NodeBuilder>;
   public async resolveNode(nodeUri: string): Promise<NodeBuilder> {
     const nodeResolver = new NodeResolver();
