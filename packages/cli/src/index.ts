@@ -7,6 +7,8 @@ import path from "node:path";
 import os from "os";
 import { pathToFileURL } from "url";
 
+const runtimeSpecifier = "@d3s/runtime";
+
 async function main() {
   console.log(`starting app`);
   const args = process.argv;
@@ -32,7 +34,7 @@ async function main() {
 
   if(isDev){
   //#region DevRun
-  const { Runtime } = await import("@d3s/runtime");
+  const { Runtime } = await import(runtimeSpecifier);
   const runtime = new Runtime("node");
   await runtime.init(appJson);
   //#endregion
@@ -69,7 +71,7 @@ async function main() {
     ?.toString("utf8");
 
   // проверить на что если версия будет отличаться здесь должен подтянуть локальную версию из node_modules самомго аппа а не родительской общей папки
-  const runtimeModulePath = pathToFileURL(createRequire(path.join(d3sRootDir, appWorkspace, "fake-entrypoint-index.js")).resolve("@d3s/runtime")).toString();
+  const runtimeModulePath = pathToFileURL(createRequire(path.join(d3sRootDir, appWorkspace, "fake-entrypoint-index.js")).resolve(runtimeSpecifier)).toString();
   const { Runtime } = await import(runtimeModulePath);
 
   const runtime = new Runtime("node");

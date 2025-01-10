@@ -61,6 +61,12 @@ class SocketClientService extends EventEmitter {
       });
     });
   }
+
+  async loadNetworkState(): Promise<any> {
+    this.socket.emit("/getNetworkState", (networkState: any) => {
+      store.dispatch(networkSlice.actions.replaceState(networkState));
+    });
+  }
 }
 
 export const socketClient = new SocketClientService();

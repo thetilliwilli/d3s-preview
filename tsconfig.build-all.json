@@ -1,7 +1,7 @@
 {
   "files": [], // это нужно чтобы не пересобирал файлы дважды. причем у меня он даже собирает ts файлы во всех проектов, в независимости от того что я ему указал в references
   "references": [
-    { "path": "./packages/runtime-host-node" },
+    { "path": "./packages/runtime" },
     { "path": "./packages/repository-playground" },
     { "path": "./packages/cli" },
   ]

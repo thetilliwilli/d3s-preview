@@ -1,4 +1,5 @@
 import { AbstractRequest, eventNames, LoadNetworkRequest, SendSignalRequest } from "@d3s/event";
+import { NodeHost } from "@d3s/runtime-host-node";
 import { AppStateWithData, NetworkState } from "@d3s/state";
 import { Dictionary, EventEmitter } from "@d3s/utils";
 import * as requestHandlerMap from "../../request-handler/index.js";
@@ -7,9 +8,9 @@ import { NodeResolver } from "../../service/node-resolver.js";
 import { NodeBuilder } from "../node/node-builder.js";
 import { RuntimeNode } from "../node/node.js";
 import { Signal } from "../node/signal.js";
-import { IDataService } from "./i-data-service.js";
 
 export class Runtime extends EventEmitter {
+  
   // public resolveNode!: (nodeUri: string) => Promise<NodeBuilder>;
   public async resolveNode(nodeUri: string): Promise<NodeBuilder> {
     const nodeResolver = new NodeResolver();
@@ -22,7 +23,7 @@ export class Runtime extends EventEmitter {
     // if (config.verbose) console.log(message);
     console.log(message);
   }
-  public data!: IDataService;
+  public data!: InMemoryDataService;
   // public promptAi!: (prompt: string) => Promise<string>;
   public async promptAi(prompt: string) {
     throw new Error(`not implemetned`);
@@ -69,10 +70,15 @@ export class Runtime extends EventEmitter {
 
     await this.handle(new LoadNetworkRequest(appStateWithData.state));
 
-    const { NodeHost } = await import("@d3s/runtime-host-node");
+    // const { NodeHost } = await import("@d3s/runtime-host-node");
     const nodeHost = new NodeHost();
+    //#region ==============> INCOMING host -> runtime
     nodeHost.communication.incoming.on("/websocket/message", (appEvent: AbstractRequest) => {
       this.handle(appEvent);
+    });
+    nodeHost.communication.incoming.on("/websocket/getNetworkState", (callback) => {
+      const networkState = this.state;
+      callback(networkState);
     });
     nodeHost.communication.incoming.on("/websocket/getDataByDataKey", (dataKey, callback) => {
       const data = this.data.get(dataKey);
@@ -160,6 +166,23 @@ export class Runtime extends EventEmitter {
       const data = await this.getData(params);
       returnData(data);
     });
+    //#endregion
+
+    //#region ==============> OUTCOMING runtime -> host
+    nodeHost.communication.outcoming.emit(eventNames.state, this.state);
+    this.on(eventNames.outboundSignal, (outboundSignal) => {
+      nodeHost.communication.outcoming.emit(eventNames.outboundSignal, outboundSignal);
+    });
+    this.on(eventNames.inboundSignal, (inboundSignal) => {
+      nodeHost.communication.outcoming.emit(eventNames.inboundSignal, inboundSignal);
+    });
+    this.data.on(eventNames.data, ({ key, value }) => {
+      const dataChannel = `${eventNames.data}/${key}`;
+      // socketIoServer.emit(dataChannel, value);
+      // this.saveState();
+      nodeHost.communication.outcoming.emit(eventNames.inboundSignal, dataChannel, value);
+    });
+    //#endregion
 
     //@ts-ignore
     await nodeHost.init(this, this.data);

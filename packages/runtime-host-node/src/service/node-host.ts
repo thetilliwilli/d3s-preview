@@ -1,10 +1,9 @@
 import { AbstractRequest, eventNames } from "@d3s/event";
-import { NodeBuilder, Runtime } from "@d3s/runtime";
-import { AppStateWithData, DataKey } from "@d3s/state";
-import { EventEmitter, throttle } from "@d3s/utils";
+import { DataKey } from "@d3s/state";
+import { EventEmitter } from "@d3s/utils";
 import bodyParser from "body-parser";
 import express from "express";
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import { readFileSync } from "fs";
 import { createServer } from "http";
 import { createServer as httpsCreateServer } from "https";
 import readline from "node:readline";
@@ -12,14 +11,13 @@ import { Server } from "socket.io";
 import util from "util";
 import { AuthService } from "./auth-service.js";
 import { config } from "./config.js";
-import { InMemoryDataService } from "./data-service.js";
-import { NodeResolver } from "./node-resolver.js";
 
 export class NodeHost {
-  private appLocation = config.appLocation;
-  private dataService!: InMemoryDataService;
-  private runtime!: Runtime;
+  // private appLocation = config.appLocation;
+  // private dataService!: InMemoryDataService;
+  // private runtime!: Runtime;
 
+  
   public communication = {
     incoming: new EventEmitter(),
     outcoming: new EventEmitter(),
@@ -29,7 +27,7 @@ export class NodeHost {
     console.log(`NOdeHost constructor`);
   }
 
-  public async init(runtime: Runtime, dataService: InMemoryDataService) {
+  public async init(/* runtime: Runtime, dataService: InMemoryDataService */) {
     console.log(`NOdeHost init`);
     // return;
     this.logToHost(JSON.stringify({ ...config, type: "config" }));
@@ -37,9 +35,9 @@ export class NodeHost {
     // const appStateWithData = this.getState();
 
     // this.dataService = new InMemoryDataService(appStateWithData.data);
-    this.dataService = dataService;
+    // this.dataService = dataService;
 
-    this.runtime = runtime;
+    // this.runtime = runtime;
     // this.runtime = new Runtime({
     //   resolveNode: this.resolveNode,
     //   logToHost: this.logToHost,
@@ -65,42 +63,44 @@ export class NodeHost {
     if (config.verbose) console.log(message);
   }
 
-  private getState(): AppStateWithData {
-    return this.appLocation && existsSync(this.appLocation)
-      ? JSON.parse(readFileSync(this.appLocation, "utf8"))
-      : new AppStateWithData();
-  }
+  // private getState(): AppStateWithData {
+  //   return this.appLocation && existsSync(this.appLocation)
+  //     ? JSON.parse(readFileSync(this.appLocation, "utf8"))
+  //     : new AppStateWithData();
+  // }
 
-  private saveState = throttle(() => {
-    const stateStr = JSON.stringify(this.runtime, null, " ");
-    if (this.appLocation) writeFileSync(this.appLocation, stateStr);
-  }, 3000);
+  // private saveState = throttle((appState:any) => {
+  //   const stateStr = JSON.stringify(this.runtime, null, " ");
+  //   if (this.appLocation) writeFileSync(this.appLocation, stateStr);
+  //   // const stateStr = JSON.stringify(this.runtime, null, " ");
+  //   // if (this.appLocation) writeFileSync(this.appLocation, stateStr);
+  // }, 3000);
 
-  public async resolveNode(nodeUri: string): Promise<NodeBuilder> {
-    const nodeResolver = new NodeResolver();
-    const result = nodeResolver.resolve(nodeUri);
-    return result;
-  }
+  // public async resolveNode(nodeUri: string): Promise<NodeBuilder> {
+  //   const nodeResolver = new NodeResolver();
+  //   const result = nodeResolver.resolve(nodeUri);
+  //   return result;
+  // }
 
-  public async getPromptResult(prompt: string) {
-    const result = await fetch(config.aiEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${config.aiToken}`,
-      },
-      body: JSON.stringify({
-        model: "deepseek-chat",
-        stream: false,
-        messages: [
-          // { role: "system", content: "You are a helpful assistant." },
-          { role: "user", content: prompt },
-        ],
-      }),
-    }).then((x) => x.json());
+  // public async getPromptResult(prompt: string) {
+  //   const result = await fetch(config.aiEndpoint, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${config.aiToken}`,
+  //     },
+  //     body: JSON.stringify({
+  //       model: "deepseek-chat",
+  //       stream: false,
+  //       messages: [
+  //         // { role: "system", content: "You are a helpful assistant." },
+  //         { role: "user", content: prompt },
+  //       ],
+  //     }),
+  //   }).then((x) => x.json());
 
-    return result.choices[0].message.content as string;
-  }
+  //   return result.choices[0].message.content as string;
+  // }
 
   private async webserverInit(port: number, host: string) {
     const app = express();
@@ -139,7 +139,12 @@ export class NodeHost {
       // первичная синхронизация состояния
       // чтобы вернуть начальное состояние приложения при подключение нового клиента
       // TODO: MEGAHACK переделать
-      socketIoServer.emit(eventNames.state, this.runtime.state);
+      // socketIoServer.emit(eventNames.state, this.runtime.state);
+      socket.on("/getNetworkState", (callback) => {
+        // const data = this.dataService.get(dataKey);
+        // callback(data);
+        this.communication.incoming.emit("/websocket/getNetworkState", callback);
+      });
 
       socket.on("message", (appEvent: AbstractRequest) => {
         // hack: дублирование кода как в express.post()
@@ -148,6 +153,7 @@ export class NodeHost {
       });
 
       socket.on("/getData", (dataKey: DataKey, callback) => {
+        
         // const data = this.dataService.get(dataKey);
         // callback(data);
         this.communication.incoming.emit("/websocket/getDataByDataKey", dataKey, callback);
@@ -183,9 +189,9 @@ export class NodeHost {
     // обслуживаем файлы из текущей рабочей директории
     if (config.webCwd) app.use("/cwd", express.static(config.cwd));
 
-    function getNodeData(app: Runtime, nodeGuid: string, scope: string, property: string): any {
-      return (scope === "input" ? app.state.nodes[nodeGuid].input : app.state.nodes[nodeGuid].output)[property];
-    }
+    // function getNodeData(app: Runtime, nodeGuid: string, scope: string, property: string): any {
+    //   return (scope === "input" ? app.state.nodes[nodeGuid].input : app.state.nodes[nodeGuid].output)[property];
+    // }
 
     app.get("/channel/root/:nodeGuid/:scope/:property", (req, res) => {
       res.writeHead(200, {
@@ -332,21 +338,26 @@ export class NodeHost {
     //
     //==============> OUTCOME runtime->webserver
     //
-    this.runtime.on(eventNames.state, (networkState) => {
+    this.communication.outcoming.on(eventNames.state, (networkState) => {
       socketIoServer.emit(eventNames.state, networkState);
-      this.saveState();
+      // this.saveState();
     });
-    this.runtime.on(eventNames.outboundSignal, (outboundSignal) => {
+    this.communication.outcoming.on(eventNames.outboundSignal, (outboundSignal) => {
       socketIoServer.emit(eventNames.outboundSignal, outboundSignal);
     });
-    this.runtime.on(eventNames.inboundSignal, (inboundSignal) => {
+    this.communication.outcoming.on(eventNames.inboundSignal, (inboundSignal) => {
       socketIoServer.emit(eventNames.inboundSignal, inboundSignal);
     });
-    this.dataService.on(eventNames.data, ({ key, value }) => {
-      const dataChannel = `${eventNames.data}/${key}`;
+    this.communication.outcoming.on(eventNames.data, (dataChannel, value) => {
       socketIoServer.emit(dataChannel, value);
-      this.saveState();
+      // this.saveState();
     });
+
+    // this.dataService.on(eventNames.data, ({ key, value }) => {
+    //   const dataChannel = `${eventNames.data}/${key}`;
+    //   socketIoServer.emit(dataChannel, value);
+    //   this.saveState();
+    // });
 
     server.listen(port, host, () => {
       this.logToHost(`server.listen: ${config.tls ? "https" : "http"}://${config.token}@localhost:${config.port}`);
