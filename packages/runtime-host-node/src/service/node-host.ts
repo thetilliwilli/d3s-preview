@@ -1,5 +1,4 @@
 import { AbstractRequest, eventNames } from "@d3s/event";
-import { DataKey } from "@d3s/state";
 import { EventEmitter } from "@d3s/utils";
 import bodyParser from "body-parser";
 import express from "express";
@@ -13,37 +12,13 @@ import { AuthService } from "./auth-service.js";
 import { config } from "./config.js";
 
 export class NodeHost {
-  // private appLocation = config.appLocation;
-  // private dataService!: InMemoryDataService;
-  // private runtime!: Runtime;
-
-  
   public communication = {
     incoming: new EventEmitter(),
     outcoming: new EventEmitter(),
   };
 
-  constructor() {
-    console.log(`NOdeHost constructor`);
-  }
-
-  public async init(/* runtime: Runtime, dataService: InMemoryDataService */) {
-    console.log(`NOdeHost init`);
-    // return;
+  public async init() {
     this.logToHost(JSON.stringify({ ...config, type: "config" }));
-
-    // const appStateWithData = this.getState();
-
-    // this.dataService = new InMemoryDataService(appStateWithData.data);
-    // this.dataService = dataService;
-
-    // this.runtime = runtime;
-    // this.runtime = new Runtime({
-    //   resolveNode: this.resolveNode,
-    //   logToHost: this.logToHost,
-    //   dataService: this.dataService,
-    //   promptAi: this.getPromptResult,
-    // });
 
     ["SIGINT", "SIGTERM", "exit", "uncaughtException"].forEach((event) => {
       process.on(event, (error) => {
@@ -54,53 +29,12 @@ export class NodeHost {
       });
     });
 
-    // await this.runtime.handle(new LoadNetworkRequest(appStateWithData.state));
-
     await this.webserverInit(config.port, config.host);
   }
 
   public logToHost(message: string) {
     if (config.verbose) console.log(message);
   }
-
-  // private getState(): AppStateWithData {
-  //   return this.appLocation && existsSync(this.appLocation)
-  //     ? JSON.parse(readFileSync(this.appLocation, "utf8"))
-  //     : new AppStateWithData();
-  // }
-
-  // private saveState = throttle((appState:any) => {
-  //   const stateStr = JSON.stringify(this.runtime, null, " ");
-  //   if (this.appLocation) writeFileSync(this.appLocation, stateStr);
-  //   // const stateStr = JSON.stringify(this.runtime, null, " ");
-  //   // if (this.appLocation) writeFileSync(this.appLocation, stateStr);
-  // }, 3000);
-
-  // public async resolveNode(nodeUri: string): Promise<NodeBuilder> {
-  //   const nodeResolver = new NodeResolver();
-  //   const result = nodeResolver.resolve(nodeUri);
-  //   return result;
-  // }
-
-  // public async getPromptResult(prompt: string) {
-  //   const result = await fetch(config.aiEndpoint, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${config.aiToken}`,
-  //     },
-  //     body: JSON.stringify({
-  //       model: "deepseek-chat",
-  //       stream: false,
-  //       messages: [
-  //         // { role: "system", content: "You are a helpful assistant." },
-  //         { role: "user", content: prompt },
-  //       ],
-  //     }),
-  //   }).then((x) => x.json());
-
-  //   return result.choices[0].message.content as string;
-  // }
 
   private async webserverInit(port: number, host: string) {
     const app = express();
@@ -136,26 +70,16 @@ export class NodeHost {
     socketIoServer.on("connect", (socket) => {
       this.logToHost(JSON.stringify({ type: "socketConnection", status: "connected", socketId: socket.id }));
 
-      // первичная синхронизация состояния
-      // чтобы вернуть начальное состояние приложения при подключение нового клиента
-      // TODO: MEGAHACK переделать
-      // socketIoServer.emit(eventNames.state, this.runtime.state);
       socket.on("/getNetworkState", (callback) => {
-        // const data = this.dataService.get(dataKey);
-        // callback(data);
         this.communication.incoming.emit("/websocket/getNetworkState", callback);
       });
 
       socket.on("message", (appEvent: AbstractRequest) => {
         // hack: дублирование кода как в express.post()
-        // this.runtime.handle(appEvent);
         this.communication.incoming.emit("/websocket/message", appEvent);
       });
 
-      socket.on("/getData", (dataKey: DataKey, callback) => {
-        
-        // const data = this.dataService.get(dataKey);
-        // callback(data);
+      socket.on("/getData", (dataKey, callback) => {
         this.communication.incoming.emit("/websocket/getDataByDataKey", dataKey, callback);
       });
 
@@ -189,10 +113,6 @@ export class NodeHost {
     // обслуживаем файлы из текущей рабочей директории
     if (config.webCwd) app.use("/cwd", express.static(config.cwd));
 
-    // function getNodeData(app: Runtime, nodeGuid: string, scope: string, property: string): any {
-    //   return (scope === "input" ? app.state.nodes[nodeGuid].input : app.state.nodes[nodeGuid].output)[property];
-    // }
-
     app.get("/channel/root/:nodeGuid/:scope/:property", (req, res) => {
       res.writeHead(200, {
         Connection: "keep-alive",
@@ -213,30 +133,6 @@ export class NodeHost {
         },
       });
 
-      // const { nodeGuid, scope, property } = req.params;
-      // const isDataOnly = "dataOnly" in req.query;
-
-      // if (scope === "input") {
-      //   this.runtime.on(eventNames.inboundSignal, (signal) => {
-      //     if (signal.nodeGuid === nodeGuid && property === signal.name) {
-      //       const data = isDataOnly ? getNodeData(this.runtime, nodeGuid, scope, property) : signal;
-      //       const dataString = JSON.stringify(data);
-      //       res.write(`data: ${dataString}\n\n`);
-      //     }
-      //   });
-      // }
-
-      // // TODO исправить - листенеры должны отсоединться при по окончанию соеденинияя - чтобы не весели бесконечно
-      // if (scope === "output") {
-      //   this.runtime.on(eventNames.outboundSignal, (signal) => {
-      //     if (signal.nodeGuid === nodeGuid && property === signal.name) {
-      //       const data = isDataOnly ? getNodeData(this.runtime, nodeGuid, scope, property) : signal;
-      //       const dataString = JSON.stringify(data);
-      //       res.write(`data: ${dataString}\n\n`);
-      //     }
-      //   });
-      // }
-
       res.on("close", () => {
         res.end();
       });
@@ -254,7 +150,6 @@ export class NodeHost {
         try {
           const request = JSON.parse(line);
           this.communication.incoming.emit("/stdin/request", request);
-          // this.runtime.handle(request);
         } catch (_) {}
       });
 
@@ -270,20 +165,6 @@ export class NodeHost {
           res.end(JSON.stringify(result));
         },
       });
-
-      // const listener = (signal: Signal) => {
-      //   if (signal.nodeGuid === req.body.resultSignal.nodeGuid && signal.name === req.body.resultSignal.name) {
-      //     this.runtime.off(eventNames.outboundSignal, listener);
-      //     res.end(JSON.stringify(signal.data));
-      //   }
-      // };
-
-      // this.runtime.on(eventNames.outboundSignal, listener);
-
-      // for (const inputSignal of req.body.activationSignals) {
-      //   inputSignal.type = "SendSignalRequest";
-      //   await this.runtime.handle(inputSignal);
-      // }
     });
 
     app.post("/invoke", (req, res) => {
@@ -294,13 +175,6 @@ export class NodeHost {
           res.send(result);
         },
       });
-
-      // try {
-      //   const result = await this.runtime.handle(req.body);
-      //   res.send({ result });
-      // } catch (error) {
-      //   res.send({ error: util.inspect(error) });
-      // }
     });
 
     // для интеграции с wallarm
@@ -309,8 +183,6 @@ export class NodeHost {
     app.post("/signal/:nodeGuid/:scope/:property", (req, res) => {
       if (req.params.scope === "input") {
         res.send({ ok: true });
-        // const signal = new SendSignalRequest(req.params.nodeGuid, req.params.property, req.body, "input");
-        // this.runtime.handle(signal);
         this.communication.incoming.emit("/rest/invokeCustomWallarmIntergration", {
           nodeGuid: req.params.nodeGuid,
           property: req.params.property,
@@ -320,19 +192,18 @@ export class NodeHost {
     });
 
     app.post("*", (req, res) => {
+      res.send(JSON.stringify({ ok: true }));
       this.communication.incoming.emit("/rest/request", req.body);
-      // res.send({ ok: true });
-      // this.runtime.handle(req.body);
     });
 
     app.get("/data/:nodeGuid/:scope/:property", (req, res) => {
-      this.communication.incoming.emit("/rest/getData", {params: req.body, returnData:(data:any)=>{
-        res.type("application/json");
-        res.send(JSON.stringify(data));
-      }});
-      // const data = await this.runtime.getData(req.params);
-      // res.type("application/json");
-      // res.send(JSON.stringify(data));
+      this.communication.incoming.emit("/rest/getData", {
+        params: req.body,
+        returnData: (data: any) => {
+          res.type("application/json");
+          res.send(JSON.stringify(data));
+        },
+      });
     });
 
     //
@@ -340,7 +211,6 @@ export class NodeHost {
     //
     this.communication.outcoming.on(eventNames.state, (networkState) => {
       socketIoServer.emit(eventNames.state, networkState);
-      // this.saveState();
     });
     this.communication.outcoming.on(eventNames.outboundSignal, (outboundSignal) => {
       socketIoServer.emit(eventNames.outboundSignal, outboundSignal);
@@ -350,14 +220,7 @@ export class NodeHost {
     });
     this.communication.outcoming.on(eventNames.data, (dataChannel, value) => {
       socketIoServer.emit(dataChannel, value);
-      // this.saveState();
     });
-
-    // this.dataService.on(eventNames.data, ({ key, value }) => {
-    //   const dataChannel = `${eventNames.data}/${key}`;
-    //   socketIoServer.emit(dataChannel, value);
-    //   this.saveState();
-    // });
 
     server.listen(port, host, () => {
       this.logToHost(`server.listen: ${config.tls ? "https" : "http"}://${config.token}@localhost:${config.port}`);

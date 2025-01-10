@@ -4,5 +4,3 @@ export { Reactor } from "./domain/node/reactor.js";
 export { ReactorBuilder } from "./domain/node/reactor-builder.js";
 export { Runtime } from "./domain/runtime/runtime.js";
 export { Signal } from "./domain/node/signal.js";
-export { RuntimeSettings } from "./domain/runtime/runtime-settings.js";
-export { IDataService } from "./domain/runtime/i-data-service.js";

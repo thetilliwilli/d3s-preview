@@ -38,9 +38,4 @@ export function isNotUndefined<T>(x: T | undefined): x is T {
   return x !== undefined;
 }
 
-export function withDefault<T>(cast: (value: unknown) => T | undefined, unknownValue: unknown, defaultValue: T) {
-  const value = cast(unknownValue);
-  return value === undefined ? defaultValue : value;
-}
-
 export type Dictionary<TValue> = Record<string, TValue>;

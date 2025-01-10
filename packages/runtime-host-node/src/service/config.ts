@@ -1,9 +1,9 @@
-import { withDefault } from "@d3s/utils";
 import crypto from "crypto";
+import fs from "fs";
 import { tmpdir } from "os";
 import path from "path";
 import url from "url";
-import fs from "fs";
+import { withDefault } from "../utils/with-default.js";
 
 const toNumber = (x: unknown) => {
   const castedX = Number.parseInt(x + "");
