@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from "fs";
 import path from "path";
-import {execSync} from "child_process";
+import { execSync } from "child_process";
 
 // const files = [
 //     "packages/designer/package.json",
@@ -14,33 +14,51 @@ import {execSync} from "child_process";
 //     "packages/cli/package.json",
 // ];
 // const files = execSync(`npx -c 'echo %cd%' -ws`)
-const files = JSON.parse(execSync(`npm query .workspace`).toString("utf8")).map(x=>path.join(x.path, "package.json"));
+const packages = JSON.parse(execSync(`npm query .workspace`).toString("utf8")).map(x => ({
+    version: x.version,
+    path: path.join(x.path, "package.json"),
+}));
 
 // console.log(files);
 
 // process.exit();
 
-console.log(`package ${files[0]} has version = ${JSON.parse(fs.readFileSync(files[0], "utf8")).version}`);
+//checking all versions are the same
+// const areAllSameVersion = new Set(packages.map(x => x.version)).size === 1;
 
-const version = process.argv[2];
-if (version === undefined) {
-    console.log(`version is not specified: ${version}`);
-    process.exit(1);
-}
+// if(new Set(packages.map(x=>x.version)).size === 1){
+//     console.log(`All packages have the same version = ${packages[0].version}. next version will be `);
+// }
+// else{
+//     throw Error(`not all pacakges have the same version. specify concrete version manually`);
+// }
 
-console.log(`setting new version: ${version}`);
+
+// console.log(`package ${files[0]} has version = ${JSON.parse(fs.readFileSync(files[0], "utf8")).version}`);
+
+// const version = process.argv[2];
+// if (version === undefined && areAllSameVersion === false) {
+//     console.log(`version is not specified: ${version} and not all packages have the same version. specify concrete version manually`);
+//     console.log(`here is packages details:\n${JSON.stringify(packages)}`);
+//     process.exit(1);
+// }
+
+// const nextVersion = version || packages[0].version.split(".").map((x, i) => i === 2 ? (Number.parseInt(x) + 1) + "" : x).join(".")
+const nextVersion = packages[0].version.split(".").map((x, i) => i === 2 ? (Number.parseInt(x) + 1) + "" : x).join(".");
+
+console.log(`setting new version: ${nextVersion}`);
 console.log(`...`);
 
 files.forEach(file => {
     const json = JSON.parse(fs.readFileSync(file, "utf8"));
 
-    json.version = version;
+    json.version = nextVersion;
 
     if (json.dependencies)
         Object.keys(json.dependencies)
             .filter(key => key.slice(0, 5) === "@d3s/")
             .forEach(key => {
-                json.dependencies[key] = version;
+                json.dependencies[key] = nextVersion;
             });
 
     fs.writeFileSync(file, JSON.stringify(json, null, " "));
