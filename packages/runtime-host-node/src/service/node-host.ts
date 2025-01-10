@@ -23,7 +23,7 @@ export class NodeHost {
   constructor() {
     console.log(`NOdeHost constructor`);
   }
-  public async init(runtime: Runtime) {
+  public async init(runtime: Runtime, dataService:InMemoryDataService) {
     console.log(`NOdeHost init`);
     // return;
     this.logToHost(JSON.stringify({ ...config, type: "config" }));
@@ -31,6 +31,7 @@ export class NodeHost {
     // const appStateWithData = this.getState();
 
     // this.dataService = new InMemoryDataService(appStateWithData.data);
+    this.dataService = dataService;
 
     this.runtime = runtime;
     // this.runtime = new Runtime({

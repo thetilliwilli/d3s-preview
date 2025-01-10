@@ -73,7 +73,7 @@ export class Runtime extends EventEmitter {
     const { NodeHost } = await import("@d3s/runtime-host-node");
     const nodeHost = new NodeHost();
     //@ts-ignore
-    await nodeHost.init(this);
+    await nodeHost.init(this, this.data);
   }
 
   public async handle(request: AbstractRequest): Promise<any> {

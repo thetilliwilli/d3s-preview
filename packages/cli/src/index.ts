@@ -67,6 +67,7 @@ async function main() {
     name: `${packageJson.name}-${appGuid}`,
     originalName: packageJson.name,
   };
+  console.log(`updatedPackageJson:\n${JSON.stringify(updatedPackageJson)}`);
   fs.writeFileSync(path.join(d3sRootDir, appWorkspace, "package.json"), JSON.stringify(updatedPackageJson));
   lastExecSyncResult = child_process
     .execSync(`npm i -w ${appWorkspace}`, { cwd: d3sRootDir, stdio: "inherit" })
@@ -86,7 +87,7 @@ async function main() {
   // const {NodeHost} = await import(hostModulePath);
 
   // проверить на что если версия будет отличаться здесь должен подтянуть локальную версию из node_modules самомго аппа а не родительской общей папки
-  const runtimeModulePath = pathToFileURL(createRequire(path.join(d3sRootDir, appWorkspace)).resolve("@d3s/runtime")).toString();
+  const runtimeModulePath = pathToFileURL(createRequire(path.join(d3sRootDir, appWorkspace, "fake-entrypoint-index.js")).resolve("@d3s/runtime")).toString();
   const { Runtime } = await import(runtimeModulePath);
 
   const runtime = new Runtime("node");
