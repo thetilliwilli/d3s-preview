@@ -5,7 +5,8 @@ import os from "os";
 import { createRequire } from "node:module";
 import path from "node:path";
 import crypto from "node:crypto";
-import { Runtime } from "@d3s/runtime";
+import { pathToFileURL } from "url";
+// import { Runtime } from "@d3s/runtime";
 
 // const entrypointCode = `import child_process from "child_process";
 // import { createRequire } from "node:module";
@@ -15,6 +16,7 @@ import { Runtime } from "@d3s/runtime";
 // child_process.fork("@d3s/runtime-host-node", { env: process.env });`;
 
 async function main() {
+  console.log(`starting app`);
   //#region LoadingAppJson
   const args = process.argv;
 
@@ -53,10 +55,10 @@ async function main() {
     .execSync(`npm init --yes -w ${appWorkspace}`, { cwd: d3sRootDir, stdio: "inherit" })
     ?.toString("utf8");
 
-  // устанавливаем последнюю версию runtime'a если еще не устанавливали в корень всех workspace'ov
-  lastExecSyncResult = child_process
-    .execSync(`npm i @d3s/runtime-host-node`, { cwd: d3sRootDir, stdio: "inherit" })
-    ?.toString("utf8");
+  // // устанавливаем последнюю версию runtime'a если еще не устанавливали в корень всех workspace'ov
+  // lastExecSyncResult = child_process
+  //   .execSync(`npm i @d3s/runtime-host-node`, { cwd: d3sRootDir, stdio: "inherit" })
+  //   ?.toString("utf8");
 
   // заменяем package.json файл из скаченного app.json и делаем "npm i"
   const updatedPackageJson = {
@@ -79,11 +81,24 @@ async function main() {
 
   // запускаем runtime и передаем приложение
   // const require = createRequire(import.meta.url);
-  // const runtimeModuleEntrypointResolved = require.resolve(path.join(d3sRootDir, "node_modules/@d3s/runtime-host-node"));
+
+  // const hostModulePath = require.resolve(path.join(d3sRootDir, "node_modules/@d3s/runtime-host-node"));
+  // const {NodeHost} = await import(hostModulePath);
+
+  // проверить на что если версия будет отличаться здесь должен подтянуть локальную версию из node_modules самомго аппа а не родительской общей папки
+  const runtimeModulePath = pathToFileURL(createRequire(path.join(d3sRootDir, appWorkspace)).resolve("@d3s/runtime")).toString();
+  const { Runtime } = await import(runtimeModulePath);
+
+  const runtime = new Runtime("node");
+  await runtime.init(appJson);
+
   // child_process.fork(runtimeModuleEntrypointResolved, [appJsonPath], { env: process.env, stdio: "inherit" });
+
   //#endregion
 
   // await new Runtime().run(appJson);
 }
 
 main();
+
+// console.log('llallalala');

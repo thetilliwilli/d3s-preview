@@ -1,5 +1,5 @@
-import { AbstractRequest, eventNames } from "@d3s/event";
-import { NetworkState } from "@d3s/state";
+import { AbstractRequest, eventNames, LoadNetworkRequest } from "@d3s/event";
+import { AppStateWithData, NetworkState } from "@d3s/state";
 import { Dictionary, EventEmitter } from "@d3s/utils";
 import * as requestHandlerMap from "../../request-handler/index.js";
 import { RuntimeNode } from "../node/node.js";
@@ -7,23 +7,58 @@ import { NodeBuilder } from "../node/node-builder.js";
 import { Signal } from "../node/signal.js";
 import { IDataService } from "./i-data-service.js";
 import { RuntimeSettings } from "./runtime-settings.js";
+import { NodeResolver } from "../../service/node-resolver.js";
+import { InMemoryDataService } from "../../service/data-service.js";
 
 export class Runtime extends EventEmitter {
-  public resolveNode: (nodeUri: string) => Promise<NodeBuilder>;
-  public logToHost: (log: any) => void;
-  public data: IDataService;
-  public promptAi: (prompt: string) => Promise<string>;
+  // public resolveNode!: (nodeUri: string) => Promise<NodeBuilder>;
+  public async resolveNode(nodeUri: string): Promise<NodeBuilder> {
+    const nodeResolver = new NodeResolver();
+    const result = nodeResolver.resolve(nodeUri);
+    return result;
+  }
+
+  // public logToHost!: (log: any) => void;
+  public logToHost(message: string) {
+    // if (config.verbose) console.log(message);
+    console.log(message);
+  }
+  public data!: IDataService;
+  // public promptAi!: (prompt: string) => Promise<string>;
+  public async promptAi(prompt: string) {
+    throw new Error(`not implemetned`);
+    const result = await fetch("config.aiEndpoint", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${"config.aiToken"}`,
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        stream: false,
+        messages: [
+          // { role: "system", content: "You are a helpful assistant." },
+          { role: "user", content: prompt },
+        ],
+      }),
+    }).then((x) => x.json());
+
+    return result.choices[0].message.content as string;
+  }
   public state = new NetworkState();
   public nodes: Dictionary<RuntimeNode> = {};
   public instances: Dictionary<{ [key: string | number | symbol]: any }> = {};
 
-  constructor(settings: RuntimeSettings) {
+  constructor(/* settings: RuntimeSettings */ private runtimeSpecifier?: "node" | "web") {
     super();
+  }
 
-    this.resolveNode = settings.resolveNode;
-    this.logToHost = settings.logToHost;
-    this.data = settings.dataService;
-    this.promptAi = settings.promptAi;
+  public async init(appStateWithData: AppStateWithData) {
+    // this.resolveNode = nodeHost.resolveNode;
+    // this.logToHost = nodeHost.logToHost;
+    // this.data = nodeHost.dataService;
+    this.data = new InMemoryDataService(appStateWithData.data);
+    // this.promptAi = nodeHost.promptAi;
 
     this.handle = this.handle.bind(this);
     this.logSignal = this.logSignal.bind(this);
@@ -32,6 +67,13 @@ export class Runtime extends EventEmitter {
     this.on(eventNames.outboundSignal, this.logSignal);
 
     this.toJSON.bind(this);
+
+    await this.handle(new LoadNetworkRequest(appStateWithData.state));
+
+    const { NodeHost } = await import("@d3s/runtime-host-node");
+    const nodeHost = new NodeHost();
+    //@ts-ignore
+    await nodeHost.init(this);
   }
 
   public async handle(request: AbstractRequest): Promise<any> {

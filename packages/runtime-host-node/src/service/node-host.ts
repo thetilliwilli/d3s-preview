@@ -20,19 +20,25 @@ export class NodeHost {
   private dataService!: InMemoryDataService;
   private runtime!: Runtime;
 
-  public async init() {
+  constructor() {
+    console.log(`NOdeHost constructor`);
+  }
+  public async init(runtime: Runtime) {
+    console.log(`NOdeHost init`);
+    // return;
     this.logToHost(JSON.stringify({ ...config, type: "config" }));
 
-    const appStateWithData = this.getState();
+    // const appStateWithData = this.getState();
 
-    this.dataService = new InMemoryDataService(appStateWithData.data);
+    // this.dataService = new InMemoryDataService(appStateWithData.data);
 
-    this.runtime = new Runtime({
-      resolveNode: this.resolveNode,
-      logToHost: this.logToHost,
-      dataService: this.dataService,
-      promptAi: this.getPromptResult,
-    });
+    this.runtime = runtime;
+    // this.runtime = new Runtime({
+    //   resolveNode: this.resolveNode,
+    //   logToHost: this.logToHost,
+    //   dataService: this.dataService,
+    //   promptAi: this.getPromptResult,
+    // });
 
     ["SIGINT", "SIGTERM", "exit", "uncaughtException"].forEach((event) => {
       process.on(event, (error) => {
@@ -43,7 +49,7 @@ export class NodeHost {
       });
     });
 
-    await this.runtime.handle(new LoadNetworkRequest(appStateWithData.state));
+    // await this.runtime.handle(new LoadNetworkRequest(appStateWithData.state));
 
     await this.webserverInit(config.port, config.host);
   }
@@ -139,7 +145,9 @@ export class NodeHost {
       });
 
       socket.on("disconnect", (reason) => {
-        this.logToHost(JSON.stringify({ type: "socketConnection", status: "disconnected", socketId: socket.id, reason }));
+        this.logToHost(
+          JSON.stringify({ type: "socketConnection", status: "disconnected", socketId: socket.id, reason })
+        );
       });
     });
 
