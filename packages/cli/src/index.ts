@@ -7,21 +7,17 @@ import path from "node:path";
 import os from "os";
 import { pathToFileURL } from "url";
 
-const runtimeSpecifier = "@d3s/runtime";
-
 async function main() {
-  // console.log(`starting app`);
   const args = process.argv;
 
   const appUri = (args[2] || "").trim();
   const isDev = args[3] !== undefined;
 
   //#region LoadingAppJson
+  const isRemoteLocation = appUri.startsWith("http:") || appUri.startsWith("https:");
   const appJsonContent = await (async () => {
     try {
-      return appUri.startsWith("http:") || appUri.startsWith("https:")
-        ? fetch(appUri).then((x) => x.text())
-        : fs.promises.readFile(appUri, "utf8");
+      return isRemoteLocation ? fetch(appUri).then((x) => x.text()) : fs.promises.readFile(appUri, "utf8");
     } catch (error) {
       console.error(`failed to load app: ${appUri}`);
       throw error;
@@ -32,10 +28,15 @@ async function main() {
   const packageJson = appJson["package.json"];
   //#endregion
 
+  const appStateOutputPath =
+    isRemoteLocation || appUri === ""
+      ? "app.json" // будет сохраняться просто в текущей рабочей директории под дефолтным именем app.json
+      : appUri; // в этом случае передан какой то вменяемый путь к файлу в локальный файловоый системе, поэтому используем его для сохранения имзенений
+
   if (isDev) {
     //#region DevRun
-    const { Runtime } = await import(runtimeSpecifier);
-    const runtime = new Runtime(appJson);
+    const { Runtime } = await import("@d3s/runtime");
+    const runtime = new Runtime(appJson, { appStateOutputPath });
     await runtime.init();
     //#endregion
   } else {
@@ -71,11 +72,12 @@ async function main() {
 
     // проверить на что если версия будет отличаться здесь должен подтянуть локальную версию из node_modules самомго аппа а не родительской общей папки
     const runtimeModulePath = pathToFileURL(
-      createRequire(path.join(d3sRootDir, appWorkspace, "fake-entrypoint-index.js")).resolve(runtimeSpecifier)
+      createRequire(path.join(d3sRootDir, appWorkspace, "fake-entrypoint-index.js")).resolve("@d3s/runtime")
     ).toString();
-    const { Runtime } = await import(runtimeModulePath);
 
-    const runtime = new Runtime(appJson);
+    const { Runtime }: { Runtime: typeof import("@d3s/runtime").Runtime } = await import(runtimeModulePath);
+
+    const runtime = new Runtime(appJson, { appStateOutputPath });
     await runtime.init();
     //#endregion
   }
