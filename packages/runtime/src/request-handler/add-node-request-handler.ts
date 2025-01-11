@@ -20,23 +20,29 @@ export class AddNodeRequestHandler implements AbstractRequestHandler<AddNodeRequ
 
       app.nodes[guid] = runtimeNode;
 
-      app.state.nodes[guid] = getEmptyNodeState();
+      app.networkState.nodes[guid] = getEmptyNodeState();
 
       // meta
-      app.state.nodes[guid].meta.guid = guid;
-      app.state.nodes[guid].meta.nodeUri = nodeUri;
-      app.state.nodes[guid].meta.name = event.name.trim() || nodeUri;
-      app.state.nodes[guid].meta.position = event.position || new PositionState(0, 0);
-      app.state.nodes[guid].active = true;
+      app.networkState.nodes[guid].meta.guid = guid;
+      app.networkState.nodes[guid].meta.nodeUri = nodeUri;
+      app.networkState.nodes[guid].meta.name = event.name.trim() || nodeUri;
+      app.networkState.nodes[guid].meta.position = event.position || new PositionState(0, 0);
+      app.networkState.nodes[guid].active = true;
 
       // state
-      app.state.nodes[guid].state = Object.fromEntries(Object.entries(state).map((x) => [x[0], app.data.new(x[1])]));
+      app.networkState.nodes[guid].state = Object.fromEntries(
+        Object.entries(state).map((x) => [x[0], app.data.new(x[1])])
+      );
 
       // input
-      app.state.nodes[guid].input = Object.fromEntries(Object.entries(input).map((x) => [x[0], app.data.new(x[1])]));
+      app.networkState.nodes[guid].input = Object.fromEntries(
+        Object.entries(input).map((x) => [x[0], app.data.new(x[1])])
+      );
 
       // output
-      app.state.nodes[guid].output = Object.fromEntries(Object.entries(output).map((x) => [x[0], app.data.new(x[1])]));
+      app.networkState.nodes[guid].output = Object.fromEntries(
+        Object.entries(output).map((x) => [x[0], app.data.new(x[1])])
+      );
 
       return app.handle(new SendSignalRequest(guid, "_init", null));
     } catch (error) {

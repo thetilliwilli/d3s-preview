@@ -4,6 +4,6 @@ import { AbstractRequestHandlerContext } from "./app-event-request-handler.js";
 
 export class UpdateMetaRequestHandler implements AbstractRequestHandler<UpdateMetaRequest> {
   public async handle({ app, event }: AbstractRequestHandlerContext<UpdateMetaRequest>): Promise<void> {
-    Object.assign(app.state.nodes[event.nodeGuid].meta, event.meta);
+    Object.assign(app.networkState.nodes[event.nodeGuid].meta, event.meta);
   }
 }

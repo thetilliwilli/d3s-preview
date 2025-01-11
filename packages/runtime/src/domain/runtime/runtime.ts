@@ -40,7 +40,7 @@ export class Runtime extends EventEmitter {
 
     return result.choices[0].message.content as string;
   }
-  public get state(): NetworkState {
+  public get networkState(): NetworkState {
     return this.appState.state;
   }
   public nodes: Dictionary<RuntimeNode> = {};
@@ -69,8 +69,7 @@ export class Runtime extends EventEmitter {
       this.handle(appEvent);
     });
     nodeHost.communication.incoming.on("/websocket/getNetworkState", (callback) => {
-      const networkState = this.state;
-      callback(networkState);
+      callback(this.networkState);
     });
     nodeHost.communication.incoming.on("/websocket/getDataByDataKey", (dataKey, callback) => {
       const data = this.data.get(dataKey);
@@ -131,7 +130,7 @@ export class Runtime extends EventEmitter {
 
     //#region ==============> OUTCOMING runtime -> host
     this.on(eventNames.networkState, () => {
-      nodeHost.communication.outcoming.emit(eventNames.networkState, this.state);
+      nodeHost.communication.outcoming.emit(eventNames.networkState, this.networkState);
     });
     this.on(eventNames.outboundSignal, (outboundSignal) => {
       nodeHost.communication.outcoming.emit(eventNames.outboundSignal, outboundSignal);
@@ -150,7 +149,9 @@ export class Runtime extends EventEmitter {
   }
 
   private getNodeData(nodeGuid: string, scope: string, property: string): any {
-    return (scope === "input" ? this.state.nodes[nodeGuid].input : this.state.nodes[nodeGuid].output)[property];
+    return (scope === "input" ? this.networkState.nodes[nodeGuid].input : this.networkState.nodes[nodeGuid].output)[
+      property
+    ];
   }
 
   public async handle(request: AbstractRequest) {
@@ -158,10 +159,10 @@ export class Runtime extends EventEmitter {
       //@ts-ignore
       const RequestHandlerClass = requestHandlerMap[request.type + "Handler"];
       const requestHandler = new RequestHandlerClass();
-      const oldStateStr = JSON.stringify(this.state);
+      const oldStateStr = JSON.stringify(this.networkState);
       const result = await requestHandler.handle({ app: this, event: request });
-      const newStateStr = JSON.stringify(this.state);
-      if (newStateStr !== oldStateStr) this.emit(eventNames.networkState, this.state); // TODO для уменьшения колва сериализаций, переделать на отправку newStateStr
+      const newStateStr = JSON.stringify(this.networkState);
+      if (newStateStr !== oldStateStr) this.emit(eventNames.networkState, this.networkState); // TODO для уменьшения колва сериализаций, переделать на отправку newStateStr
       return { result };
     } catch (error) {
       console.error(error);
@@ -177,7 +178,7 @@ export class Runtime extends EventEmitter {
     }
     try {
       const dataKey = select(
-        this.state,
+        this.networkState,
         ["nodes", dataRequest.nodeGuid, dataRequest.scope, dataRequest.property].join("/"),
         "/"
       );
@@ -190,14 +191,14 @@ export class Runtime extends EventEmitter {
 
   public getAppState(): AppStateWithData {
     return {
-      state: this.state,
+      state: this.networkState,
       data: this.data.getState(),
     };
   }
 
   private logSignal(signal: Signal) {
     const logLength = 200;
-    const node = this.state.nodes[signal.nodeGuid];
+    const node = this.networkState.nodes[signal.nodeGuid];
     const shortGuid = node.meta.guid.slice(0, 8);
     const shortUri = node.meta.nodeUri.split(".").pop();
     const shortName = node.meta.name.replace(/[\r\n]+/g, " ").slice(0, 20);

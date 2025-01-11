@@ -9,7 +9,7 @@ export class LoadNetworkRequestHandler implements AbstractRequestHandler<LoadNet
 
     // переделать последовательность _addNodeHandelr -> initSignal
     Object.values(networkState.bindings).forEach((bindingState) => {
-      app.state.bindings[bindingState.guid] = new BindingState(
+      app.networkState.bindings[bindingState.guid] = new BindingState(
         bindingState.guid,
         bindingState.from.node,
         bindingState.from.property,
@@ -30,7 +30,7 @@ export class LoadNetworkRequestHandler implements AbstractRequestHandler<LoadNet
 
         app.nodes[nodeState.meta.guid] = runtimeNode;
 
-        app.state.nodes[nodeState.meta.guid] = new NodeState(
+        app.networkState.nodes[nodeState.meta.guid] = new NodeState(
           nodeState.meta,
           nodeState.state,
           nodeState.input,
@@ -46,9 +46,9 @@ export class LoadNetworkRequestHandler implements AbstractRequestHandler<LoadNet
       )
     );
 
-    app.state.repository = event.networkState.repository;
+    app.networkState.repository = event.networkState.repository;
 
-    const entrypointNode = Object.values(app.state.nodes).find(
+    const entrypointNode = Object.values(app.networkState.nodes).find(
       (node) => node.meta.nodeUri === "@d3s/repository-playground.entrypoint"
     );
 

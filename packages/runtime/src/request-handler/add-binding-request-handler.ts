@@ -8,7 +8,7 @@ export class AddBindingRequestHandler implements AbstractRequestHandler<AddBindi
   public async handle({ app, event }: AbstractRequestHandlerContext<AddBindingRequest>): Promise<void> {
     const guid = GuidService.getGuid();
 
-    app.state.bindings[guid] = new BindingState(
+    app.networkState.bindings[guid] = new BindingState(
       guid,
       event.fromNode,
       event.fromProperty,
@@ -16,8 +16,8 @@ export class AddBindingRequestHandler implements AbstractRequestHandler<AddBindi
       event.toProperty
     );
 
-    const fromDataKey = app.state.nodes[event.fromNode].output[event.fromProperty];
+    const fromDataKey = app.networkState.nodes[event.fromNode].output[event.fromProperty];
 
-    app.state.nodes[event.toNode].input[event.toProperty] = fromDataKey;
+    app.networkState.nodes[event.toNode].input[event.toProperty] = fromDataKey;
   }
 }

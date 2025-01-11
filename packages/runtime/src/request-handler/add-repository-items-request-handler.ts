@@ -11,7 +11,7 @@ export class AddRepositoryItemsRequestHandler implements AbstractRequestHandler<
         description: "",
         category: "default",
       };
-      app.state.repository[nodeUri] = nodeItem;
+      app.networkState.repository[nodeUri] = nodeItem;
     });
   }
 }

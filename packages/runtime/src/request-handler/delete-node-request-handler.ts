@@ -7,9 +7,9 @@ export class DeleteNodeRequestHandler implements AbstractRequestHandler<DeleteNo
     await app.handle(new SendSignalRequest(event.nodeGuid, "_destroy", null));
 
     delete app.nodes[event.nodeGuid];
-    delete app.state.nodes[event.nodeGuid];
+    delete app.networkState.nodes[event.nodeGuid];
 
-    const bindings = Object.values(app.state.bindings);
+    const bindings = Object.values(app.networkState.bindings);
 
     const outboundBindings = bindings.filter((x) => x.from.node === event.nodeGuid);
     const inboundBindings = bindings.filter((x) => x.to.node === event.nodeGuid);

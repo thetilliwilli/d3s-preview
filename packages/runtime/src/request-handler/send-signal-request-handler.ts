@@ -10,7 +10,7 @@ export class SendSignalRequestHandler implements AbstractRequestHandler<SendSign
   public async handle({ app, event }: AbstractRequestHandlerContext<SendSignalRequest>): Promise<void> {
     if (event.signalType === "output") {
       //HACK
-      const nodeOutput = app.state.nodes[event.nodeGuid].output;
+      const nodeOutput = app.networkState.nodes[event.nodeGuid].output;
       const dataKey = nodeOutput[event.name];
       if (app.data.has(dataKey)) {
         app.data.set(dataKey, event.data);
@@ -25,7 +25,7 @@ export class SendSignalRequestHandler implements AbstractRequestHandler<SendSign
 }
 
 function findRightNodeSignals(app: Runtime, nodeGuid: string, signal: Signal) {
-  return Object.values(app.state.bindings)
+  return Object.values(app.networkState.bindings)
     .filter((binding) => binding.from.node === nodeGuid && binding.from.property === signal.name)
     .map((binding) => ({
       rightNodeGuid: binding.to.node,
@@ -43,7 +43,7 @@ function runRecursive(
   inboundSignal.phase = phase;
   app.emit(eventNames.inboundSignal, inboundSignal);
   const node = app.nodes[leftNodeGuid];
-  const nodeState = app.state.nodes[leftNodeGuid];
+  const nodeState = app.networkState.nodes[leftNodeGuid];
 
   //HACK
   const dataKey = nodeState.input[inboundSignal.name];
@@ -113,14 +113,14 @@ function createEmit(app: Runtime, leftNodeGuid: string, phase: number) {
 function createInputContext(app: Runtime, node: NodeState) {
   const nodeGuid = node.meta.guid;
   const entries = Object.entries(node.input).map(([name, dataKey]) => {
-    const boundBinding = Object.values(app.state.bindings).find(
+    const boundBinding = Object.values(app.networkState.bindings).find(
       (binding) => binding.to.node === nodeGuid && binding.to.property === name
     );
 
     const value =
       boundBinding === undefined
         ? app.data.get(dataKey)
-        : app.data.get(app.state.nodes[boundBinding.from.node].output[boundBinding.from.property]);
+        : app.data.get(app.networkState.nodes[boundBinding.from.node].output[boundBinding.from.property]);
 
     return [name, value];
   });
