@@ -1,6 +1,6 @@
 {
  "name": "@d3s/runtime",
- "version": "0.0.26",
+ "version": "0.0.27",
  "description": "",
  "type": "module",
  "main": "dist/index.js",
@@ -12,8 +12,8 @@
  "author": "",
  "license": "ISC",
  "dependencies": {
-  "@d3s/runtime-host-node": "0.0.26",
-  "@d3s/event": "0.0.26",
-  "@d3s/state": "0.0.26"
+  "@d3s/runtime-host-node": "0.0.27",
+  "@d3s/event": "0.0.27",
+  "@d3s/state": "0.0.27"
  }
 }
