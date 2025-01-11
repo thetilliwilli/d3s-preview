@@ -204,7 +204,7 @@ export class Runtime extends EventEmitter {
 
   public serializeDto(): AppStateWithData {
     return {
-      state: this.networkState,
+      ...this.appState,
       data: this.data.serializeDto(),
     };
   }
