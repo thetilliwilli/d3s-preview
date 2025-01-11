@@ -1,8 +1,9 @@
 import { AbstractRequest, eventNames } from "@d3s/event";
-import { EventEmitter } from "@d3s/utils";
+import { AppStateWithData } from "@d3s/state";
+import { EventEmitter, throttle } from "@d3s/utils";
 import bodyParser from "body-parser";
 import express from "express";
-import { readFileSync } from "fs";
+import fs from "fs";
 import { createServer } from "http";
 import { createServer as httpsCreateServer } from "https";
 import readline from "node:readline";
@@ -16,6 +17,8 @@ export class NodeHost {
     incoming: new EventEmitter(),
     outcoming: new EventEmitter(),
   };
+
+  constructor(private appStateOutputPath: string) {}
 
   public async init() {
     this.logToHost(JSON.stringify({ ...config, type: "config" }));
@@ -36,6 +39,11 @@ export class NodeHost {
     if (config.verbose) console.log(message);
   }
 
+  public saveState = throttle((appState: AppStateWithData) => {
+    const content = JSON.stringify(appState, null, " ");
+    fs.writeFileSync(this.appStateOutputPath, content);
+  }, 1500);
+
   private async webserverInit(port: number, host: string) {
     const app = express();
 
@@ -44,8 +52,8 @@ export class NodeHost {
         ? createServer(app)
         : httpsCreateServer(
             {
-              key: readFileSync(config.cert + ".key"),
-              cert: readFileSync(config.cert + ".crt"),
+              key: fs.readFileSync(config.cert + ".key"),
+              cert: fs.readFileSync(config.cert + ".crt"),
             },
             app
           );
