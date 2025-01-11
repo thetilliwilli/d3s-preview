@@ -71,5 +71,12 @@
   {},
   null,
   ""
- ]
+ ],
+ "package.json": {
+  "name": "HelloWorld",
+  "dependencies": {
+   "@d3s/runtime": "0.0.27",
+   "@d3s/repository-playground": "0.0.27"
+  }
+ }
 }
