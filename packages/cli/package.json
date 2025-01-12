@@ -12,5 +12,7 @@
  "author": "",
  "license": "ISC",
  "bin": "dist/index.js",
- "dependencies": {}
+ "dependencies": {
+  "commander": "13.0.0"
+ }
 }
