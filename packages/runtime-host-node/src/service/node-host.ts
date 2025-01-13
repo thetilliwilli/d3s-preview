@@ -11,6 +11,7 @@ import { Server } from "socket.io";
 import util from "util";
 import { AuthService } from "./auth-service.js";
 import { config } from "./config.js";
+import { HostSettings } from "../domain/host-settings.js";
 
 export class NodeHost {
   public communication = {
@@ -18,7 +19,7 @@ export class NodeHost {
     outcoming: new EventEmitter(),
   };
 
-  constructor(private appStateOutputPath: string) {}
+  constructor(private settings: HostSettings) {}
 
   public async init() {
     this.logToHost(JSON.stringify({ ...config, type: "config" }));
@@ -32,16 +33,32 @@ export class NodeHost {
       });
     });
 
-    await this.webserverInit(config.port, config.host);
+    if(this.settings.api)
+      await this.webserverInit(config.port, config.host);
   }
 
   public logToHost(message: string) {
     if (config.verbose) console.log(message);
   }
 
-  public saveState = throttle((appState: AppStateWithData) => {
-    const content = JSON.stringify(appState, null, " ");
-    fs.writeFileSync(this.appStateOutputPath, content);
+  // public async loadApp(): Promise<string> {
+  //   const appSource = this.settings.appSource;
+
+  //   const isRemoteLocation = appSource.startsWith("http:") || appSource.startsWith("https:");
+  //   const appJsonContent = await (async () => {
+  //     try {
+  //       return isRemoteLocation ? fetch(appSource).then((x) => x.text()) : fs.promises.readFile(appSource, "utf8");
+  //     } catch (error) {
+  //       console.error(`failed to load app: ${appSource}`);
+  //       throw error;
+  //     }
+  //   })();
+
+  //   return appJsonContent;
+  // }
+
+  public saveApp = throttle((appContent: string) => {
+    if (this.settings.save) fs.writeFileSync(this.settings.save, appContent);
   }, 1500);
 
   private async webserverInit(port: number, host: string) {
