@@ -33,8 +33,7 @@ export class NodeHost {
       });
     });
 
-    if(this.settings.api)
-      await this.webserverInit(config.port, config.host);
+    if (this.settings.api) await this.webserverInit(config.port, config.host);
   }
 
   public logToHost(message: string) {
@@ -62,15 +61,19 @@ export class NodeHost {
   }, 1500);
 
   private async webserverInit(port: number, host: string) {
+    const apiSettings = this.settings.api;
+
+    if (apiSettings === undefined) throw new Error(`assert guard`);
+
     const app = express();
 
     const server =
-      config.tls === false
+      this.settings.tlsCert === undefined
         ? createServer(app)
         : httpsCreateServer(
             {
-              key: fs.readFileSync(config.cert + ".key"),
-              cert: fs.readFileSync(config.cert + ".crt"),
+              key: fs.readFileSync(this.settings.tlsCert + ".key"),
+              cert: fs.readFileSync(this.settings.tlsCert + ".crt"),
             },
             app
           );

@@ -11,7 +11,9 @@
  },
  "author": "",
  "license": "ISC",
- "bin": "dist/index.js",
+ "bin": {
+    "d3s": "dist/index.js"
+ },
  "dependencies": {
   "commander": "13.0.0"
  }

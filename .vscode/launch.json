@@ -6,10 +6,10 @@
     "configurations": [
         {
             "type": "node",
-            "runtimeArgs": [
-                // "--trace-deprecation",
-                "--no-deprecation"
-            ],
+            // "runtimeArgs": [
+            //     "--trace-deprecation",
+            //     "--no-deprecation"
+            // ],
             "request": "launch",
             "name": "app.json",
             "skipFiles": [
@@ -30,11 +30,13 @@
                 "AI_ENDPOINT": "https://api.deepseek.com/chat/completions"
             },
             "args": [
-                "app.json",
-                "dev"
+                "run",
+                "--develop",
+                "--dry-run",
+                "http://app.d3s/app.json",
             ],
             // "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/ignore/apps",
+            "cwd": "${workspaceFolder}/ignore/playground",
             // hack: https://github.com/microsoft/vscode/issues/102042#issuecomment-656402933
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",

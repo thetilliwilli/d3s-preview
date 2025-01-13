@@ -8,25 +8,30 @@ import { NodeResolver } from "../../service/node-resolver.js";
 import { NodeBuilder } from "../node/node-builder.js";
 import { RuntimeNode } from "../node/node.js";
 import { Signal } from "../node/signal.js";
-import { RunSettings } from "./run-settings.js";
+import { AppSettings } from "./app-settings.js";
 
 export class Runtime extends EventEmitter {
+  private host: NodeHost;
+  private settings: AppSettings;
+
   private appState: AppStateWithData;
   public data!: InMemoryDataService;
-  private host: NodeHost;
   public get networkState(): NetworkState {
     return this.appState.state;
   }
   public nodes: Dictionary<RuntimeNode> = {};
   public instances: Dictionary<{ [key: string | number | symbol]: any }> = {};
 
-  constructor(appState: AppStateWithData, private runSettings: RunSettings) {
+  constructor(host: NodeHost, settings: AppSettings, appState: AppStateWithData) {
     super();
+    
+    this.host = host;
+    this.settings = settings;
     this.appState = this.shrinkAppState(appState);
-    this.host = new NodeHost(this.runSettings.appStateOutputPath);
   }
 
   public async init() {
+    // this.appState = await this.loadAppState();
     this.data = new InMemoryDataService(this.appState.data);
 
     this.handle = this.handle.bind(this);
@@ -173,7 +178,8 @@ export class Runtime extends EventEmitter {
       }
 
       if (newStateStr !== oldStateStr || oldDataVersion !== newDataVersion) {
-        this.host.saveState(this.serializeDto());
+        const appContent = JSON.stringify(this.serializeDto(), null, " ");
+        this.host.saveApp(appContent);
       }
 
       return { result };
@@ -228,6 +234,13 @@ export class Runtime extends EventEmitter {
     const reaction = `[${shortUri}: "${shortName}"].${signal.type}.${signal.name} (${shortDataString})`;
     this.logToHost(`${shortGuid} ${reaction}`);
   }
+
+  // private async loadAppState(): Promise<AppStateWithData> {
+  //   let appContent = await this.host.loadApp();
+  //   let appState = JSON.parse(appContent) as AppStateWithData;
+  //   appState = this.shrinkAppState(appState);
+  //   return appState;
+  // }
 
   private shrinkAppState(appState: AppStateWithData): AppStateWithData {
     /** old to new DataKey mapping */

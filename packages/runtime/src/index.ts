@@ -3,4 +3,5 @@ export { RuntimeNode } from "./domain/node/node.js";
 export { Reactor } from "./domain/node/reactor.js";
 export { ReactorBuilder } from "./domain/node/reactor-builder.js";
 export { Runtime } from "./domain/runtime/runtime.js";
+export { AppSettings } from "./domain/runtime/app-settings.js";
 export { Signal } from "./domain/node/signal.js";
