@@ -6,7 +6,7 @@ export interface HostSettings {
   /** 127.0.0.1:5000 */
   api?: {
     // protocol: "http:" | "https:";
-    hostname: string;
+    host: string;
     port: number;
   };
   apiCwd: false | string;

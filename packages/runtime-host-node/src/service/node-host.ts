@@ -33,7 +33,7 @@ export class NodeHost {
       });
     });
 
-    if (this.settings.api) await this.webserverInit(config.port, config.host);
+    if (this.settings.api) await this.webserverInit();
   }
 
   public logToHost(message: string) {
@@ -60,7 +60,7 @@ export class NodeHost {
     if (this.settings.save) fs.writeFileSync(this.settings.save, appContent);
   }, 1500);
 
-  private async webserverInit(port: number, host: string) {
+  private async webserverInit() {
     const apiSettings = this.settings.api;
 
     if (apiSettings === undefined) throw new Error(`assert guard`);
@@ -250,7 +250,7 @@ export class NodeHost {
       socketIoServer.emit(dataChannel, value);
     });
 
-    server.listen(port, host, () => {
+    server.listen(apiSettings.port, apiSettings.host, () => {
       this.logToHost(`server.listen: ${config.tls ? "https" : "http"}://${config.token}@localhost:${config.port}`);
     });
   }
