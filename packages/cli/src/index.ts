@@ -78,7 +78,10 @@ program
         // host: options.host,
         apiCwd: options.apiCwd,
         tlsCert: options.tlsCert,
-        auth: options.auth === true ? crypto.randomUUID() : options.auth,
+        auth: {
+          enabled: options.auth !== false,// ? crypto.randomUUID() : options.auth,
+          token: typeof(options.auth) === "string" ? options.auth : crypto.randomUUID()
+        },
         log: options.log,
       },
     };

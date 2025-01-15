@@ -10,7 +10,7 @@ import readline from "node:readline";
 import { Server } from "socket.io";
 import util from "util";
 import { AuthService } from "./auth-service.js";
-import { config } from "./config.js";
+// import { config } from "./config.js";
 import { HostSettings } from "../domain/host-settings.js";
 
 export class NodeHost {
@@ -22,7 +22,7 @@ export class NodeHost {
   constructor(private settings: HostSettings) {}
 
   public async init() {
-    this.logToHost(JSON.stringify({ ...config, type: "config" }));
+    this.logToHost(JSON.stringify({ ...this.settings, type: "config" }));
 
     ["SIGINT", "SIGTERM", "exit", "uncaughtException"].forEach((event) => {
       process.on(event, (error) => {
@@ -37,24 +37,8 @@ export class NodeHost {
   }
 
   public logToHost(message: string) {
-    if (config.verbose) console.log(message);
+    if (this.settings.log) console.log(message);
   }
-
-  // public async loadApp(): Promise<string> {
-  //   const appSource = this.settings.appSource;
-
-  //   const isRemoteLocation = appSource.startsWith("http:") || appSource.startsWith("https:");
-  //   const appJsonContent = await (async () => {
-  //     try {
-  //       return isRemoteLocation ? fetch(appSource).then((x) => x.text()) : fs.promises.readFile(appSource, "utf8");
-  //     } catch (error) {
-  //       console.error(`failed to load app: ${appSource}`);
-  //       throw error;
-  //     }
-  //   })();
-
-  //   return appJsonContent;
-  // }
 
   public saveApp = throttle((appContent: string) => {
     if (this.settings.save) fs.writeFileSync(this.settings.save, appContent);
@@ -87,9 +71,9 @@ export class NodeHost {
     });
 
     socketIoServer.use((socket, next) => {
-      if (config.auth === false) return next();
+      if (this.settings.auth.enabled === false) return next();
 
-      const isAuthed = AuthService.isAuth(socket.conn.request.headers.authorization || "", config.token);
+      const isAuthed = AuthService.isAuth(socket.conn.request.headers.authorization || "", this.settings.auth.token);
 
       if (!isAuthed) next(new Error(`not authed`));
       next();
@@ -125,9 +109,9 @@ export class NodeHost {
       res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
       // если авторизация выключена
-      if (config.auth === false) return next();
+      if (this.settings.auth.enabled === false) return next();
 
-      const isAuthed = AuthService.isAuth(req.headers.authorization || "", config.token);
+      const isAuthed = AuthService.isAuth(req.headers.authorization || "", this.settings.auth.token);
 
       if (isAuthed) return next();
 
@@ -135,11 +119,11 @@ export class NodeHost {
       res.status(401).send("Authentication required.");
     });
 
-    // serving designer UI files
-    app.use(express.static(config.designerDist));
+    // // serving designer UI files
+    // app.use(express.static(config.designerDist));
 
     // обслуживаем файлы из текущей рабочей директории
-    if (config.webCwd) app.use("/cwd", express.static(config.cwd));
+    if (this.settings.apiCwd) app.use("/cwd", express.static(this.settings.apiCwd));
 
     app.get("/channel/root/:nodeGuid/:scope/:property", (req, res) => {
       res.writeHead(200, {
@@ -251,7 +235,11 @@ export class NodeHost {
     });
 
     server.listen(apiSettings.port, apiSettings.host, () => {
-      this.logToHost(`server.listen: ${config.tls ? "https" : "http"}://${config.token}@localhost:${config.port}`);
+      this.logToHost(
+        `server.listen: ${this.settings.tlsCert ? "https" : "http"}://${this.settings.auth.token}@${apiSettings.host}:${
+          apiSettings.port
+        }`
+      );
     });
   }
 }

@@ -11,7 +11,10 @@ export interface HostSettings {
   };
   apiCwd: false | string;
   tlsCert: string | undefined;
-  auth: false | string;
+  auth: {
+    enabled:boolean;
+    token: string;
+  };
   /** enables log to stdout or file */
   log: boolean | string;
 }
