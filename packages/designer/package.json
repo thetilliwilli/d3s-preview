@@ -1,6 +1,6 @@
 {
  "name": "@d3s/designer",
- "version": "0.0.29",
+ "version": "0.0.30",
  "type": "module",
  "scripts": {
   "dev": "vite --force",
@@ -9,9 +9,9 @@
   "preview": "vite preview"
  },
  "dependencies": {
-  "@d3s/event": "0.0.29",
-  "@d3s/state": "0.0.29",
-  "@d3s/utils": "0.0.29",
+  "@d3s/event": "0.0.30",
+  "@d3s/state": "0.0.30",
+  "@d3s/utils": "0.0.30",
   "@joint/core": "4.0.4",
   "@reduxjs/toolkit": "^1.9.7",
   "events": "3.3.0",

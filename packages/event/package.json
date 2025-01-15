@@ -1,6 +1,6 @@
 {
  "name": "@d3s/event",
- "version": "0.0.29",
+ "version": "0.0.30",
  "description": "",
  "main": "dist/index.js",
  "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
   "build-watch": "tsc -w"
  },
  "dependencies": {
-  "@d3s/state": "0.0.29"
+  "@d3s/state": "0.0.30"
  },
  "author": "",
  "license": "ISC"
