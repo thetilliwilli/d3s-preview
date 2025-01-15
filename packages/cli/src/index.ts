@@ -57,12 +57,13 @@ program
 
   .action((source, options, command) => {
     // const options = { ...process.env, ...cliOptions };
-    console.log(JSON.stringify(options));
+    const verbose = options.dryRun === true || options.log !== false;
+    if (verbose) console.log(JSON.stringify(options));
     const runSettings: RunOptions = {
       source: source,
       develop: options.develop,
       dryRun: options.dryRun,
-      verbose: options.dryRun === true || options.log !== false,
+      verbose: verbose,
       app: {
         service: {
           ai: {
@@ -80,8 +81,8 @@ program
         apiCwd: options.apiCwd,
         tlsCert: options.tlsCert,
         auth: {
-          enabled: options.auth !== false,// ? crypto.randomUUID() : options.auth,
-          token: typeof(options.auth) === "string" ? options.auth : crypto.randomUUID()
+          enabled: options.auth !== false, // ? crypto.randomUUID() : options.auth,
+          token: typeof options.auth === "string" ? options.auth : crypto.randomUUID(),
         },
         log: options.log,
       },

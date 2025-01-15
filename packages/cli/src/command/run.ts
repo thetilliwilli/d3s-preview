@@ -1,4 +1,4 @@
-import child_process from "child_process";
+import { execSync } from "child_process";
 import fs from "fs";
 import crypto from "node:crypto";
 import { createRequire } from "node:module";
@@ -6,8 +6,8 @@ import os from "os";
 import path from "path";
 import { pathToFileURL } from "url";
 
-function log(verbose:boolean, ...args:any) {
-  console.log(...args);
+function log(verbose: boolean, ...args: any) {
+  if (verbose) console.log(...args);
 }
 
 export interface RunOptions {
@@ -48,15 +48,14 @@ async function runProd(ops: RunOptions, appJson: any) {
   const d3sRootDir = path.join(os.tmpdir(), "d3s");
   fs.mkdirSync(d3sRootDir, { recursive: true });
 
-  lastExecSyncResult = child_process
-    .execSync(`npm init --yes`, { cwd: d3sRootDir, stdio: "inherit" })
-    ?.toString("utf8");
+  lastExecSyncResult = execSync(`npm init --yes`, { cwd: d3sRootDir })?.toString("utf8");
+  log(ops.verbose, lastExecSyncResult);
 
   const appGuid = crypto.randomUUID(); // fs.mkdtempSync("app-");
   const appWorkspace = `apps/${appGuid}`;
-  lastExecSyncResult = child_process
-    .execSync(`npm init --yes -w ${appWorkspace}`, { cwd: d3sRootDir, stdio: "inherit" })
+  lastExecSyncResult = execSync(`npm init --yes -w ${appWorkspace}`, { cwd: d3sRootDir })
     ?.toString("utf8");
+  log(ops.verbose, lastExecSyncResult);
 
   // заменяем package.json файл из скаченного app.json и делаем "npm i"
   const updatedPackageJson = {
@@ -67,9 +66,8 @@ async function runProd(ops: RunOptions, appJson: any) {
   };
   log(ops.verbose, `updatedPackageJson:\n${JSON.stringify(updatedPackageJson)}`);
   fs.writeFileSync(path.join(d3sRootDir, appWorkspace, "package.json"), JSON.stringify(updatedPackageJson));
-  lastExecSyncResult = child_process
-    .execSync(`npm i -w ${appWorkspace}`, { cwd: d3sRootDir, stdio: "inherit" })
-    ?.toString("utf8");
+  lastExecSyncResult = execSync(`npm i -w ${appWorkspace}`, { cwd: d3sRootDir })?.toString("utf8");
+  log(ops.verbose, lastExecSyncResult);
 
   // проверить на что если версия будет отличаться здесь должен подтянуть локальную версию из node_modules самомго аппа а не родительской общей папки
   const runtimeModulePath = pathToFileURL(
