@@ -1,4 +1,4 @@
-import { AbstractRequest } from "@d3s/event";
+import { AbstractRequest, eventNames } from "@d3s/event";
 import { EventEmitter, throttle } from "@d3s/utils";
 import bodyParser from "body-parser";
 import express from "express";
@@ -20,7 +20,7 @@ export class NodeHost {
   constructor(private settings: HostSettings) {}
 
   public async init() {
-    this.logToHost(JSON.stringify({ ...this.settings, type: "config" }));
+    this.outcomingEventLog({ name: "host.setings", payload: this.settings });
 
     ["SIGINT", "SIGTERM", "exit", "uncaughtException"].forEach((event) => {
       process.on(event, (error) => {
@@ -32,10 +32,6 @@ export class NodeHost {
     });
 
     if (this.settings.api) await this.webserverInit();
-  }
-
-  public logToHost(message: string) {
-    if (this.settings.log) console.log(message);
   }
 
   public saveApp = throttle((appContent: string) => {
@@ -78,7 +74,7 @@ export class NodeHost {
     });
 
     socketIoServer.on("connect", (socket) => {
-      this.logToHost(JSON.stringify({ type: "socketConnection", status: "connected", socketId: socket.id }));
+      this.outcomingEventLog({ name: "socket.connection", payload: { status: "connected", socketId: socket.id } });
 
       socket.on("/getNetworkState", (callback) => {
         this.communication.incoming.emit("/websocket/getNetworkState", callback);
@@ -94,9 +90,10 @@ export class NodeHost {
       });
 
       socket.on("disconnect", (reason) => {
-        this.logToHost(
-          JSON.stringify({ type: "socketConnection", status: "disconnected", socketId: socket.id, reason })
-        );
+        this.outcomingEventLog({
+          name: "socket.connection",
+          payload: { status: "disconnected", socketId: socket.id, reason },
+        });
       });
     });
 
@@ -222,15 +219,50 @@ export class NodeHost {
     });
 
     server.listen(apiSettings.port, apiSettings.host, () => {
-      this.logToHost(
-        `server.listen: ${this.settings.tlsCert ? "https" : "http"}://${this.settings.auth.token}@${apiSettings.host}:${
-          apiSettings.port
-        }`
-      );
+      const protocol = this.settings.tlsCert ? "https" : "http";
+      const address = `${protocol}://${this.settings.auth.token}@${apiSettings.host}:${apiSettings.port}`;
+      this.outcomingEventLog({
+        name: "server",
+        payload: {
+          address,
+        },
+      });
     });
   }
 
-  private outcomingEventLog(event: { name: string; payload: unknown }) {
-    if (this.settings.log) this.outcomingEventLog(event);
+  private outcomingEventLog({ name, payload }: { name: string; payload: any }) {
+    function short(value: unknown, length: number = 8) {
+      switch (typeof value) {
+        case "bigint":
+        case "boolean":
+        case "number":
+        case "undefined":
+          return value;
+
+        case "symbol":
+          return value.toString();
+
+        default:
+          return (value + "").slice(0, length);
+      }
+    }
+
+    const logObject = (() => {
+      switch (name) {
+        case eventNames.data:
+          return { key: payload.key, value: short(payload.value) };
+        case eventNames.inboundSignal:
+        case eventNames.outboundSignal:
+          return { ...payload, nodeGuid: short(payload.nodeGuid), data: short(payload.data) };
+        case eventNames.networkState:
+          return {};
+        default:
+          return payload;
+      }
+    })();
+
+    const logString = JSON.stringify(logObject);
+
+    if (this.settings.log) console.log(name, logString);
   }
 }

@@ -32,7 +32,9 @@
             "args": [
                 "run",
                 "--develop",
-                "--dry-run",
+                "--log",
+                "-p5000",
+                // "--dry-run",
                 "http://app.d3s/app.json",
             ],
             // "console": "integratedTerminal",

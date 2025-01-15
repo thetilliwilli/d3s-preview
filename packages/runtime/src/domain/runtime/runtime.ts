@@ -124,10 +124,6 @@ export class Runtime extends EventEmitter {
     return result;
   }
 
-  public logToHost(message: string) {
-    console.log(message);
-  }
-
   public emitOutcomingEvent(event: OutcomingEvent) {
     this.host.communication.outcoming.emit("outcomingEvent", event);
   }
@@ -214,20 +210,6 @@ export class Runtime extends EventEmitter {
       property
     ];
   }
-
-  // private logSignal(signal: Signal) {
-  //   const logLength = 200;
-  //   const node = this.networkState.nodes[signal.nodeGuid];
-  //   const shortGuid = node.meta.guid.slice(0, 8);
-  //   const shortUri = node.meta.nodeUri.split(".").pop();
-  //   const shortName = node.meta.name.replace(/[\r\n]+/g, " ").slice(0, 20);
-  //   const dataString = Array.isArray(signal.data) ? `[${signal.data}]` : "" + signal.data;
-  //   const shortDataString = JSON.stringify(
-  //     dataString.length > logLength ? dataString.slice(0, logLength) + "..." : dataString
-  //   ).slice(1, -1);
-  //   const reaction = `[${shortUri}: "${shortName}"].${signal.type}.${signal.name} (${shortDataString})`;
-  //   this.logToHost(`${shortGuid} ${reaction}`);
-  // }
 
   private shrinkAppState(appState: AppStateWithData): AppStateWithData {
     /** old to new DataKey mapping */

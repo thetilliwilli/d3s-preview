@@ -27,11 +27,6 @@ program
 
   // host options
   .option("-s, --save [string]", "save changed app state to file", false)
-  // .option(
-  //   "--api [string]",
-  //   "enables api [optionally bind address scheme://host:port (ex: https://127.0.0.1:5000)]",
-  //   false
-  // )
   .option("-p, --port <number>", "api port", (value) => {
     const port = cast.toNumber(value);
     if (port === undefined) throw new Error(`invalid port: ${value}`);
@@ -56,9 +51,7 @@ program
   .option("--serviceAiToken <string>", "auth token for ai service")
 
   .action((source, options, command) => {
-    // const options = { ...process.env, ...cliOptions };
     const verbose = options.dryRun === true || options.log !== false;
-    if (verbose) console.log(JSON.stringify(options));
     const runSettings: RunOptions = {
       source: source,
       develop: options.develop,
@@ -76,12 +69,10 @@ program
         type: "node",
         save: options.save === true ? "app.json" : options.save,
         api: getApi(options.port, options.host),
-        // port: options.port,
-        // host: options.host,
         apiCwd: options.apiCwd,
         tlsCert: options.tlsCert,
         auth: {
-          enabled: options.auth !== false, // ? crypto.randomUUID() : options.auth,
+          enabled: options.auth !== false,
           token: typeof options.auth === "string" ? options.auth : crypto.randomUUID(),
         },
         log: options.log,
