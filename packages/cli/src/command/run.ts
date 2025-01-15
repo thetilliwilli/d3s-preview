@@ -6,18 +6,23 @@ import os from "os";
 import path from "path";
 import { pathToFileURL } from "url";
 
+function log(verbose:boolean, ...args:any) {
+  console.log(...args);
+}
+
 export interface RunOptions {
   /** remote http://d3s/app.json or local ./app.json */
   source: string;
   develop: boolean;
   dryRun: boolean;
+  verbose: boolean;
   app: import("@d3s/runtime").AppSettings;
   host: import("@d3s/runtime-host-node").HostSettings;
 }
 
 export async function run(ops: RunOptions) {
   if (ops.dryRun) {
-    console.log(JSON.stringify(ops, null, " "));
+    log(ops.verbose, JSON.stringify(ops, null, " "));
     return;
   }
 
@@ -60,7 +65,7 @@ async function runProd(ops: RunOptions, appJson: any) {
     name: `${packageJson.name}-${appGuid}`,
     originalName: packageJson.name,
   };
-  console.log(`updatedPackageJson:\n${JSON.stringify(updatedPackageJson)}`);
+  log(ops.verbose, `updatedPackageJson:\n${JSON.stringify(updatedPackageJson)}`);
   fs.writeFileSync(path.join(d3sRootDir, appWorkspace, "package.json"), JSON.stringify(updatedPackageJson));
   lastExecSyncResult = child_process
     .execSync(`npm i -w ${appWorkspace}`, { cwd: d3sRootDir, stdio: "inherit" })
@@ -74,11 +79,13 @@ async function runProd(ops: RunOptions, appJson: any) {
   const { Runtime }: { Runtime: typeof import("@d3s/runtime").Runtime } = await import(runtimeModulePath);
 
   const hostModulePath = pathToFileURL(
-    createRequire(path.join(d3sRootDir, appWorkspace, "fake-entrypoint-index.js")).resolve("@d3s/runtime")
+    createRequire(path.join(d3sRootDir, appWorkspace, "fake-entrypoint-index.js")).resolve("@d3s/runtime-host-node")
   ).toString();
-  const { HostNode }: { HostNode: typeof import("@d3s/runtime-host-node").NodeHost } = await import(hostModulePath);
+  // log(hostModulePath);
+  const { NodeHost }: { NodeHost: typeof import("@d3s/runtime-host-node").NodeHost } = await import(hostModulePath);
+  // log(HostNode);
 
-  const hostNode = new HostNode(ops.host);
+  const hostNode = new NodeHost(ops.host);
   const runtime = new Runtime(hostNode, ops.app, appJson);
   await runtime.init();
 }

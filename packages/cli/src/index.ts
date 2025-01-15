@@ -11,7 +11,7 @@ import * as cast from "./service/cast.js";
 const program = new Command();
 
 const require = createRequire(import.meta.url);
-const packageVersion = require("@d3s/cli/package.json");
+const packageVersion = require("@d3s/cli/package.json").version;
 
 program.name("d3s").description("A self-sufficient runtime for softainers").version(packageVersion);
 
@@ -23,7 +23,7 @@ program
 
   // cli client options
   .option("--develop", "develop mode. no npm package installations", false)
-  .option("--dry-run", "don't run app, just print run details")
+  .option("--dry-run", "don't run app, just print run details", false)
 
   // host options
   .option("-s, --save [string]", "save changed app state to file", false)
@@ -62,6 +62,7 @@ program
       source: source,
       develop: options.develop,
       dryRun: options.dryRun,
+      verbose: options.dryRun === true || options.log !== false,
       app: {
         service: {
           ai: {
