@@ -75,8 +75,8 @@
  "package": {
   "name": "HelloWorld",
   "dependencies": {
-   "@d3s/runtime": "0.0.29",
-   "@d3s/repository-playground": "0.0.29"
+   "@d3s/runtime": "0.0.30",
+   "@d3s/repository-playground": "0.0.30"
   }
  }
 }
