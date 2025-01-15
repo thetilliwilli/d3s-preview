@@ -1,5 +1,4 @@
-import { AbstractRequest, eventNames } from "@d3s/event";
-import { AppStateWithData } from "@d3s/state";
+import { AbstractRequest } from "@d3s/event";
 import { EventEmitter, throttle } from "@d3s/utils";
 import bodyParser from "body-parser";
 import express from "express";
@@ -9,9 +8,8 @@ import { createServer as httpsCreateServer } from "https";
 import readline from "node:readline";
 import { Server } from "socket.io";
 import util from "util";
-import { AuthService } from "./auth-service.js";
-// import { config } from "./config.js";
 import { HostSettings } from "../domain/host-settings.js";
+import { AuthService } from "./auth-service.js";
 
 export class NodeHost {
   public communication = {
@@ -119,9 +117,6 @@ export class NodeHost {
       res.status(401).send("Authentication required.");
     });
 
-    // // serving designer UI files
-    // app.use(express.static(config.designerDist));
-
     // обслуживаем файлы из текущей рабочей директории
     if (this.settings.apiCwd) app.use("/cwd", express.static(this.settings.apiCwd));
 
@@ -221,17 +216,9 @@ export class NodeHost {
     //
     //==============> OUTCOME runtime->webserver
     //
-    this.communication.outcoming.on(eventNames.networkState, (networkState) => {
-      socketIoServer.emit(eventNames.networkState, networkState);
-    });
-    this.communication.outcoming.on(eventNames.outboundSignal, (outboundSignal) => {
-      socketIoServer.emit(eventNames.outboundSignal, outboundSignal);
-    });
-    this.communication.outcoming.on(eventNames.inboundSignal, (inboundSignal) => {
-      socketIoServer.emit(eventNames.inboundSignal, inboundSignal);
-    });
-    this.communication.outcoming.on(eventNames.data, (dataChannel, value) => {
-      socketIoServer.emit(dataChannel, value);
+    this.communication.outcoming.on("outcomingEvent", (event: { name: string; payload: unknown }) => {
+      this.outcomingEventLog(event);
+      socketIoServer.emit(event.name, event.payload);
     });
 
     server.listen(apiSettings.port, apiSettings.host, () => {
@@ -241,5 +228,9 @@ export class NodeHost {
         }`
       );
     });
+  }
+
+  private outcomingEventLog(event: { name: string; payload: unknown }) {
+    if (this.settings.log) this.outcomingEventLog(event);
   }
 }

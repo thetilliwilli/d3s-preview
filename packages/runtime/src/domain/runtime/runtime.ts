@@ -8,6 +8,7 @@ import { NodeResolver } from "../../service/node-resolver.js";
 import { NodeBuilder } from "../node/node-builder.js";
 import { RuntimeNode } from "../node/node.js";
 import { Signal } from "../node/signal.js";
+import { OutcomingEvent } from "../outcoming-event/outcoming-event.js";
 import { AppSettings } from "./app-settings.js";
 
 export class Runtime extends EventEmitter {
@@ -24,23 +25,16 @@ export class Runtime extends EventEmitter {
 
   constructor(host: NodeHost, settings: AppSettings, appState: AppStateWithData) {
     super();
-    
+
     this.host = host;
     this.settings = settings;
     this.appState = this.shrinkAppState(appState);
   }
 
   public async init() {
-    // this.appState = await this.loadAppState();
     this.data = new InMemoryDataService(this.appState.data);
 
     this.handle = this.handle.bind(this);
-    this.logSignal = this.logSignal.bind(this);
-
-    this.on(eventNames.inboundSignal, this.logSignal);
-    this.on(eventNames.outboundSignal, this.logSignal);
-
-    // this.toJSON.bind(this);
 
     await this.handle(new LoadNetworkRequest(this.appState.state));
 
@@ -65,24 +59,30 @@ export class Runtime extends EventEmitter {
     this.host.communication.incoming.on("/rest/channelEventStream", ({ emitEventData, request }) => {
       const { nodeGuid, scope, property, isDataOnly } = request;
 
-      this.on(scope === "input" ? eventNames.inboundSignal : eventNames.outboundSignal, (signal) => {
-        if (signal.nodeGuid === nodeGuid && property === signal.name) {
-          const data = isDataOnly ? this.getNodeData(nodeGuid, scope, property) : signal;
-          const dataString = JSON.stringify(data);
-          emitEventData(dataString);
+      this.on("outcomingEvent", (outcomingEvent: OutcomingEvent) => {
+        if (outcomingEvent.name === eventNames.inboundSignal || outcomingEvent.name === eventNames.outboundSignal) {
+          const signal = outcomingEvent.payload as Signal;
+
+          if (signal.nodeGuid === nodeGuid && property === signal.name) {
+            const data = isDataOnly ? this.getNodeData(nodeGuid, scope, property) : signal;
+            const dataString = JSON.stringify(data);
+            emitEventData(dataString);
+          }
         }
       });
     });
 
     this.host.communication.incoming.on("/rest/task", async ({ task, emitTaskResult }) => {
-      const listener = (signal: Signal) => {
+      const listener = (outcomingEvent: OutcomingEvent) => {
+        if (outcomingEvent.name !== eventNames.outboundSignal) return;
+        const signal = outcomingEvent.payload as Signal;
         if (signal.nodeGuid === task.resultSignal.nodeGuid && signal.name === task.resultSignal.name) {
-          this.off(eventNames.outboundSignal, listener);
+          this.off("outcomingEvent", listener);
           emitTaskResult(signal.data);
         }
       };
 
-      this.on(eventNames.outboundSignal, listener);
+      this.on("outcomingEvent", listener);
 
       for (const inputSignal of task.activationSignals) {
         inputSignal.type = "SendSignalRequest";
@@ -109,18 +109,8 @@ export class Runtime extends EventEmitter {
     //#endregion
 
     //#region ==============> OUTCOMING runtime -> host
-    this.on(eventNames.networkState, () => {
-      this.host.communication.outcoming.emit(eventNames.networkState, this.networkState);
-    });
-    this.on(eventNames.outboundSignal, (outboundSignal) => {
-      this.host.communication.outcoming.emit(eventNames.outboundSignal, outboundSignal);
-    });
-    this.on(eventNames.inboundSignal, (inboundSignal) => {
-      this.host.communication.outcoming.emit(eventNames.inboundSignal, inboundSignal);
-    });
-    this.data.on(eventNames.data, ({ key, value }) => {
-      const dataChannel = `${eventNames.data}/${key}`;
-      this.host.communication.outcoming.emit(eventNames.data, dataChannel, value);
+    this.data.on(eventNames.data, (dataKeyValue) => {
+      this.emitOutcomingEvent(new OutcomingEvent(eventNames.data, dataKeyValue));
     });
     //#endregion
 
@@ -136,6 +126,10 @@ export class Runtime extends EventEmitter {
 
   public logToHost(message: string) {
     console.log(message);
+  }
+
+  public emitOutcomingEvent(event: OutcomingEvent) {
+    this.host.communication.outcoming.emit("outcomingEvent", event);
   }
 
   public async promptAi(prompt: string) {
@@ -174,7 +168,7 @@ export class Runtime extends EventEmitter {
       const newDataVersion = this.data.version;
       // TODO для уменьшения кол-ва сериализаций, переделать на отправку newStateStr
       if (newStateStr !== oldStateStr) {
-        this.emit(eventNames.networkState, this.networkState);
+        this.emitOutcomingEvent(new OutcomingEvent(eventNames.networkState, this.networkState));
       }
 
       if (newStateStr !== oldStateStr || oldDataVersion !== newDataVersion) {
@@ -221,25 +215,18 @@ export class Runtime extends EventEmitter {
     ];
   }
 
-  private logSignal(signal: Signal) {
-    const logLength = 200;
-    const node = this.networkState.nodes[signal.nodeGuid];
-    const shortGuid = node.meta.guid.slice(0, 8);
-    const shortUri = node.meta.nodeUri.split(".").pop();
-    const shortName = node.meta.name.replace(/[\r\n]+/g, " ").slice(0, 20);
-    const dataString = Array.isArray(signal.data) ? `[${signal.data}]` : "" + signal.data;
-    const shortDataString = JSON.stringify(
-      dataString.length > logLength ? dataString.slice(0, logLength) + "..." : dataString
-    ).slice(1, -1);
-    const reaction = `[${shortUri}: "${shortName}"].${signal.type}.${signal.name} (${shortDataString})`;
-    this.logToHost(`${shortGuid} ${reaction}`);
-  }
-
-  // private async loadAppState(): Promise<AppStateWithData> {
-  //   let appContent = await this.host.loadApp();
-  //   let appState = JSON.parse(appContent) as AppStateWithData;
-  //   appState = this.shrinkAppState(appState);
-  //   return appState;
+  // private logSignal(signal: Signal) {
+  //   const logLength = 200;
+  //   const node = this.networkState.nodes[signal.nodeGuid];
+  //   const shortGuid = node.meta.guid.slice(0, 8);
+  //   const shortUri = node.meta.nodeUri.split(".").pop();
+  //   const shortName = node.meta.name.replace(/[\r\n]+/g, " ").slice(0, 20);
+  //   const dataString = Array.isArray(signal.data) ? `[${signal.data}]` : "" + signal.data;
+  //   const shortDataString = JSON.stringify(
+  //     dataString.length > logLength ? dataString.slice(0, logLength) + "..." : dataString
+  //   ).slice(1, -1);
+  //   const reaction = `[${shortUri}: "${shortName}"].${signal.type}.${signal.name} (${shortDataString})`;
+  //   this.logToHost(`${shortGuid} ${reaction}`);
   // }
 
   private shrinkAppState(appState: AppStateWithData): AppStateWithData {

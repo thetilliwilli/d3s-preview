@@ -9,12 +9,13 @@ export class DataCache {
     return this.entries.get(dataKey);
   }
 
-  on(dataKey: DataKey, listener: (data: any) => void) {
-    const channel = `${eventNames.data}/${dataKey}`;
+  on(dataKey: DataKey, listener: (data: unknown) => void) {
 
-    socketClient.channelOn(channel, (data: any) => {
-      this.entries.set(dataKey, data);
-      listener(data);
+    socketClient.channelOn(eventNames.data, (dataKeyValue: { key: DataKey; value: unknown }) => {
+      if (dataKey === dataKeyValue.key) {
+        this.entries.set(dataKey, dataKeyValue.value);
+        listener(dataKeyValue.value);
+      }
     });
 
     if (this.entries.has(dataKey)) {

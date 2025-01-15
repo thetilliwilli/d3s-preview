@@ -5,6 +5,7 @@ import { Signal } from "../domain/node/signal.js";
 import { Runtime } from "../domain/runtime/runtime.js";
 import { AbstractRequestHandler } from "./abstract-request-handler.js";
 import { AbstractRequestHandlerContext } from "./app-event-request-handler.js";
+import { OutcomingEvent } from "../domain/outcoming-event/outcoming-event.js";
 
 export class SendSignalRequestHandler implements AbstractRequestHandler<SendSignalRequest> {
   public async handle({ app, event }: AbstractRequestHandlerContext<SendSignalRequest>): Promise<void> {
@@ -41,7 +42,9 @@ function runRecursive(
   isActivationSignal: boolean
 ) {
   inboundSignal.phase = phase;
-  app.emit(eventNames.inboundSignal, inboundSignal);
+
+  app.emitOutcomingEvent(new OutcomingEvent(eventNames.inboundSignal, inboundSignal));
+
   const node = app.nodes[leftNodeGuid];
   const nodeState = app.networkState.nodes[leftNodeGuid];
 
@@ -100,7 +103,7 @@ function createEmit(app: Runtime, leftNodeGuid: string, phase: number) {
   return function emit(outboundSignal: Signal) {
     //фаза аутупут сигнала на одном и том же ноде должна соответвовать фазе инпут сигнала
     outboundSignal.phase = ++phase;
-    app.emit(eventNames.outboundSignal, outboundSignal);
+    app.emitOutcomingEvent(new OutcomingEvent(eventNames.outboundSignal, outboundSignal));
 
     const rightNodeSignals = findRightNodeSignals(app, leftNodeGuid, outboundSignal);
 
