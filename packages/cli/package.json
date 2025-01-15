@@ -1,6 +1,6 @@
 {
  "name": "@d3s/cli",
- "version": "0.0.27",
+ "version": "0.0.29",
  "description": "",
  "type": "module",
  "main": "dist/index.js",
@@ -12,7 +12,7 @@
  "author": "",
  "license": "ISC",
  "bin": {
-    "d3s": "dist/index.js"
+  "d3s": "dist/index.js"
  },
  "dependencies": {
   "commander": "13.0.0"
