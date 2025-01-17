@@ -1,12 +1,10 @@
+import { AppSettings, Runtime } from "@d3s/runtime";
+import { HostSettings, NodeHost } from "@d3s/runtime-host-node";
 import { execSync } from "child_process";
 import fs from "fs";
 import crypto from "node:crypto";
-import { createRequire } from "node:module";
 import os from "os";
 import path from "path";
-import { pathToFileURL } from "url";
-import { NodeHost } from "@d3s/runtime-host-node";
-import { Runtime } from "@d3s/runtime";
 
 function log(verbose: boolean, ...args: any) {
   if (verbose) console.log(...args);
@@ -18,8 +16,8 @@ export interface RunOptions {
   develop: boolean;
   dryRun: boolean;
   verbose: boolean;
-  app: import("@d3s/runtime").AppSettings;
-  host: import("@d3s/runtime-host-node").HostSettings;
+  app: AppSettings;
+  host: HostSettings;
 }
 
 export async function run(ops: RunOptions) {
@@ -30,18 +28,16 @@ export async function run(ops: RunOptions) {
 
   const appJson = await loadAppJson(ops.source);
 
-  if (ops.develop) {
-    //#region DevRun
-    await runDev(ops, appJson);
-    //#endregion
-  } else {
-    //#region Producation mode
-    await runProd(ops, appJson);
-    //#endregion
+  if (!ops.develop) {
+    await setup(ops, appJson);
   }
+
+  const host = new NodeHost(ops.host);
+  const runtime = new Runtime(host, ops.app, appJson);
+  await runtime.init();
 }
 
-async function runProd(ops: RunOptions, appJson: any) {
+async function setup(ops: RunOptions, appJson: any) {
   const packageJson = appJson["package"];
 
   let lastExecSyncResult = "";
@@ -66,36 +62,12 @@ async function runProd(ops: RunOptions, appJson: any) {
     name: `${packageJson.name}-${appGuid}`,
     originalName: packageJson.name,
   };
+
   log(ops.verbose, `updatedPackageJson:\n${JSON.stringify(updatedPackageJson)}`);
   fs.writeFileSync(path.join(d3sRootDir, appWorkspace, "package.json"), JSON.stringify(updatedPackageJson));
+
   lastExecSyncResult = execSync(`npm i -w ${appWorkspace}`, { cwd: d3sRootDir })?.toString("utf8");
   log(ops.verbose, lastExecSyncResult);
-
-  // проверить на что если версия будет отличаться здесь должен подтянуть локальную версию из node_modules самомго аппа а не родительской общей папки
-  const runtimeModulePath = pathToFileURL(
-    createRequire(path.join(d3sRootDir, appWorkspace, "fake-entrypoint-index.js")).resolve("@d3s/runtime")
-  ).toString();
-
-  const { Runtime }: { Runtime: typeof import("@d3s/runtime").Runtime } = await import(runtimeModulePath);
-
-  const hostModulePath = pathToFileURL(
-    createRequire(path.join(d3sRootDir, appWorkspace, "fake-entrypoint-index.js")).resolve("@d3s/runtime-host-node")
-  ).toString();
-  // log(hostModulePath);
-  const { NodeHost }: { NodeHost: typeof import("@d3s/runtime-host-node").NodeHost } = await import(hostModulePath);
-  // log(HostNode);
-
-  const hostNode = new NodeHost(ops.host);
-  const runtime = new Runtime(hostNode, ops.app, appJson);
-  await runtime.init();
-}
-
-async function runDev(ops: RunOptions, appJson: any) {
-  const { NodeHost } = await import("@d3s/runtime-host-node");
-  const { Runtime } = await import("@d3s/runtime");
-  const host = new NodeHost(ops.host);
-  const runtime = new Runtime(host, ops.app, appJson);
-  await runtime.init();
 }
 
 async function loadAppJson(source: string) {
