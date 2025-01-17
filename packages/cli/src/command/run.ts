@@ -5,6 +5,8 @@ import { createRequire } from "node:module";
 import os from "os";
 import path from "path";
 import { pathToFileURL } from "url";
+import { NodeHost } from "@d3s/runtime-host-node";
+import { Runtime } from "@d3s/runtime";
 
 function log(verbose: boolean, ...args: any) {
   if (verbose) console.log(...args);

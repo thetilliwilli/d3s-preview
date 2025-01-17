@@ -6,5 +6,8 @@
     "sourceMap": true,
     "declaration": true
   },
-  "references": []
+  "references": [
+    {"path": "../runtime-host-node"},
+    {"path": "../runtime"},
+  ]
 }
