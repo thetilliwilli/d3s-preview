@@ -70,6 +70,7 @@ export class NodeHost {
       const isAuthed = AuthService.isAuth(socket.conn.request.headers.authorization || "", this.settings.auth.token);
 
       if (!isAuthed) next(new Error(`not authed`));
+      
       next();
     });
 
