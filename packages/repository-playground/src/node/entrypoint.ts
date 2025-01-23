@@ -1,14 +1,8 @@
 import { NodeBuilder } from "@d3s/runtime";
 
 export const entrypoint = new NodeBuilder()
-  .withInput({
-    entry: null,
-  })
-  .withOutput({
-    event: null,
-  })
-  .withHandlers({
-    entry({ state, input, signal, instance, emit }) {
-      emit("event", null);
-    },
+  .withInput({} as { [name: string]: any })
+  .withOutput({} as { [name: string]: any })
+  .withHandler(({ state, input, signal, instance, emit }) => {
+    emit(signal.name, signal.data);
   });

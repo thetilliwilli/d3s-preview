@@ -19,7 +19,8 @@ program
   .command("run")
   .description("run app")
 
-  .argument("<source>", "app source: local fs ./path/app.json or remote http://example.com/app.json")
+  // .argument("<source>", "app source: local fs ./path/app.json or remote http://example.com/app.json")
+  .arguments("<source>")
 
   // cli client options
   .option("--develop", "develop mode. no npm package installations", false)
