@@ -11,6 +11,7 @@ export interface AppSettings {
     fetch? : {},
     kv?:{}
   };
+  signals: string[]
 }
 // export interface AppSettings {
 //   host: HostSettings;

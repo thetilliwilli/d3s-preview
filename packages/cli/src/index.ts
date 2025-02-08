@@ -27,7 +27,8 @@ program
   .option("--dry-run", "don't run app, just print run details", false)
 
   // host options
-  .option("-s, --save [string]", "save changed app state to file", false)
+  // .option("-s, --save [string]", "save changed app state to file", false)
+  .option("-r, --readonly", "readonly app don't change app.json file", false)
   .option("-p, --port <number>", "api port", (value) => {
     const port = cast.toNumber(value);
     if (port === undefined) throw new Error(`invalid port: ${value}`);
@@ -42,6 +43,7 @@ program
     false
   )
   .option("--log [string]", "enables logging to stdout [optionally to file]", false)
+  .option("-s, --signal <string...>", "signal aka global variables")
 
   // app options
   .option(
@@ -65,10 +67,12 @@ program
             token: options.serviceAiToken,
           },
         },
+        signals: options.signal,
       },
       host: {
         type: "node",
-        save: options.save === true ? "app.json" : options.save,
+        source: source,
+        readonly: options.readonly,
         api: getApi(options.port, options.host),
         apiCwd: options.apiCwd,
         tlsCert: options.tlsCert,

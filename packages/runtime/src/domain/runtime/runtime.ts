@@ -129,12 +129,12 @@ export class Runtime extends EventEmitter {
   }
 
   public async promptAi(prompt: string) {
-    throw new Error(`not implemetned`);
-    const result = await fetch("config.aiEndpoint", {
+    if (this.settings.service.ai === undefined) throw new Error(`not implemetned`);
+    const result = await fetch(this.settings.service.ai.endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${"config.aiToken"}`,
+        Authorization: `Bearer ${this.settings.service.ai.token}`,
       },
       body: JSON.stringify({
         model: "deepseek-chat",

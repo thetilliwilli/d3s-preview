@@ -2,7 +2,9 @@ type HostType = "node" | "web";
 
 export interface HostSettings {
   type: HostType;
-  save: false | string;
+  source: string;
+  readonly: false;
+  // read
   /** 127.0.0.1:5000 */
   api?: {
     // protocol: "http:" | "https:";
@@ -12,7 +14,7 @@ export interface HostSettings {
   apiCwd: false | string;
   tlsCert: string | undefined;
   auth: {
-    enabled:boolean;
+    enabled: boolean;
     token: string;
   };
   /** enables log to stdout or file */

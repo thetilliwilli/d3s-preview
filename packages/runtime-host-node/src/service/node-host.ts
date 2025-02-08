@@ -35,7 +35,7 @@ export class NodeHost {
   }
 
   public saveApp = throttle((appContent: string) => {
-    if (this.settings.save) fs.writeFileSync(this.settings.save, appContent);
+    if (!this.settings.readonly) fs.writeFileSync(this.settings.source, appContent);
   }, 1500);
 
   private async webserverInit() {
@@ -70,7 +70,7 @@ export class NodeHost {
       const isAuthed = AuthService.isAuth(socket.conn.request.headers.authorization || "", this.settings.auth.token);
 
       if (!isAuthed) next(new Error(`not authed`));
-      
+
       next();
     });
 
