@@ -61,6 +61,13 @@ editViewCommunication.onmessage = (event) => {
   }
 };
 
+const customViewCommunication = new BroadcastChannel("customView");
+customViewCommunication.onmessage = (event) => {
+  const messageData = event.data as { nodeGuid: string; type: "input"; name: string; data: any };
+  const signal = new SendSignalRequest(messageData.nodeGuid, messageData.name, messageData.data);
+  socketClient.send(signal);
+};
+
 export const PropertyEditor = () => {
   const dispatch = useAppDispatch();
 
@@ -182,7 +189,7 @@ export const PropertyEditor = () => {
               }
             }}
           />
-          <PropertyPanel controls={stateControls} type="state" addProperty={() => { }} />
+          <PropertyPanel controls={stateControls} type="state" addProperty={() => {}} />
           <PropertyPanel
             controls={outputControls}
             type="output"

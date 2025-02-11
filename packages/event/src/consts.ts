@@ -7,4 +7,5 @@ export const eventNames = {
   request: "/request",
   response: "/response",
   data: "/data",
+  ai: "/ai",
 };

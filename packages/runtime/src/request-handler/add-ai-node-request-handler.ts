@@ -1,6 +1,7 @@
-import { AddAiNodeRequest, AddNodeRequest } from "@d3s/event";
+import { AddAiNodeRequest, AddNodeRequest, eventNames } from "@d3s/event";
 import { AbstractRequestHandler } from "./abstract-request-handler.js";
 import { AbstractRequestHandlerContext } from "./app-event-request-handler.js";
+import { OutcomingEvent } from "../domain/outcoming-event/outcoming-event.js";
 
 const defaults = {
   prompt: {
@@ -30,6 +31,8 @@ const defaults = {
 
 export class AddAiNodeRequestHandler implements AbstractRequestHandler<AddAiNodeRequest, any> {
   public async handle({ app, event }: AbstractRequestHandlerContext<AddAiNodeRequest>): Promise<any> {
+    app.emitOutcomingEvent(new OutcomingEvent("ai.node.creating", { prompt: event.prompt }));
+
     const inputParametersPrompt = defaults.prompt.inputParameters
       .replace("{{nodePrompt}}", event.prompt)
       .split("\n")
@@ -41,9 +44,6 @@ export class AddAiNodeRequestHandler implements AbstractRequestHandler<AddAiNode
       .map((x) => x.trim())
       .join("\n");
 
-    console.log(`inputParametersPrompt: ${inputParametersPrompt}`);
-    console.log(`outputParametersPrompt: ${outputParametersPrompt}`);
-
     const parametersPromptResult = await Promise.all([
       app.promptAi(inputParametersPrompt),
       app.promptAi(outputParametersPrompt),
@@ -54,7 +54,7 @@ export class AddAiNodeRequestHandler implements AbstractRequestHandler<AddAiNode
       output: JSON.parse(parametersPromptResult[1]),
     };
 
-    console.log(`parameters: ${parameters}`);
+    app.emitOutcomingEvent(new OutcomingEvent("ai.node.interface", parameters));
 
     const getNodeCodePromptFilled = defaults.prompt.nodeCode
       .replace("{{nodePrompt}}", event.prompt)
@@ -64,13 +64,16 @@ export class AddAiNodeRequestHandler implements AbstractRequestHandler<AddAiNode
       .map((x) => x.trim())
       .join("\n");
 
-    console.log(`getNodeCodePromptFilled: ${getNodeCodePromptFilled}`);
-
     const nodeCode = await app.promptAi(getNodeCodePromptFilled);
 
-    console.log(`nodeCode: ${nodeCode}`);
+    app.emitOutcomingEvent(new OutcomingEvent("ai.node.code", { code: nodeCode }));
+
+    const firstFunctionMatch = nodeCode.match(/function \w*/);
+    const functionName = firstFunctionMatch === null ? "<AI generated>" : firstFunctionMatch[0].split("function ")[1];
 
     const addAiNodeRequest = new AddNodeRequest("@d3s/repository-playground.ai");
+
+    addAiNodeRequest.name = functionName;
 
     addAiNodeRequest.input = {
       ...parameters.input,
@@ -80,5 +83,7 @@ export class AddAiNodeRequestHandler implements AbstractRequestHandler<AddAiNode
     addAiNodeRequest.output = parameters.output;
 
     await app.handle(addAiNodeRequest);
+
+    app.emitOutcomingEvent(new OutcomingEvent("ai.node.created", { name: functionName }));
   }
 }
