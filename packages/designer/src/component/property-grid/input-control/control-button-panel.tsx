@@ -1,14 +1,11 @@
-import { AddBindingRequest } from "@d3s/event";
-import { useAppSelector } from "../../../app/hooks";
-import { store } from "../../../app/store";
-import { socketClient } from "../../../service/socket-client-service";
-import { bindingSlice } from "../../../slice/binding-slice";
-import { BindType, ControlSignal, ControlSignalWithTypeAndNode } from "../control";
-import { TypeTag } from "./type-tag";
+import { SendSignalRequest } from "@d3s/event";
 import { viewPrefix } from "../../../domain/consts";
+import { socketClient } from "../../../service/socket-client-service";
+import { BindType, ControlSignal, ControlSignalWithTypeAndNode } from "../control";
 import { Serializor } from "./serializer";
+import { TypeTag } from "./type-tag";
 
-const styles: React.CSSProperties = { marginLeft: "4px", borderRadius: 0, borderWidth: "1px", visibility: "initial" };
+const styles: React.CSSProperties = { marginLeft: "4px", /* borderRadius: 0, borderWidth: "1px", visibility: "initial" */ };
 
 const PropertyControlButton = ({ onClick, onContextMenu, text, disabled, title, backgroundColor }: any) => {
   return (
@@ -35,8 +32,6 @@ export const ControlButtonPanel = (props: {
   onInvoke: (signal: ControlSignal) => void;
   onCustomView: (signal: ControlSignalWithTypeAndNode) => void;
 }) => {
-  const bindingStart = useAppSelector((state) => state.binding.bindingStart);
-
   const getEditText = (value: any, altKey: boolean = false) =>
     (value + "").startsWith(viewPrefix) ? (altKey ? "E" : "V") : altKey ? "V" : "E";
 
@@ -57,7 +52,7 @@ export const ControlButtonPanel = (props: {
         }}
         text={"\u25BA"}
         title="Signal (поссылка сигнала на сервер с текущим значением)"
-        backgroundColor={props.value === null ? "crimson" : ""}
+        backgroundColor={props.value === null ? "#fd5e7c" : ""}
       />
 
       <button
@@ -105,12 +100,23 @@ export const ControlButtonPanel = (props: {
         {getEditText(props.value)}
       </button>
 
-      <PropertyControlButton
+      {/* <PropertyControlButton
         onClick={() => {
           navigator.clipboard.writeText(props.value);
         }}
         text="C"
         title="Copy to clipboard"
+      /> */}
+      <PropertyControlButton
+        onClick={() => {
+          const dataString = prompt("Введите новое значение чтобы изменить тип данных:");
+          if (dataString !== null) {
+            const data = JSON.parse(dataString);
+            socketClient.send(new SendSignalRequest(props.nodeGuid, props.name, data));
+          }
+        }}
+        text="T"
+        title="Change type"
       />
       <PropertyControlButton
         onClick={() => {
@@ -119,39 +125,8 @@ export const ControlButtonPanel = (props: {
         text="L"
         title="Log to console"
       />
-      {bindingStart === undefined && props.bindType === "input" ? (
-        <PropertyControlButton
-          onClick={() => {
-            store.dispatch(
-              bindingSlice.actions.startBinding({
-                name: props.name,
-                type: props.type,
-                nodeGuid: props.nodeGuid,
-                value: props.value,
-              })
-            );
-          }}
-          text="B"
-          title="Bind start (начать привязку этого параметра к другому)"
-        />
-      ) : null}
 
-      {bindingStart !== undefined && props.bindType === "output" ? (
-        <PropertyControlButton
-          onClick={() => {
-            if (bindingStart)
-              socketClient.send(
-                new AddBindingRequest(props.nodeGuid, props.name, bindingStart.nodeGuid, bindingStart.name)
-              );
-            store.dispatch(bindingSlice.actions.endBinding());
-          }}
-          text="Be"
-          title="Bind end (привязать к этому параметру)"
-          disabled={props.type != bindingStart?.type}
-        />
-      ) : null}
-
-      <PropertyControlButton
+      {/* <PropertyControlButton
         onClick={() => {
           const channel = `${window.location.href}channel/root/${props.nodeGuid}/${props.bindType}/${props.name}`;
           navigator.clipboard.writeText(channel);
@@ -159,7 +134,7 @@ export const ControlButtonPanel = (props: {
         }}
         text="W"
         title="Watch mode (отдельное окно с отображением изменений данного параметра)"
-      />
+      /> */}
     </>
   );
 };

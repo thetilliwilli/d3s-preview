@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { dataCache } from "../../../service/data-cache";
 import { Control } from "../control";
 import { InputLabel } from "./input-label";
-import { VariantInputControl } from "./variant-input-control";
 import { Serializor } from "./serializer";
 import { TypeTag } from "./type-tag";
+import { VariantInputControl } from "./variant-input-control";
 
 const inputControlStyles: React.CSSProperties = { marginBottom: "4px", transition: "background-color 0.2s ease" };
 
@@ -43,7 +43,14 @@ export const InputControl = ({ control }: { control: Control }) => {
   if (value === undefined)
     return (
       <div style={inputControlStyles}>
-        <InputLabel name={control.name} type="raw" dataKey={control.dataKey} nodeGuid={control.nodeGuid} />
+        <InputLabel
+          name={control.name}
+          type={type}
+          dataKey={control.dataKey}
+          nodeGuid={control.nodeGuid}
+          bindType={control.bindType}
+          value={value}
+        />
         <input value={"dataKey#" + control.dataKey} type="text" disabled />
       </div>
     );

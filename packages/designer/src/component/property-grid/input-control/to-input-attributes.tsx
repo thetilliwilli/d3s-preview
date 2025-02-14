@@ -8,6 +8,10 @@ const titleTruncateLimit = 1000;
 const styles: React.CSSProperties = {
   borderRadius: 0,
   borderWidth: "1px",
+  width: "30%",
+  margin:0,
+  resize: "none",
+  overflow: "hidden",
 };
 
 export function toInputElement(
@@ -58,8 +62,9 @@ export function toInputElement(
   };
 
   switch (type) {
-    case "string":
-      return <textarea {...attributes} defaultValue={serializedValueAsStringLimited} style={{resize:"none", overflow: "hidden", borderRadius:0 }} rows={1}  />;
+    case "string": {
+      return <textarea {...attributes} defaultValue={serializedValueAsStringLimited} rows={1} />;
+    }
     case "number":
       return <input {...attributes} defaultValue={serializedValue} type="number" />;
     case "object":

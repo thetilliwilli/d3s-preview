@@ -39,7 +39,7 @@ export const VariantInputControl = forwardRef(
 
     return (
       <div style={inputControlStyles}>
-        <InputLabel name={props.name} type={props.type} dataKey={props.dataKey} nodeGuid={props.nodeGuid} />
+        <InputLabel name={props.name} type={props.type} dataKey={props.dataKey} nodeGuid={props.nodeGuid} bindType={props.bindType} value={props.value} />
         {inputElement}
         <ControlButtonPanel {...buttonProps} />
       </div>
