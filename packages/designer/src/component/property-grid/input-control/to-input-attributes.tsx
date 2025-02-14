@@ -6,15 +6,15 @@ import { viewPrefix } from "../../../domain/consts";
 const serializedValueSizeLimitBytes = 1 * 1000;
 const titleTruncateLimit = 1000;
 const viewColor = "rgb(3, 169, 244)";
-// const viewColorReadonly = "rgb(0, 101, 148)";
 
 const styles: React.CSSProperties = {
   borderRadius: 0,
   borderWidth: "1px",
-  width: "30%",
+  width: "50%",
   margin: 0,
   resize: "none",
   overflow: "hidden",
+  verticalAlign: "middle",
 };
 
 export function toInputElement(
@@ -82,6 +82,7 @@ export function toInputElement(
     //MEGAHACK
     case "object": {
       if (value === null) {
+        delete attributes.style.width;
         attributes.style.backgroundColor = "lightcoral";
         return (
           <button {...attributes} value={serializedValueAsStringLimited} type="button">
@@ -93,6 +94,7 @@ export function toInputElement(
       }
     }
     case "boolean":
+      delete attributes.style.width;
       return <input {...attributes} defaultChecked={serializedValue} type="checkbox" />;
   }
 }

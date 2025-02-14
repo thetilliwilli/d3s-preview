@@ -1,13 +1,10 @@
 import { DataKey } from "@d3s/state";
 import { forwardRef } from "react";
 import { BindType, ControlSignal, ControlSignalWithTypeAndNode } from "../control";
-// import { ControlButtonPanel } from "./control-button-panel";
 import { InputLabel } from "./input-label";
+import { Serializor } from "./serializer";
 import { toInputElement } from "./to-input-attributes";
 import { TypeTag } from "./type-tag";
-import { Serializor } from "./serializer";
-
-const inputControlStyles: React.CSSProperties = { marginBottom: "4px", transition: "background-color 0.2s ease" };
 
 export const VariantInputControl = forwardRef(
   (
@@ -55,31 +52,18 @@ export const VariantInputControl = forwardRef(
         }
       },
       (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        if(e.ctrlKey)
+        //HACK - для воссоздания несуществующего типа TypeTag = "action"
+        if (props.value === null) {
           props.onInvoke({ name: props.name, value: props.value });
-        // if (props.type === "action") {
-        //   props.onInvoke({ name: props.name, value: props.value });
-        // } else {
-        //   if (e.ctrlKey) {
-        //     props.onInvoke({ name: props.name, value: props.value });
-        //   }
-        // }
+        } else {
+          if (e.ctrlKey) {
+            props.onInvoke({ name: props.name, value: props.value });
+          }
+        }
       }
     );
-
-    // const buttonProps = {
-    //   name: props.name,
-    //   type: props.type,
-    //   value: props.value,
-    //   readonly: props.readonly,
-    //   bindType: props.bindType,
-    //   nodeGuid: props.nodeGuid,
-    //   onInvoke: props.onInvoke,
-    //   onCustomView: props.onCustomView,
-    // };
-
     return (
-      <div style={inputControlStyles}>
+      <div style={{ marginBottom: "4px", transition: "background-color 0.2s ease" }}>
         <InputLabel
           name={props.name}
           type={props.type}
@@ -89,7 +73,6 @@ export const VariantInputControl = forwardRef(
           value={props.value}
         />
         {inputElement}
-        {/* <ControlButtonPanel {...buttonProps} /> */}
       </div>
     );
   }

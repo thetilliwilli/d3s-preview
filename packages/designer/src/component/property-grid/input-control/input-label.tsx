@@ -37,7 +37,8 @@ export const InputLabel = ({
     .map((x) => x[1]);
   const isBound = connectedBindings.length > 0;
 
-  const typeLabel = `${type.slice(0, 3)}`;
+  //HACK for TagType = "action"
+  const typeLabel = value === null ? "act" : `${type.slice(0, 3)}`;
 
   return (
     <label
