@@ -1,7 +1,7 @@
 import { DataKey } from "@d3s/state";
 import { forwardRef } from "react";
 import { BindType, ControlSignal, ControlSignalWithTypeAndNode } from "../control";
-import { ControlButtonPanel } from "./control-button-panel";
+// import { ControlButtonPanel } from "./control-button-panel";
 import { InputLabel } from "./input-label";
 import { toInputElement } from "./to-input-attributes";
 import { TypeTag } from "./type-tag";
@@ -37,13 +37,6 @@ export const VariantInputControl = forwardRef(
         console.log(props.value);
       },
       (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        // console.log(props.value);
-
-        // console.log("ffffffffffffffffffff");
-        // const element: HTMLInputElement | null = window.document.querySelector(
-        //   `.propertyEditor form [name='${props.name}']`
-        // );
-        // const element: HTMLInputElement | null = e.target;
         const element = e.target as HTMLInputElement;
         if (element) {
           const serializer = new Serializor(props.type);
@@ -60,28 +53,30 @@ export const VariantInputControl = forwardRef(
             bindType: props.bindType,
           });
         }
+      },
+      (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        if(e.ctrlKey)
+          props.onInvoke({ name: props.name, value: props.value });
+        // if (props.type === "action") {
+        //   props.onInvoke({ name: props.name, value: props.value });
+        // } else {
+        //   if (e.ctrlKey) {
+        //     props.onInvoke({ name: props.name, value: props.value });
+        //   }
+        // }
       }
-      // (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-      //   if (props.type === "action") {
-      //     props.onInvoke({ name: props.name, value: props.value });
-      //   } else {
-      //     if (e.ctrlKey) {
-      //       props.onInvoke({ name: props.name, value: props.value });
-      //     }
-      //   }
-      // }
     );
 
-    const buttonProps = {
-      name: props.name,
-      type: props.type,
-      value: props.value,
-      readonly: props.readonly,
-      bindType: props.bindType,
-      nodeGuid: props.nodeGuid,
-      onInvoke: props.onInvoke,
-      onCustomView: props.onCustomView,
-    };
+    // const buttonProps = {
+    //   name: props.name,
+    //   type: props.type,
+    //   value: props.value,
+    //   readonly: props.readonly,
+    //   bindType: props.bindType,
+    //   nodeGuid: props.nodeGuid,
+    //   onInvoke: props.onInvoke,
+    //   onCustomView: props.onCustomView,
+    // };
 
     return (
       <div style={inputControlStyles}>
@@ -94,7 +89,7 @@ export const VariantInputControl = forwardRef(
           value={props.value}
         />
         {inputElement}
-        <ControlButtonPanel {...buttonProps} />
+        {/* <ControlButtonPanel {...buttonProps} /> */}
       </div>
     );
   }

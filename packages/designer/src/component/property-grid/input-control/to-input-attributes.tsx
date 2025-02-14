@@ -25,8 +25,8 @@ export function toInputElement(
   onChange: (signal: ControlSignal) => void,
   ref: React.ForwardedRef<any>,
   rightClick: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
-  doubleClick: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void
-  // click: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void
+  doubleClick: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
+  click: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void
 ) {
   const serializer = new Serializor(type);
 
@@ -71,7 +71,7 @@ export function toInputElement(
     ref: ref,
     onContextMenu: rightClick,
     onDoubleClick: doubleClick,
-    // onClick: click,
+    onClick: click,
   };
 
   switch (type) {
@@ -79,8 +79,19 @@ export function toInputElement(
       return <textarea {...attributes} defaultValue={serializedValueAsStringLimited} rows={1} />;
     case "number":
       return <input {...attributes} defaultValue={serializedValue} type="number" />;
-    case "object":
-      return <input {...attributes} defaultValue={serializedValueAsStringLimited} type="text" />;
+    //MEGAHACK
+    case "object": {
+      if (value === null) {
+        attributes.style.backgroundColor = "lightcoral";
+        return (
+          <button {...attributes} value={serializedValueAsStringLimited} type="button">
+            {"\u25BA"}
+          </button>
+        );
+      } else {
+        return <input {...attributes} defaultValue={serializedValueAsStringLimited} type="text" />;
+      }
+    }
     case "boolean":
       return <input {...attributes} defaultChecked={serializedValue} type="checkbox" />;
   }
