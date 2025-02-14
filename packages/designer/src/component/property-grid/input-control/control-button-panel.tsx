@@ -32,17 +32,17 @@ export const ControlButtonPanel = (props: {
   onInvoke: (signal: ControlSignal) => void;
   onCustomView: (signal: ControlSignalWithTypeAndNode) => void;
 }) => {
-  const getEditText = (value: any, altKey: boolean = false) =>
-    (value + "").startsWith(viewPrefix) ? (altKey ? "E" : "V") : altKey ? "V" : "E";
+  // const getEditText = (value: any, altKey: boolean = false) =>
+  //   (value + "").startsWith(viewPrefix) ? (altKey ? "E" : "V") : altKey ? "V" : "E";
 
-  const getEditTitle = (value: any, altKey: boolean = false) =>
-    (value + "").startsWith(viewPrefix)
-      ? altKey
-        ? "Edit (отдельное окно для редактирования кода)"
-        : "View (customView)"
-      : altKey
-      ? "View (customView)"
-      : "Edit (отдельное окно для редактирования кода)";
+  // const getEditTitle = (value: any, altKey: boolean = false) =>
+  //   (value + "").startsWith(viewPrefix)
+  //     ? altKey
+  //       ? "Edit (отдельное окно для редактирования кода)"
+  //       : "View (customView)"
+  //     : altKey
+  //     ? "View (customView)"
+  //     : "Edit (отдельное окно для редактирования кода)";
 
   return (
     <>
@@ -55,7 +55,7 @@ export const ControlButtonPanel = (props: {
         backgroundColor={props.value === null ? "#fd5e7c" : ""}
       />
 
-      <button
+      {/* <button
         tabIndex={-1}
         onClick={(e) => {
           const element: HTMLInputElement | null = window.document.querySelector(
@@ -98,7 +98,7 @@ export const ControlButtonPanel = (props: {
         }}
       >
         {getEditText(props.value)}
-      </button>
+      </button> */}
 
       {/* <PropertyControlButton
         onClick={() => {
@@ -107,7 +107,7 @@ export const ControlButtonPanel = (props: {
         text="C"
         title="Copy to clipboard"
       /> */}
-      <PropertyControlButton
+      {/* <PropertyControlButton
         onClick={() => {
           const dataString = prompt("Введите новое значение чтобы изменить тип данных:");
           if (dataString !== null) {
@@ -117,14 +117,14 @@ export const ControlButtonPanel = (props: {
         }}
         text="T"
         title="Change type"
-      />
-      <PropertyControlButton
+      /> */}
+      {/* <PropertyControlButton
         onClick={() => {
           console.log(props.value);
         }}
         text="L"
         title="Log to console"
-      />
+      /> */}
 
       {/* <PropertyControlButton
         onClick={() => {

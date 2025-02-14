@@ -1,4 +1,4 @@
-import { AddBindingRequest } from "@d3s/event";
+import { AddBindingRequest, SendSignalRequest } from "@d3s/event";
 import { DataKey } from "@d3s/state";
 import { useAppSelector } from "../../../app/hooks";
 import { store } from "../../../app/store";
@@ -7,14 +7,9 @@ import { bindingSlice } from "../../../slice/binding-slice";
 import { BindType } from "../control";
 import { TypeTag } from "./type-tag";
 
-const labelStyles: React.CSSProperties = {
-  display: "inline-block",
-  width: "45%",
-  textAlign: "left",
-  // marginLeft: "2%",
-};
-
-const typeLabelStyles: React.CSSProperties = { color: "grey", fontSize: ".7em" };
+// const typeLabelStyles: React.CSSProperties = { color: "grey", fontSize: ".7em" };
+const boundColor = "limegreen";
+const unboundColor = "rgb(240, 240, 240)";
 
 export const InputLabel = ({
   name,
@@ -44,80 +39,75 @@ export const InputLabel = ({
 
   const typeLabel = `${type.slice(0, 3)}`;
 
-  const labelButtonStyles: React.CSSProperties = {
-    margin: "0px 2% 0px 2%",
-    height: "12px",
-    width: "12px",
-    borderRadius: "0px",
-    border: "1px solid lightgrey" /* padding: "0px 12px 0px 12px" */,
-    backgroundColor: isBound ? "limegreen" : "rgb(240, 240, 240)",
-  };
-
-  const labelButton = bindingStart ? (
-    (() => {
-      const disabled = bindType !== "output" || type != bindingStart.type || nodeGuid === bindingStart.nodeGuid;
-      return (
-        <button
-          style={{
-            ...labelButtonStyles,
-            visibility: disabled ? "hidden" : "initial",
-          }}
-          title={
-            bindType === "output" && type != bindingStart.type
-              ? `Не может быть связан так как тип не совпадает: ${bindingStart.type} != ${type}`
-              : "Связать с этим параметром"
-          }
-          onClick={() => {
+  return (
+    <label
+      style={{
+        display: "inline-block",
+        width: "45%",
+        textAlign: "left",
+      }}
+    >
+      <button
+        style={{
+          margin: "0px 2% 0px 2%",
+          height: "12px",
+          width: "12px",
+          borderRadius: "0px",
+          border: "1px solid lightgrey",
+          backgroundColor: isBound ? boundColor : unboundColor,
+          visibility:
+            bindingStart && (bindType !== "output" || type != bindingStart.type || nodeGuid === bindingStart.nodeGuid)
+              ? "hidden"
+              : "initial",
+        }}
+        title={bindingStart ? "Связать с этим параметром" : "Нажмите чтобы начать привязку этого параметра к другому"}
+        onPointerEnter={(e) => {
+          e.currentTarget.style.backgroundColor = boundColor;
+        }}
+        onPointerLeave={(e) => {
+          e.currentTarget.style.backgroundColor = isBound ? boundColor : unboundColor;
+        }}
+        onClick={() => {
+          if (bindingStart) {
             const request = new AddBindingRequest(nodeGuid, name, bindingStart.nodeGuid, bindingStart.name);
             socketClient.send(request);
             store.dispatch(bindingSlice.actions.endBinding());
-          }}
-          onPointerEnter={(e) => {
-            if (disabled) return;
-            e.currentTarget.style.backgroundColor = "black";
-            e.currentTarget.style.color = "rgb(240, 240, 240)";
-          }}
-          onPointerLeave={(e) => {
-            if (disabled) return;
-            e.currentTarget.style.backgroundColor = "rgb(240, 240, 240)";
-            e.currentTarget.style.color = "black";
-          }}
-          disabled={disabled}
-        ></button>
-      );
-    })()
-  ) : (
-    <button
-      style={labelButtonStyles}
-      title="Нажмите чтобы начать привязку этого параметра к другому"
-      onPointerEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "black";
-        e.currentTarget.style.color = "rgb(240, 240, 240)";
-      }}
-      onPointerLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "rgb(240, 240, 240)";
-        e.currentTarget.style.color = "black";
-      }}
-      onClick={() => {
-        if (bindType === "input") {
-          store.dispatch(
-            bindingSlice.actions.startBinding({
-              name: name,
-              type: type,
-              nodeGuid: nodeGuid,
-              value: value,
-            })
-          );
-        }
-      }}
-    ></button>
-  );
-
-  return (
-    <label style={labelStyles}>
-      {labelButton}
+          } else {
+            if (bindType === "input") {
+              store.dispatch(
+                bindingSlice.actions.startBinding({
+                  name: name,
+                  type: type,
+                  nodeGuid: nodeGuid,
+                  value: value,
+                })
+              );
+            }
+          }
+        }}
+      ></button>
       {name}
-      <span style={typeLabelStyles}>{`${typeLabel} #${dataKey} `}</span>
+      <span
+        style={{ float: "right", color: "grey" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          const dataString = prompt("Введите новое значение, чтобы изменить тип данных:");
+          if (dataString !== null) {
+            const data = JSON.parse(dataString);
+            socketClient.send(new SendSignalRequest(nodeGuid, name, data));
+          }
+        }}
+        title="Сменить тип данных"
+        onPointerEnter={(e) => {
+          e.currentTarget.style.color = "#03a9f4";
+        }}
+        onPointerLeave={(e) => {
+          e.currentTarget.style.color = "grey";
+        }}
+      >
+        <span style={{ margin: "auto", fontSize: ".65em" }}>{`{${typeLabel}#${dataKey}}`}</span>
+      </span>
     </label>
   );
 };
