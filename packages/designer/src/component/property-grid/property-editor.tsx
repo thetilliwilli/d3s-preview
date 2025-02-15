@@ -43,7 +43,19 @@ function PropertyEditorButtonPanel({ nodeState }: { nodeState: NodeState }) {
     },
   };
   const buttons = Object.values(actions).map((action, i) => (
-    <button key={i} style={{ marginLeft: "25px", borderRadius: 0, borderWidth: "1px" }} onClick={action}>
+    <button
+    key={i}
+    style={{
+      marginLeft: "5%",
+      borderRadius: "0px",
+      border: "1px solid lightgrey",
+      padding: "0px 18px",
+      fontSize: "x-small",
+      verticalAlign: "middle",
+      color: "black",
+    }}
+    onClick={action}
+    >
       {action.name}
     </button>
   ));

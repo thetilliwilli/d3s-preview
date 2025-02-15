@@ -107,7 +107,7 @@ export const InputLabel = ({
           e.currentTarget.style.color = "grey";
         }}
       >
-        <span style={{ margin: "auto", fontSize: ".65em" }}>{`{${typeLabel}#${dataKey}}`}</span>
+        <span style={{ margin: "auto", fontSize: ".65em" }}>{`{${typeLabel}}`}</span>
       </span>
     </label>
   );
