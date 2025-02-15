@@ -49,7 +49,7 @@ class NetworkService {
       gridSize: 10,
       drawGrid: true,
       background: {
-        color: "rgba(128, 128, 128, 0.3)",
+        color: "rgb(227 229 237)",
       },
       cellViewNamespace: namespace,
       clickThreshold: 15, // для мобильных приложений

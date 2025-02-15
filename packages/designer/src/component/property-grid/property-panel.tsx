@@ -1,16 +1,6 @@
 import { Control } from "./control";
 import { InputControl } from "./input-control/input-control";
 
-const panelStyles: React.CSSProperties = {
-  border: "1px solid grey",
-  marginBottom: "2px",
-  width: "98%",
-  marginLeft: "auto",
-  marginRight: "auto",
-};
-
-const titleStyles: React.CSSProperties = { color: "grey", paddingLeft: "8px" };
-
 export const PropertyPanel = ({
   controls,
   type,
@@ -20,28 +10,32 @@ export const PropertyPanel = ({
   type: "input" | "state" | "output";
   addProperty: () => void;
 }) => (
-  <div style={panelStyles}>
-    <div style={titleStyles}>
-    {/* {type} */}
-    {type.toUpperCase()}
+  <div
+    style={{
+      border: "1px solid grey",
+      marginBottom: "2px",
+      width: "98%",
+      marginLeft: "auto",
+      marginRight: "auto",
+    }}
+  >
+    <div style={{ color: "grey", paddingLeft: "8px" }}>
+      {type.toUpperCase()}
 
       <button
         onClick={addProperty}
-        style={{ marginLeft:"5%", /* borderRadius:0, border:"1px solid" */ }}
-        // style={{ border: "0px", padding: "0px 12px 0px 12px" }}
-        // onPointerEnter={(e) => {
-        //   e.currentTarget.style.backgroundColor = "black";
-        //   e.currentTarget.style.color = "rgb(240, 240, 240)";
-        // }}
-        // onPointerLeave={(e) => {
-        //   e.currentTarget.style.backgroundColor = "rgb(240, 240, 240)";
-        //   e.currentTarget.style.color = "black";
-        // }}
+        style={{
+          marginLeft: "5%",
+          borderRadius: 0,
+          border: "1px solid lightgrey",
+          padding: "0px 18px 0px 18px",
+          fontSize: "x-small",
+          verticalAlign: "middle",
+          color: "black",
+        }}
       >
-        +
+        new
       </button>
-      
-      {/* {type[0].toUpperCase() + type.slice(1)} */}
     </div>
 
     <form
