@@ -5,7 +5,7 @@ import { viewPrefix } from "../../../domain/consts";
 
 const serializedValueSizeLimitBytes = 1 * 1000;
 const titleTruncateLimit = 1000;
-const viewColor = "rgb(3, 169, 244)";
+const viewColor = "dodgerblue";
 
 const styles: React.CSSProperties = {
   borderRadius: 0,

@@ -3,10 +3,11 @@ import { store } from "../../app/store";
 import { bindingService } from "../binding-service";
 import { NodeElement } from "./node-element";
 
-const strokeColor = "rgb(42,42,42)";
+const strokeColor = "grey";
 
 export function redrawNetwork(graph: dia.Graph) {
   const network = store.getState().network.network;
+  const selectedNodeGuid = store.getState().network.selectedNodes[0];
 
   graph.clear();
 
@@ -25,6 +26,7 @@ export function redrawNetwork(graph: dia.Graph) {
     rect.attr({
       body: {
         stroke: strokeColor,
+        fill: nodeGuid === selectedNodeGuid ? "dodgerblue" : undefined,
       },
       type: {
         text: typeText,

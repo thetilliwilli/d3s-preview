@@ -72,6 +72,7 @@ export const VariantInputControl = forwardRef(
           bindType={props.bindType}
           value={props.value}
         />
+        &nbsp;
         {inputElement}
       </div>
     );

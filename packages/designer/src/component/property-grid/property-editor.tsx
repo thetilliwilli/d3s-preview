@@ -127,7 +127,9 @@ export const PropertyEditor = () => {
     }
   };
 
-  const inputControls = Object.entries(selectedNode.input).map(
+  const inputControls = Object.entries(selectedNode.input)
+  .filter(([name])=>!name.startsWith("_"))
+  .map(
     ([name, dataKey]) =>
       new Control({
         name,
@@ -144,7 +146,9 @@ export const PropertyEditor = () => {
       })
   );
 
-  const stateControls = Object.entries(selectedNode.state).map(
+  const stateControls = Object.entries(selectedNode.state)
+  .filter(([name])=>!name.startsWith("_"))
+  .map(
     ([name, dataKey]) =>
       new Control({
         name,
@@ -154,7 +158,9 @@ export const PropertyEditor = () => {
       })
   );
 
-  const outputControls = Object.entries(selectedNode.output).map(
+  const outputControls = Object.entries(selectedNode.output)
+  .filter(([name])=>!name.startsWith("_"))
+  .map(
     ([name, dataKey]) =>
       new Control({
         name,
