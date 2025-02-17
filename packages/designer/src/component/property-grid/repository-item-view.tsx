@@ -13,13 +13,7 @@ export const RepositoryItemView = (props: any) => {
       style={styles}
       draggable
       onDragStart={(e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const shiftX = e.clientX - rect.left;
-        const shiftY = e.clientY - rect.top;
-        e.dataTransfer.setData(
-          dataTransferTypes.node,
-          JSON.stringify({ uri: props.uri, name: props.name, shiftX, shiftY })
-        );
+        e.dataTransfer.setData(dataTransferTypes.node, JSON.stringify({ uri: props.uri, name: props.name }));
       }}
     >
       <svg width={204} height={104} style={{ backgroundColor: "#0000" }}>

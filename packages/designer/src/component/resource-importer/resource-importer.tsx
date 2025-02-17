@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { socketClient } from "../../service/socket-client-service";
 import { ResourceImporterTile } from "./resource-importer-tile";
 import { keyboardService } from "../../service/keyboard";
+import { dataTransferTypes } from "../../domain/consts";
 
 const styles: React.CSSProperties = {
   zIndex: 2,
@@ -28,7 +29,7 @@ const styles: React.CSSProperties = {
 function isDndAllowed(item: { kind: string; type: string }): boolean {
   if (item.kind === "file") return true;
   if (item.kind === "string" && item.type === "text/plain") return true;
-  if (item.kind === "string" && item.type === "@d3s/node") return true;
+  if (item.kind === "string" && item.type === dataTransferTypes.node) return true;
 
   return false;
 }

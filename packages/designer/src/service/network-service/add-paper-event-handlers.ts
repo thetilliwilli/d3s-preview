@@ -1,11 +1,11 @@
 import { AddNodeRequest } from "@d3s/event";
+import { PositionState } from "@d3s/state";
 import { dia } from "@joint/core";
 import { store } from "../../app/store";
 import { networkSlice } from "../../slice/network-slice";
 import { uiSlice } from "../../slice/ui-slice";
 import { socketClient } from "../socket-client-service";
-import { PositionState } from "@d3s/state";
-import { dataTransferTypes } from "../../domain/consts";
+import { ImportService } from "./import-service";
 
 export function addPaperEventHandlers(paper: dia.Paper) {
   paper.on({
@@ -105,18 +105,18 @@ export function addPaperEventHandlers(paper: dia.Paper) {
   });
   paper.el.addEventListener("drop", (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
     // иначе не попадёт в ResourceImporter.dropListener
-    const { x, y } = paper.clientToLocalPoint(e.clientX, e.clientY);
-    const data = e.dataTransfer?.getData(dataTransferTypes.node);
-    if (data !== undefined && data !== "") {
-      e.stopPropagation();
-      console.log(data);
-      const node = JSON.parse(data);
-      const req = new AddNodeRequest(node.uri);
-      req.name = node.name;
-      req.position = new PositionState(x - node.shiftX, y - node.shiftY);
-      socketClient.send(req);
+    const request = ImportService.parse(e.dataTransfer);
+    
+    if (request) {
+      const { x, y } = paper.clientToLocalPoint(e.clientX, e.clientY);
+      (request as AddNodeRequest).position = new PositionState(x, y);
+      console.log(request);
+      socketClient.send(request);
     }
+
   });
   //#endregion
 }
