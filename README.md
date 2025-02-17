@@ -10,7 +10,8 @@
 **todo**
 
 ## examples
-![designer](docs/designer.png)
+![image](https://github.com/user-attachments/assets/f8a67bdc-78f3-49ac-9cef-7d7fb160c106)
+
 
 ## documentations
 [Wiki](https://github.com/thetilliwilli/d3s-preview/wiki)
