@@ -7,9 +7,8 @@ import { bindingSlice } from "../../../slice/binding-slice";
 import { BindType } from "../control";
 import { TypeTag } from "./type-tag";
 
-// const typeLabelStyles: React.CSSProperties = { color: "grey", fontSize: ".7em" };
 const boundColor = "limegreen";
-const unboundColor = "rgb(240, 240, 240)";
+const unboundColor = "white";
 
 export const InputLabel = ({
   name,
