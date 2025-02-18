@@ -14,7 +14,8 @@ export const fetchJson = new NodeBuilder()
   })
   .withHandlers({
     async fetch({ input, emit }) {
-      const init = eval(input.pre);
+      // специально добавлены скобки чтобы если передан json объект не упал eval('{}')
+      const init = eval(`(${input.pre})`);
       const fetchResponse = await fetch(input.url, init);
       const response = await fetchResponse.json();
       const result = eval(input.post);
