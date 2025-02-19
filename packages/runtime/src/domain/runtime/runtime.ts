@@ -42,6 +42,9 @@ export class Runtime extends EventEmitter {
     this.host.communication.incoming.on("/websocket/message", (appEvent: AbstractRequest) => {
       this.handle(appEvent);
     });
+    this.host.communication.incoming.on("/websocket/messageWait", (appEvent: AbstractRequest, callback) => {
+      this.handle(appEvent).then(callback);
+    });
     this.host.communication.incoming.on("/websocket/getNetworkState", (callback) => {
       callback(this.networkState);
     });

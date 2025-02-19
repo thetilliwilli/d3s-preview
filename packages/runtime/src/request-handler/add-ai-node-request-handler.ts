@@ -66,9 +66,11 @@ export class AddAiNodeRequestHandler implements AbstractRequestHandler<AddAiNode
 
     const nodeCode = await app.promptAi(getNodeCodePromptFilled);
 
-    app.emitOutcomingEvent(new OutcomingEvent("ai.node.code", { code: nodeCode }));
+    const codeWithOriginalPrompt = `/** ${event.prompt} */` + nodeCode;
 
-    const firstFunctionMatch = nodeCode.match(/function \w*/);
+    app.emitOutcomingEvent(new OutcomingEvent("ai.node.code", { code: codeWithOriginalPrompt }));
+
+    const firstFunctionMatch = codeWithOriginalPrompt.match(/function \w*/);
     const functionName = firstFunctionMatch === null ? "<AI generated>" : firstFunctionMatch[0].split("function ")[1];
 
     const addAiNodeRequest = new AddNodeRequest("@d3s/repository-playground.ai");
@@ -77,7 +79,7 @@ export class AddAiNodeRequestHandler implements AbstractRequestHandler<AddAiNode
 
     addAiNodeRequest.input = {
       ...parameters.input,
-      code: nodeCode,
+      code: codeWithOriginalPrompt,
     };
 
     addAiNodeRequest.output = parameters.output;

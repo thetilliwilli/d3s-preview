@@ -185,7 +185,7 @@ export const PropertyEditor = () => {
   );
 
   return (
-    <WinBox width={650} right={0} x="right" height="100%" background="grey" title="PropertyEditor" noClose={true}>
+    <WinBox width={window.innerWidth/2} right={0} x="right" height="100%" background="grey" title="PropertyEditor" noClose={true}>
       <div ref={ref} className="propertyEditor" style={styles}>
         <div style={titleStyles}>{title}</div>
         <PropertyEditorButtonPanel nodeState={selectedNode} />

@@ -6,7 +6,7 @@ export interface BindingControlProps {
 }
 
 const invokeStyles: React.CSSProperties = {
-  backgroundColor: "crimson",
+  backgroundColor: "lightcoral",
   border: "1px solid black",
 };
 
@@ -23,7 +23,7 @@ export function BindingControl(props: BindingControlProps) {
             props.onDelete();
           }}
         >
-          X
+          &times;
         </button>
       </td>
     </tr>

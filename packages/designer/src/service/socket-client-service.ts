@@ -54,6 +54,14 @@ class SocketClientService extends EventEmitter {
     else this.socket.send(message);
   }
 
+  async sendWait(message: any): Promise<any> {
+    return new Promise((resolve, _reject) => {
+      this.socket.emit("messageWait", message, (response: any) => {
+        resolve(response);
+      });
+    });
+  }
+
   async getData(key: DataKey): Promise<any> {
     return new Promise((resolve, _reject) => {
       this.socket.emit("/getData", key, (response: any) => {

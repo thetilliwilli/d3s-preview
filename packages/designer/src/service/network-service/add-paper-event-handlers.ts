@@ -9,10 +9,6 @@ import { ImportService } from "./import-service";
 
 export function addPaperEventHandlers(paper: dia.Paper) {
   paper.on({
-    all: (...args: any[]) => {
-      if (store.getState().ui.isDebugging) console.log(...args);
-    },
-
     // createPropertyEditor - создаем проперти эдитор и показываем свойства выделенного нода
     "element:pointerclick": (elementView) => {
       const nodeGuid = elementView.model.attributes.id;
@@ -29,11 +25,12 @@ export function addPaperEventHandlers(paper: dia.Paper) {
     "blank:pointerclick": (_event) => {
       store.dispatch(networkSlice.actions.clearSelection());
       store.dispatch(uiSlice.actions.clearBindingSelection());
+      store.dispatch(uiSlice.actions.hideOmnibox());
     },
 
     // добавляем новый нод в нетворк
     "blank:pointerdblclick": (_event, x, y) => {
-      const nodeUri = prompt("nodeUri") || "";
+      const nodeUri = "@d3s/repository-playground.js";
       const addEvent = new AddNodeRequest(nodeUri);
       addEvent.position = new PositionState(x, y);
       if (nodeUri !== null) socketClient.send(addEvent);
@@ -109,14 +106,13 @@ export function addPaperEventHandlers(paper: dia.Paper) {
 
     // иначе не попадёт в ResourceImporter.dropListener
     const request = ImportService.parse(e.dataTransfer);
-    
+
     if (request) {
       const { x, y } = paper.clientToLocalPoint(e.clientX, e.clientY);
       (request as AddNodeRequest).position = new PositionState(x, y);
       console.log(request);
       socketClient.send(request);
     }
-
   });
   //#endregion
 }

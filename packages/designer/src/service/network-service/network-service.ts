@@ -10,6 +10,7 @@ import { socketClient } from "../socket-client-service";
 import { addPaperEventHandlers } from "./add-paper-event-handlers";
 import { redrawNetwork } from "./redraw-network";
 import { NodeElement } from "./node-element";
+import { uiSlice } from "../../slice/ui-slice";
 
 class NetworkService {
   private graph = new dia.Graph({}, { cellNamespace: shapes });
@@ -128,6 +129,7 @@ class NetworkService {
         }
       }
     });
+
     keyboardService.on("KeyA", (event: KeyboardEvent) => {
       if (event.ctrlKey === false) return;
       event.preventDefault();
@@ -162,6 +164,15 @@ class NetworkService {
         req.output = typedNodeState.output;
         socketClient.send(req);
       }
+    });
+
+    keyboardService.on("Space", async (_event) => {
+      const showOmnibox = store.getState().ui.showOmnibox;
+      const action = showOmnibox ? uiSlice.actions.hideOmnibox() : uiSlice.actions.showOmnibox();
+      //hack чтобы обойти в omnibox встаку первого пробела
+      setTimeout(() => {
+        store.dispatch(action);
+      });
     });
   }
 }

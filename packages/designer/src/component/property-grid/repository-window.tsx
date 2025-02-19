@@ -40,12 +40,36 @@ export const RepositoryWindow = () => {
   ));
 
   return (
-    <WinBox width={500} x="left" height="100%" background="grey" title="Repository" min={true}>
+    <WinBox
+      x={100}
+      y={400}
+      width={window.screen.width - 200}
+      height={320}
+      background="grey"
+      title="Repository"
+      min={true}
+      noFull
+      noClose
+      noMax
+    >
       <div>
-        <button onClick={addNodes}>+</button>
+        <button
+          style={{
+            marginLeft: "1%",
+            borderRadius: 0,
+            border: "1px solid lightgrey",
+            padding: "0px 18px 0px 18px",
+            fontSize: "x-small",
+            verticalAlign: "middle",
+            color: "black",
+          }}
+          onClick={addNodes}
+        >
+          add
+        </button>
       </div>
-      <div>{categoryTabs}</div>
-      <div style={{ marginTop: "12px", height: "80vh", overflow: "auto" }}>{items}</div>
+      <div style={{ padding: "4px" }}>{categoryTabs}</div>
+      <div style={{ marginTop: "12px", height: "220px", overflow: "auto" }}>{items}</div>
     </WinBox>
   );
 };

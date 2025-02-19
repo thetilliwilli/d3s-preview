@@ -86,6 +86,11 @@ export class NodeHost {
         this.communication.incoming.emit("/websocket/message", appEvent);
       });
 
+      socket.on("messageWait", (appEvent: AbstractRequest, callback) => {
+        // hack: дублирование кода как в express.post()
+        this.communication.incoming.emit("/websocket/messageWait", appEvent, callback);
+      });
+
       socket.on("/getData", (dataKey, callback) => {
         this.communication.incoming.emit("/websocket/getDataByDataKey", dataKey, callback);
       });
