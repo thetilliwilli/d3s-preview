@@ -3,7 +3,10 @@ import { useState } from "react";
 import { EditViewWindowOptions } from "../../domain/edit-view-window-options";
 import { socketClient } from "../../service/socket-client-service";
 
-export function CreateAiCode(props: { options: EditViewWindowOptions, onCodeGenerated:(options:EditViewWindowOptions)=>void }) {
+export function CreateAiCode(props: {
+  options: EditViewWindowOptions;
+  onCodeGenerated: (options: EditViewWindowOptions) => void;
+}) {
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +39,7 @@ export function CreateAiCode(props: { options: EditViewWindowOptions, onCodeGene
                   await socketClient.send(
                     new SendSignalRequest(props.options.nodeGuid, props.options.name, code, "input")
                   );
+                  props.onCodeGenerated({ ...props.options, value: code });
                 }
               } finally {
                 setIsLoading(false);

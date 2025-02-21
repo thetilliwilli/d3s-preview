@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import WinBox from "react-winbox";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { EditViewWindowOptions } from "../../domain/edit-view-window-options";
 import { uiSlice } from "../../slice/ui-slice";
 import { CreateAiCode } from "./create-ai-code";
 
@@ -25,8 +26,14 @@ export function EditViewWindow() {
         dispatch(uiSlice.actions.destroyEditViewWindow());
       }}
     >
-      <CreateAiCode options={options} onCodeGenerated={() => {}} />
+      <CreateAiCode
+        options={options}
+        onCodeGenerated={(newOptions: EditViewWindowOptions) => {
+          dispatch(uiSlice.actions.createEditViewWindow(newOptions));
+        }}
+      />
       <iframe
+        key={options.value}
         ref={iframeRef}
         src="editor.html"
         onLoad={() => {
