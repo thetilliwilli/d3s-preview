@@ -1,9 +1,9 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { TypeTag } from "../component/property-grid/input-control/type-tag";
+import { EditViewWindowOptions } from "../domain/edit-view-window-options";
 
 interface InitialState {
   selectedBindings: string[];
-  editViewWindowOptions: { name: string; value: any; type: TypeTag; nodeGuid: string; nodeName: string } | undefined;
+  editViewWindowOptions: EditViewWindowOptions | undefined;
   showOmnibox: boolean;
 }
 
@@ -23,10 +23,7 @@ export const uiSlice = createSlice({
     clearBindingSelection(state) {
       state.selectedBindings = [];
     },
-    createEditViewWindow(
-      state,
-      action: PayloadAction<{ name: string; value: any; type: TypeTag; nodeGuid: string; nodeName: string }>
-    ) {
+    createEditViewWindow(state, action: PayloadAction<EditViewWindowOptions>) {
       state.editViewWindowOptions = action.payload;
     },
     destroyEditViewWindow(state) {

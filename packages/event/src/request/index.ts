@@ -45,6 +45,13 @@ export class AddAiNodeRequest extends AbstractRequest {
   }
 }
 
+export class GenerateAiCodeRequest extends AbstractRequest {
+  public type = "GenerateAiCodeRequest" as const;
+  constructor(public prompt: string, public language: "html") {
+    super();
+  }
+}
+
 export class AddRepositoryItemsRequest extends AbstractRequest {
   public type = "AddRepositoryItemsRequest" as const;
   constructor(public nodeUris: string[]) {

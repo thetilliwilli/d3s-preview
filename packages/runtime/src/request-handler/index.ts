@@ -12,3 +12,4 @@ export * from "../request-handler/update-meta-request-handler.js";
 export * from "../request-handler/active-node-request-handler.js";
 export * from "../request-handler/invoke-node-request-handler.js";
 export * from "../request-handler/add-ai-node-request-handler.js";
+export * from "../request-handler/generate-ai-code-request-handler.js";
