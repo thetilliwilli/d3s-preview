@@ -16,6 +16,7 @@ export function EditViewWindow() {
 
   return (
     <WinBox
+      id="edit-view-window"
       width={600}
       height={600}
       x={0}
@@ -26,20 +27,26 @@ export function EditViewWindow() {
         dispatch(uiSlice.actions.destroyEditViewWindow());
       }}
     >
-      <CreateAiCode
-        options={options}
-        onCodeGenerated={(newOptions: EditViewWindowOptions) => {
-          dispatch(uiSlice.actions.createEditViewWindow(newOptions));
-        }}
-      />
-      <iframe
-        key={options.value}
-        ref={iframeRef}
-        src="editor.html"
-        onLoad={() => {
-          iframeRef.current?.contentWindow?.postMessage({ ...options, messageType: "edit" });
-        }}
-      ></iframe>
+      <div style={{ display: "flex", flexDirection: "column", height:"100%" }}>
+        <div style={{ flex: 1, padding: "8px" }}>
+          <CreateAiCode
+            options={options}
+            onCodeGenerated={(newOptions: EditViewWindowOptions) => {
+              dispatch(uiSlice.actions.createEditViewWindow(newOptions));
+            }}
+          />
+        </div>
+        <div style={{ flex: 11 }}>
+          <iframe
+            key={options.value}
+            ref={iframeRef}
+            src="editor.html"
+            onLoad={() => {
+              iframeRef.current?.contentWindow?.postMessage({ ...options, messageType: "edit" });
+            }}
+          ></iframe>
+        </div>
+      </div>
     </WinBox>
   );
 }

@@ -27,9 +27,11 @@ export function CreateAiCode(props: {
       {prompt.trim() !== "" && (
         <div>
           <button
+            disabled={isLoading}
             onClick={async () => {
               setIsLoading(true);
               try {
+                // await new Promise((r, _) => setTimeout(r, 5000));
                 const response = await socketClient.sendWait(new GenerateAiCodeRequest(prompt, "html"));
                 console.log("aicodegen.result:", response);
                 if (response.error) setError(response.error);
@@ -56,15 +58,17 @@ export function CreateAiCode(props: {
                 : "none",
             }}
             onPointerEnter={(e) => {
+              if (isLoading) return;
               e.currentTarget.style.backgroundColor = "dodgerblue";
               e.currentTarget.style.color = "white";
             }}
             onPointerLeave={(e) => {
+              if (isLoading) return;
               e.currentTarget.style.backgroundColor = "white";
               e.currentTarget.style.color = "dodgerblue";
             }}
           >
-            aigen
+            сгенерировать
           </button>
           <span>{isLoading ? " генерируем код. подождите..." : ""}</span>
           <span style={{ backgroundColor: "lightcoral" }}>{error ? `ошибка:${error}` : ""}</span>

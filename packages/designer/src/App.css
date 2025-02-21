@@ -17,3 +17,7 @@ body,
   border-radius: 0;
   border-color: crimson;
 }
+
+#edit-view-window .wb-body {
+  overflow: hidden;
+}

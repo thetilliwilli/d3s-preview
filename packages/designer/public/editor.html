@@ -52,6 +52,7 @@
                         language: defaultLanguage,
                         theme: 'vs-dark',
                         automaticLayout: true,
+                        minimap: { enabled: false },
                     });
                     editor.onDidChangeModelContent((...args) => {
                         // console.log("newValue: ", editor.getModel().getValue());
