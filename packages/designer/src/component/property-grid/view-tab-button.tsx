@@ -5,7 +5,7 @@ export function ViewTabButton(props: PropsWithChildren<{ onClick: () => void; na
     <button
       style={{
         flex: 1,
-        marginLeft: "5%",
+        margin: "0 1% 0 1%",
         backgroundColor: props.active ? "dodgerblue" : "initial",
         borderTopLeftRadius: "8px",
         borderTopRightRadius: "8px",
