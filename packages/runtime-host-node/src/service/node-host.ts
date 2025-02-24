@@ -95,6 +95,10 @@ export class NodeHost {
         this.communication.incoming.emit("/websocket/getDataByDataKey", dataKey, callback);
       });
 
+      socket.on("/getDatakeyValues", (dataKeys, callback) => {
+        this.communication.incoming.emit("/websocket/getDatakeyValues", dataKeys, callback);
+      });
+
       socket.on("disconnect", (reason) => {
         this.outcomingEventLog({
           name: "socket.connection",

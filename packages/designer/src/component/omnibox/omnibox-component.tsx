@@ -84,7 +84,7 @@ export const OmniboxComponent = () => {
               color: "dodgerblue",
               background: isAiGeneration
                 ? "center / contain no-repeat url(circular_progress_indicator_selective.gif)"
-                : "none",
+                : "white",
             }}
             onPointerEnter={(e) => {
               e.currentTarget.style.backgroundColor = "dodgerblue";

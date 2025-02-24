@@ -1,13 +1,14 @@
-import { store } from "../app/store";
-import { uiSlice } from "../slice/ui-slice";
+import { dataCache } from "./data-cache";
+import { socketClient } from "./socket-client-service";
 
 export class DeveloperTools {
   constructor(public paper: any, public graph: any) {}
 
-  enableDebugging() {
-    store.dispatch(uiSlice.actions.enableDebugging());
+  get dataCache() {
+    return dataCache;
   }
-  disableDebugging() {
-    store.dispatch(uiSlice.actions.disableDebugging());
+
+  get socketClient() {
+    return socketClient;
   }
 }

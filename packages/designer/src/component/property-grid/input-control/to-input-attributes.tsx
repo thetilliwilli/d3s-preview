@@ -1,7 +1,6 @@
 import { ControlSignal } from "../control";
 import { TypeTag } from "./type-tag";
 import { Serializor } from "./serializer";
-import { viewPrefix } from "../../../domain/consts";
 
 const serializedValueSizeLimitBytes = 1 * 1000;
 const titleTruncateLimit = 1000;
@@ -55,7 +54,7 @@ export function toInputElement(
         )} KB-----\n${serializedValueAsString.slice(0, titleTruncateLimit)}...`
       : serializedValueAsString;
 
-  const isView = (value + "").trim().startsWith(viewPrefix);
+  const isView = name.startsWith("@");
   const readOnly = isSizeLimitOverflow ? true : readonly;
   const backgroundColor = readOnly ? (isView ? viewColor : "rgb(240,240,240)") : isView ? viewColor : "initial";
 

@@ -75,6 +75,14 @@ class SocketClientService extends EventEmitter {
       store.dispatch(networkSlice.actions.replaceState(networkState));
     });
   }
+
+  async getDatakeyValues(keys: DataKey[]): Promise<{ dataKey: DataKey; value: any }[]> {
+    return new Promise((resolve, _reject) => {
+      this.socket.emit("/getDatakeyValues", keys, (response: any) => {
+        resolve(response);
+      });
+    });
+  }
 }
 
 export const socketClient = new SocketClientService();

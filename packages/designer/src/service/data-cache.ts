@@ -10,7 +10,6 @@ export class DataCache {
   }
 
   on(dataKey: DataKey, listener: (data: unknown) => void) {
-
     socketClient.channelOn(eventNames.data, (dataKeyValue: { key: DataKey; value: unknown }) => {
       if (dataKey === dataKeyValue.key) {
         this.entries.set(dataKey, dataKeyValue.value);
@@ -31,6 +30,25 @@ export class DataCache {
   off(dataKey: DataKey, listener: (data: any) => void) {
     const channel = `${eventNames.data}/${dataKey}`;
     socketClient.channelOff(channel, listener);
+  }
+
+  async getDatakeyValuesAsync(dataKeys: DataKey[]) {
+    const cachedValues = dataKeys
+      .map((dataKey) => ({
+        dataKey,
+        value: this.entries.get(dataKey),
+      }))
+      .filter((x) => x.value !== undefined);
+
+    const missedDataKeys = dataKeys.filter((x) => !this.entries.has(x));
+
+    const missedValues = await socketClient.getDatakeyValues(missedDataKeys);
+
+    missedValues.forEach(({ dataKey, value }) => this.entries.set(dataKey, value));
+
+    const result = missedValues.concat(cachedValues);
+
+    return result;
   }
 }
 

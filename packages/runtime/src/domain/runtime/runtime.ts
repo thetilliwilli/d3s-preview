@@ -52,6 +52,13 @@ export class Runtime extends EventEmitter {
       const data = this.data.get(dataKey);
       callback(data);
     });
+    this.host.communication.incoming.on("/websocket/getDatakeyValues", (dataKeys, callback) => {
+      const data = dataKeys.map((dataKey: number) => ({
+        dataKey,
+        value: this.data.get(dataKey),
+      }));
+      callback(data);
+    });
     this.host.communication.incoming.on("/stdin/request", (request) => {
       this.handle(request);
     });
