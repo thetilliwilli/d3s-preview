@@ -38,5 +38,5 @@ export function InlineView(props: {
     frameWindow.document.write(htmlContent);
   }, [htmlContent, useEffectKey]);
 
-  return <iframe key={view.name} style={{ width: "100%", height: "80vh", overflow: "auto" }} ref={ref}></iframe>;
+  return <iframe key={view.name} style={{ width: "100%", height: "90vh", overflow: "auto" }} ref={ref}></iframe>;
 }

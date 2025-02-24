@@ -13,7 +13,7 @@ export const PropertyPanel = ({
   <div
     style={{
       border: "1px solid grey",
-      marginBottom: "2px",
+      marginTop: "2px",
       width: "98%",
       marginLeft: "auto",
       marginRight: "auto",
