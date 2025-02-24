@@ -11,7 +11,7 @@ interface InitialState {
 const initialState: InitialState = {
   selectedBindings: [],
   editViewWindowOptions: undefined,
-  showOmnibox: false,
+  showOmnibox: true,
   showRepositoryWindow: false,
 };
 
