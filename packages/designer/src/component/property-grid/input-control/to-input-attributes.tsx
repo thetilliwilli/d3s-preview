@@ -69,13 +69,14 @@ export function toInputElement(
     onChange: (event: any) => onChange({ name: name, value: serializer.deserialize(event.target[targetProperty]) }),
     ref: ref,
     onContextMenu: rightClick,
-    onDoubleClick: doubleClick,
     onClick: click,
   };
 
   switch (type) {
     case "string":
-      return <textarea {...attributes} defaultValue={serializedValueAsStringLimited} rows={1} />;
+      return (
+        <textarea {...attributes} defaultValue={serializedValueAsStringLimited} rows={1} onDoubleClick={doubleClick} />
+      );
     case "number":
       return <input {...attributes} defaultValue={serializedValue} type="number" />;
     //MEGAHACK
@@ -89,7 +90,14 @@ export function toInputElement(
           </button>
         );
       } else {
-        return <input {...attributes} defaultValue={serializedValueAsStringLimited} type="text" />;
+        return (
+          <input
+            {...attributes}
+            defaultValue={serializedValueAsStringLimited}
+            type="text"
+            onDoubleClick={doubleClick}
+          />
+        );
       }
     }
     case "boolean":

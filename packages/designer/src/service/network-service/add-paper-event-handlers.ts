@@ -11,12 +11,14 @@ export function addPaperEventHandlers(paper: dia.Paper) {
   paper.on({
     // createPropertyEditor - создаем проперти эдитор и показываем свойства выделенного нода
     "element:pointerclick": (elementView) => {
+      store.dispatch(uiSlice.actions.hideOmnibox());
       const nodeGuid = elementView.model.attributes.id;
       store.dispatch(networkSlice.actions.selectNode(nodeGuid));
     },
 
     // открываем редактор байндингов: где можно удалить байдинги
     "link:pointerclick": (link) => {
+      store.dispatch(uiSlice.actions.hideOmnibox());
       const bindingGuids = link.model.attributes.bindings.map((x: any) => x.guid);
       store.dispatch(uiSlice.actions.selectBinding(bindingGuids));
     },

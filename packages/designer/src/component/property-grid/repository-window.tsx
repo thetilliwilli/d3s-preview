@@ -8,6 +8,7 @@ import { useState } from "react";
 export const RepositoryWindow = () => {
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
   const repository = useAppSelector((state) => state.network.network.repository);
+  const showRepositoryWindow = useAppSelector((state) => state.ui.showRepositoryWindow);
   const categories = [...new Set(Object.values(repository).map((x) => x.category))];
   const selectedCategory = categories[selectedCategoryIndex];
 
@@ -47,7 +48,7 @@ export const RepositoryWindow = () => {
       height={320}
       background="grey"
       title="Repository"
-      min={true}
+      min={!showRepositoryWindow}
       noFull
       noClose
       noMax

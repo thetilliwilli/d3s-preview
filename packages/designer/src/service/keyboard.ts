@@ -5,6 +5,7 @@ class KeyboardService extends EventEmitter {
     super();
 
     window.document.addEventListener("keydown", (event) => {
+      this.emit("*", event);
       this.emit(event.code, event);
     });
   }

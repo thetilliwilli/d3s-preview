@@ -212,7 +212,7 @@ export class NodeHost {
 
     app.get("/data/:nodeGuid/:scope/:property", (req, res) => {
       this.communication.incoming.emit("/rest/getData", {
-        params: req.body,
+        params: req.params,
         returnData: (data: any) => {
           res.type("application/json");
           res.send(JSON.stringify(data));

@@ -57,6 +57,7 @@ export const OmniboxComponent = () => {
             flex: 11,
             width: "100%",
             borderRadius: 0,
+            borderColor:"dodgerblue",
             fontSize: `${textSize}px`,
             height: `${textareaHeight}px`,
             resize: "none",
@@ -121,7 +122,15 @@ export const OmniboxComponent = () => {
         )}
       </div>
       {items.length > 0 && (
-        <div style={{ overflow: "auto", height:"50%" }}>
+        <div
+          style={{
+            overflow: "auto",
+            height: "50%",
+            backgroundColor: "rgb(227, 229, 237)",
+            backgroundImage: "radial-gradient(black 0.5px, transparent 0)",
+            backgroundSize: "10px 10px",
+          }}
+        >
           <div style={{ margin: "0px auto 0px auto", width: "80%" }}>{items}</div>
         </div>
       )}

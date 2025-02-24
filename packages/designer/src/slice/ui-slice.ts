@@ -5,12 +5,14 @@ interface InitialState {
   selectedBindings: string[];
   editViewWindowOptions: EditViewWindowOptions | undefined;
   showOmnibox: boolean;
+  showRepositoryWindow: boolean;
 }
 
 const initialState: InitialState = {
   selectedBindings: [],
   editViewWindowOptions: undefined,
   showOmnibox: false,
+  showRepositoryWindow: false,
 };
 
 export const uiSlice = createSlice({
@@ -34,6 +36,12 @@ export const uiSlice = createSlice({
     },
     hideOmnibox(state) {
       state.showOmnibox = false;
+    },
+    showRepositoryWindow(state) {
+      state.showRepositoryWindow = true;
+    },
+    hideRepositoryWindow(state) {
+      state.showRepositoryWindow = false;
     },
   },
 });

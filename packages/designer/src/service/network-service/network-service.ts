@@ -100,7 +100,7 @@ class NetworkService {
       }
     });
 
-    keyboardService.on("Slash", () => {
+    keyboardService.on("KeyF", () => {
       const promptResult = prompt("Find node by guid or name:");
       const guidOrName = (promptResult || "").trim().toLowerCase();
       if (guidOrName !== "") {
@@ -166,13 +166,19 @@ class NetworkService {
       }
     });
 
-    keyboardService.on("Space", async (_event) => {
+    keyboardService.on("Space", (_event: KeyboardEvent) => {
+      const showRepositoryWindow = store.getState().ui.showRepositoryWindow;
+      const action = showRepositoryWindow ? uiSlice.actions.hideRepositoryWindow() : uiSlice.actions.showRepositoryWindow();
+      store.dispatch(action);
+    });
+
+    keyboardService.on("*", (event: KeyboardEvent) => {
+      console.log(event);
+      const isWordSymbol = event.key.length === 1 && (event.key[0].toLowerCase().match(/[a-zA-Z]/) || []).length > 0;
+      if (event.ctrlKey || !isWordSymbol) return;
       const showOmnibox = store.getState().ui.showOmnibox;
       const action = showOmnibox ? uiSlice.actions.hideOmnibox() : uiSlice.actions.showOmnibox();
-      //hack чтобы обойти в omnibox встаку первого пробела
-      setTimeout(() => {
-        store.dispatch(action);
-      });
+      store.dispatch(action);
     });
   }
 }
