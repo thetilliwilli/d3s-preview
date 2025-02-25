@@ -12,8 +12,9 @@ export const ai = new NodeBuilder()
   })
   .withHandlers({
     async run({ state, input, signal, instance, emit }) {
-      const funcInvokation = await eval(`(${input.code})`);
+      const funcInvokation = eval(`(${input.code})`);
       const results = await funcInvokation(input);
+      emit("done", null);
       for (const [name, value] of Object.entries(results)) {
         emit(name as any, value);
       }

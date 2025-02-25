@@ -1,13 +1,12 @@
+import { AddAiNodeRequest, AddNodeRequest } from "@d3s/event";
 import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { socketClient } from "../../service/socket-client-service";
 import { uiSlice } from "../../slice/ui-slice";
 import { RepositoryItemView } from "../property-grid/repository-item-view";
-import { socketClient } from "../../service/socket-client-service";
-import { AddAiNodeRequest } from "@d3s/event";
 
 const textSize = 14;
 const aiButtonOriginalText = "AI";
-const aiButtonGenerationText = "AI...";
 
 function calcHeight(n: number) {
   return (n + 0.5) * textSize + textSize;
@@ -24,8 +23,11 @@ export const OmniboxComponent = () => {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const [aiGeneratedRepositoryItemElement, setAiGeneratedRepositoryItemElement] = useState<JSX.Element | null>(null);
+
   useEffect(() => {
     textareaRef.current?.focus();
+    if (showOmnibox === false) setSearch("");
   }, [showOmnibox]);
 
   if (!showOmnibox) return null;
@@ -36,7 +38,11 @@ export const OmniboxComponent = () => {
       ? []
       : Object.values(repository)
           .filter((x) => [x.uri].join("").includes(searchTrimmed))
-          .map((x) => <RepositoryItemView key={x.uri} {...x} />);
+          .map((x) => {
+            const addNodeRequest = new AddNodeRequest(x.uri);
+            addNodeRequest.name = x.name;
+            return <RepositoryItemView key={x.uri} addNodeRequest={addNodeRequest} description={x.description} />;
+          });
 
   return (
     <div
@@ -57,7 +63,7 @@ export const OmniboxComponent = () => {
             flex: 11,
             width: "100%",
             borderRadius: 0,
-            borderColor:"dodgerblue",
+            borderColor: "dodgerblue",
             fontSize: `${textSize}px`,
             height: `${textareaHeight}px`,
             resize: "none",
@@ -96,23 +102,17 @@ export const OmniboxComponent = () => {
               e.currentTarget.style.color = "dodgerblue";
             }}
             title="Сгенерировать с помощью ИИ"
-            onClick={async (e) => {
+            onClick={async () => {
               const prompt = search;
               setIsAiGeneration(true);
-              let timer: ReturnType<typeof setInterval> | undefined = undefined;
               try {
-                timer = setInterval(() => {
-                  const seconds = new Date().getSeconds();
-                  e.currentTarget.innerText = aiButtonGenerationText.slice(
-                    0,
-                    (seconds % aiButtonGenerationText.length) + 1
-                  );
-                }, 1000);
-
                 const response = await socketClient.sendWait(new AddAiNodeRequest(prompt));
                 console.log("ai result:", response);
+                const aiGeneratedRepositoryItemElement = (
+                  <RepositoryItemView addNodeRequest={response.result} description="" />
+                );
+                setAiGeneratedRepositoryItemElement(aiGeneratedRepositoryItemElement);
               } finally {
-                clearInterval(timer);
                 setIsAiGeneration(false);
               }
             }}
@@ -135,6 +135,7 @@ export const OmniboxComponent = () => {
         </div>
       )}
       {isAiGeneration && <div>отправлен запрос на генерацию ИИ нода</div>}
+      {aiGeneratedRepositoryItemElement}
     </div>
   );
 };

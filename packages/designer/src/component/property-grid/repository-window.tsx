@@ -1,5 +1,5 @@
 import WinBox from "react-winbox";
-import { AddRepositoryItemsRequest } from "@d3s/event";
+import { AddNodeRequest, AddRepositoryItemsRequest } from "@d3s/event";
 import { useAppSelector } from "../../app/hooks";
 import { socketClient } from "../../service/socket-client-service";
 import { RepositoryItemView } from "./repository-item-view";
@@ -14,7 +14,11 @@ export const RepositoryWindow = () => {
 
   const items = Object.values(repository)
     .filter((x) => x.category === selectedCategory)
-    .map((x) => <RepositoryItemView key={x.uri} {...x} />);
+    .map((x) => {
+      const addNodeRequest = new AddNodeRequest(x.uri);
+      addNodeRequest.name = x.name;
+      return <RepositoryItemView key={x.uri} addNodeRequest={addNodeRequest} description={x.description} />;
+    });
 
   function addNodes() {
     const list = prompt("node uris");

@@ -100,7 +100,9 @@ class NetworkService {
       }
     });
 
-    keyboardService.on("KeyF", () => {
+    keyboardService.on("KeyF", (event) => {
+      if (event.ctrlKey === false) return;
+      event.preventDefault();
       const promptResult = prompt("Find node by guid or name:");
       const guidOrName = (promptResult || "").trim().toLowerCase();
       if (guidOrName !== "") {
@@ -168,7 +170,9 @@ class NetworkService {
 
     keyboardService.on("Space", (_event: KeyboardEvent) => {
       const showRepositoryWindow = store.getState().ui.showRepositoryWindow;
-      const action = showRepositoryWindow ? uiSlice.actions.hideRepositoryWindow() : uiSlice.actions.showRepositoryWindow();
+      const action = showRepositoryWindow
+        ? uiSlice.actions.hideRepositoryWindow()
+        : uiSlice.actions.showRepositoryWindow();
       store.dispatch(action);
     });
 

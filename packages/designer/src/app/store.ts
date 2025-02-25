@@ -19,3 +19,6 @@ export type RootStateType = ReturnType<typeof store.getState>;
 
 /** тип нашей диспатч функции */
 export type AppDispatchType = typeof store.dispatch;
+
+/** тип нашего магазина) */
+export type AppStoreType =typeof store;

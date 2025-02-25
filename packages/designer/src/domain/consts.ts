@@ -4,3 +4,8 @@ export const dataTransferTypes = {
 };
 
 export const viewPrefix = "/*@view";
+
+export const nodeSize = {
+  width:200,
+  height:100,
+}

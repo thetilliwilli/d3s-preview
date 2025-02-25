@@ -84,8 +84,8 @@ export class AddAiNodeRequestHandler implements AbstractRequestHandler<AddAiNode
 
     addAiNodeRequest.output = parameters.output;
 
-    await app.handle(addAiNodeRequest);
-
     app.emitOutcomingEvent(new OutcomingEvent("ai.node.created", { name: functionName }));
+
+    return addAiNodeRequest;
   }
 }
