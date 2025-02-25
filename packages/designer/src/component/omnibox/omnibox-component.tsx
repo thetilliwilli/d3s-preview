@@ -13,9 +13,10 @@ function calcHeight(n: number) {
 }
 
 export const OmniboxComponent = () => {
-  const dispatch = useAppDispatch();
+  const appDispatch = useAppDispatch();
   const showOmnibox = useAppSelector((state) => state.ui.showOmnibox);
   const repository = useAppSelector((state) => state.network.network.repository);
+  const aiGeneratedAddNodeRequest = useAppSelector((state) => state.ui.aiGeneratedAddNodeRequest);
 
   const [textareaHeight, setTextareaHeight] = useState(calcHeight(1));
   const [search, setSearch] = useState("");
@@ -23,7 +24,6 @@ export const OmniboxComponent = () => {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const [aiGeneratedRepositoryItemElement, setAiGeneratedRepositoryItemElement] = useState<JSX.Element | null>(null);
 
   useEffect(() => {
     textareaRef.current?.focus();
@@ -32,12 +32,12 @@ export const OmniboxComponent = () => {
 
   if (!showOmnibox) return null;
 
-  const searchTrimmed = search.trim();
+  const searchTrimmed = search.trim().toLowerCase();
   const items =
     searchTrimmed === ""
       ? []
       : Object.values(repository)
-          .filter((x) => [x.uri].join("").includes(searchTrimmed))
+          .filter((x) => [x.uri.toLowerCase()].join("").includes(searchTrimmed))
           .map((x) => {
             const addNodeRequest = new AddNodeRequest(x.uri);
             addNodeRequest.name = x.name;
@@ -72,7 +72,7 @@ export const OmniboxComponent = () => {
           onKeyDown={(e) => {
             e.stopPropagation();
 
-            if (e.code === "Escape") dispatch(uiSlice.actions.hideOmnibox());
+            if (e.code === "Escape") appDispatch(uiSlice.actions.hideOmnibox());
           }}
           value={search}
           placeholder="> найти или сгенерировать AI нод"
@@ -108,10 +108,7 @@ export const OmniboxComponent = () => {
               try {
                 const response = await socketClient.sendWait(new AddAiNodeRequest(prompt));
                 console.log("ai result:", response);
-                const aiGeneratedRepositoryItemElement = (
-                  <RepositoryItemView addNodeRequest={response.result} description="" />
-                );
-                setAiGeneratedRepositoryItemElement(aiGeneratedRepositoryItemElement);
+                appDispatch(uiSlice.actions.setAiGeneratedAddNodeRequest(response.result))
               } finally {
                 setIsAiGeneration(false);
               }
@@ -135,7 +132,7 @@ export const OmniboxComponent = () => {
         </div>
       )}
       {isAiGeneration && <div>отправлен запрос на генерацию ИИ нода</div>}
-      {aiGeneratedRepositoryItemElement}
+      {aiGeneratedAddNodeRequest && <RepositoryItemView addNodeRequest={aiGeneratedAddNodeRequest} description="" />}
     </div>
   );
 };

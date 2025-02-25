@@ -113,6 +113,12 @@ export function addPaperEventHandlers(paper: dia.Paper) {
       const { x, y } = paper.clientToLocalPoint(e.clientX, e.clientY);
       (request as AddNodeRequest).position = new PositionState(x, y);
       console.log(request);
+      if (
+        request.type === "AddNodeRequest" &&
+        "nodeUri" in request &&
+        request.nodeUri === "@d3s/repository-playground.ai"
+      )
+        store.dispatch(uiSlice.actions.setAiGeneratedAddNodeRequest(undefined));
       socketClient.send(request);
     }
   });

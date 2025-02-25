@@ -1,11 +1,13 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { EditViewWindowOptions } from "../domain/edit-view-window-options";
+import { AddNodeRequest } from "@d3s/event";
 
 interface InitialState {
   selectedBindings: string[];
   editViewWindowOptions: EditViewWindowOptions | undefined;
   showOmnibox: boolean;
   showRepositoryWindow: boolean;
+  aiGeneratedAddNodeRequest?: AddNodeRequest;
 }
 
 const initialState: InitialState = {
@@ -13,6 +15,7 @@ const initialState: InitialState = {
   editViewWindowOptions: undefined,
   showOmnibox: true,
   showRepositoryWindow: false,
+  aiGeneratedAddNodeRequest: undefined,
 };
 
 export const uiSlice = createSlice({
@@ -42,6 +45,9 @@ export const uiSlice = createSlice({
     },
     hideRepositoryWindow(state) {
       state.showRepositoryWindow = false;
+    },
+    setAiGeneratedAddNodeRequest(state, action: PayloadAction<AddNodeRequest | undefined>) {
+      state.aiGeneratedAddNodeRequest = action.payload;
     },
   },
 });

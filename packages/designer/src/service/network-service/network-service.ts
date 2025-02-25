@@ -12,6 +12,15 @@ import { redrawNetwork } from "./redraw-network";
 import { NodeElement } from "./node-element";
 import { uiSlice } from "../../slice/ui-slice";
 
+const nameChunkSize = 22;
+function chunkString(str: string, n: number) {
+  const substrings = [];
+  for (let i = 0; i < str.length; i += n) {
+    substrings.push(str.slice(i, i + n));
+  }
+  return substrings;
+}
+
 class NetworkService {
   private graph = new dia.Graph({}, { cellNamespace: shapes });
   private paper?: dia.Paper;
@@ -96,7 +105,10 @@ class NetworkService {
       if (selectedNodeGuid) {
         const node = network.network.nodes[selectedNodeGuid];
         const name = prompt("Переименование", node.meta.name);
-        if (name) socketClient.send(new UpdateMetaRequest(node.meta.guid, { name }));
+        if (name) {
+          const chunkedName = chunkString(name, nameChunkSize).join("\n");
+          socketClient.send(new UpdateMetaRequest(node.meta.guid, { name: chunkedName }));
+        }
       }
     });
 
@@ -178,7 +190,8 @@ class NetworkService {
 
     keyboardService.on("*", (event: KeyboardEvent) => {
       console.log(event);
-      const isWordSymbol = event.key.length === 1 && (event.key[0].toLowerCase().match(/[a-zA-Z]/) || []).length > 0;
+      const isWordSymbol =
+        event.key.length === 1 && (event.key[0].toLowerCase().match(/[a-zA-Zа-яА-Я]/) || []).length > 0;
       if (event.ctrlKey || !isWordSymbol) return;
       const showOmnibox = store.getState().ui.showOmnibox;
       const action = showOmnibox ? uiSlice.actions.hideOmnibox() : uiSlice.actions.showOmnibox();
