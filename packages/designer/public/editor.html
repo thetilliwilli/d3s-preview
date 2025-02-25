@@ -24,8 +24,6 @@
     <script>
         // console.log('Editor created');
 
-        const defaultLanguage = 'javascript';
-
         window.addEventListener("keyup", (event) => {
             if (event.key === "Escape")
                 window.close();
@@ -36,6 +34,7 @@
                 // console.log("Editor started");
 
                 const communication = new BroadcastChannel('editView');
+                const communicationLanguage = new BroadcastChannel('editView.language');
 
                 const editMessage = event.data;
 
@@ -49,7 +48,7 @@
                 require(['vs/editor/editor.main'], () => {
                     window.editor = editor = monaco.editor.create(document.getElementById('container'), {
                         value: editMessage.value,
-                        language: defaultLanguage,
+                        language: editMessage.defaultLanguage,
                         theme: 'vs-dark',
                         automaticLayout: true,
                         minimap: { enabled: false },
@@ -58,11 +57,15 @@
                         // console.log("newValue: ", editor.getModel().getValue());
                         const newValue = editor.getModel().getValue();
                         communication.postMessage({ ...editMessage, value: newValue });
-                    })
+                    });
+                    editor.onDidChangeModelLanguage((e) => {
+                        console.log(e);
+                        communicationLanguage.postMessage(e);
+                    });
                 });
 
                 const languageSelector = document.getElementById('language');
-                languageSelector.value = defaultLanguage;
+                languageSelector.value = editMessage.defaultLanguage;
                 languageSelector.onchange = event => {
                     const language = event.target.value;
                     // console.log(`Changing language to: ${language}`);

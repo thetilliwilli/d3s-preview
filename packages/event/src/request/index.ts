@@ -47,7 +47,7 @@ export class AddAiNodeRequest extends AbstractRequest {
 
 export class GenerateAiCodeRequest extends AbstractRequest {
   public type = "GenerateAiCodeRequest" as const;
-  constructor(public prompt: string, public language: "html") {
+  constructor(public prompt: string, public language: string) {
     super();
   }
 }

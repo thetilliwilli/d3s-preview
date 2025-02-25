@@ -159,7 +159,7 @@ export class Runtime extends EventEmitter {
     return result.choices[0].message.content as string;
   }
 
-  public async promptAiCode(prompt: string, language: "html") {
+  public async promptAiCode(prompt: string, language: string) {
     if (this.settings.service.ai === undefined) throw new Error(`not implemetned`);
     const endpoint = `https://api.deepseek.com/beta/chat/completions`;
     const result = await fetch(endpoint, {

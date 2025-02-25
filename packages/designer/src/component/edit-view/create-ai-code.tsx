@@ -6,6 +6,7 @@ import { socketClient } from "../../service/socket-client-service";
 export function CreateAiCode(props: {
   options: EditViewWindowOptions;
   onCodeGenerated: (options: EditViewWindowOptions) => void;
+  language: string;
 }) {
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -31,13 +32,11 @@ export function CreateAiCode(props: {
             onClick={async () => {
               setIsLoading(true);
               try {
-                // await new Promise((r, _) => setTimeout(r, 5000));
-                const response = await socketClient.sendWait(new GenerateAiCodeRequest(prompt, "html"));
+                const response = await socketClient.sendWait(new GenerateAiCodeRequest(prompt, props.language));
                 console.log("aicodegen.result:", response);
                 if (response.error) setError(response.error);
                 else {
-                  let code = response.result;
-                  code = `/*@view*/${code}`;
+                  const code = response.result;
                   await socketClient.send(
                     new SendSignalRequest(props.options.nodeGuid, props.options.name, code, "input")
                   );
