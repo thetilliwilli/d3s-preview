@@ -4,7 +4,6 @@ import { Serializor } from "./serializer";
 
 const serializedValueSizeLimitBytes = 1 * 1000;
 const titleTruncateLimit = 1000;
-const viewColor = "dodgerblue";
 
 const styles: React.CSSProperties = {
   borderRadius: 0,
@@ -54,9 +53,8 @@ export function toInputElement(
         )} KB-----\n${serializedValueAsString.slice(0, titleTruncateLimit)}...`
       : serializedValueAsString;
 
-  const isView = name.startsWith("@");
   const readOnly = isSizeLimitOverflow ? true : readonly;
-  const backgroundColor = readOnly ? (isView ? viewColor : "rgb(240,240,240)") : isView ? viewColor : "initial";
+  const backgroundColor = readOnly ? "rgb(240,240,240)" : "initial";
 
   const attributes = {
     style: { ...styles, backgroundColor: backgroundColor },

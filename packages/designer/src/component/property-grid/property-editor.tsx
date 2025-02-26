@@ -97,15 +97,12 @@ export const PropertyEditorInner = (props: { node: NodeState }) => {
   const [activeViewName, setActiveViewName] = useState<string | null>(null);
 
   const onCustomView = (signal: ControlSignalWithTypeAndNode) => {
-    // const isCustomView = signal.value.trimStart().startsWith(viewPrefix);
     const isCustomView = signal.name.startsWith("@");
-    // its boolean xor :) aka [+true ^ +false]
-    if (+isCustomView ^ +signal.altKey) createCustomView(signal.value, node, dataCache);
-    else {
-      // was
-      // createEditView({ ...signal, nodeName: selectedNode.meta.name });
+    const shouldOpenCustomView = signal.altKey ? (isCustomView ? true : false) : false;
 
-      //now
+    if (shouldOpenCustomView) {
+      createCustomView(signal.value, node, dataCache);
+    } else {
       dispatch(uiSlice.actions.createEditViewWindow({ ...signal, nodeName: node.meta.name }));
     }
   };
@@ -158,7 +155,12 @@ export const PropertyEditorInner = (props: { node: NodeState }) => {
   const activeView = views.find((x) => x.name === activeViewName);
 
   const viewButtons = [
-    <ViewTabButton key="<-all" name="Properties" onClick={() => setActiveViewName(null)} active={activeView === undefined} />,
+    <ViewTabButton
+      key="<-all"
+      name="Properties"
+      onClick={() => setActiveViewName(null)}
+      active={activeView === undefined}
+    />,
   ].concat(
     views.map((view) => (
       <ViewTabButton
@@ -206,7 +208,7 @@ export const PropertyEditorInner = (props: { node: NodeState }) => {
           />
         )}
 
-        {viewButtons.length > 1 && <div style={{display:"flex", marginTop:"2px"}}>{viewButtons}</div>}
+        {viewButtons.length > 1 && <div style={{ display: "flex", marginTop: "2px" }}>{viewButtons}</div>}
 
         {activeView && <InlineView view={activeView} node={node} />}
 

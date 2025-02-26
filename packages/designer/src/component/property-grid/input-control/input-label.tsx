@@ -45,6 +45,7 @@ export const InputLabel = ({
         display: "inline-block",
         width: "45%",
         textAlign: "left",
+        color: name.startsWith("@") ? "dodgerblue" : "black"
       }}
     >
       <button
