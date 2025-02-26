@@ -213,7 +213,7 @@ export const PropertyEditorInner = (props: { node: NodeState }) => {
         {activeView === undefined && (
           <div
             style={{
-              height: "80vh",
+              height: "85vh",
               overflow: "auto",
             }}
           >
