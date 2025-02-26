@@ -10,7 +10,7 @@ export const cron = new NodeBuilder()
     // [task]: undefined as CronJob<() => void, null> | undefined,
   })
   .withInput({
-    schedule: "",
+    schedule: "* * * * * *",
     _init: null,
     _destroy: null,
     start: null,

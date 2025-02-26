@@ -12,15 +12,6 @@ import { redrawNetwork } from "./redraw-network";
 import { NodeElement } from "./node-element";
 import { uiSlice } from "../../slice/ui-slice";
 
-const nameChunkSize = 22;
-function chunkString(str: string, n: number) {
-  const substrings = [];
-  for (let i = 0; i < str.length; i += n) {
-    substrings.push(str.slice(i, i + n));
-  }
-  return substrings;
-}
-
 class NetworkService {
   private graph = new dia.Graph({}, { cellNamespace: shapes });
   private paper?: dia.Paper;
@@ -105,10 +96,7 @@ class NetworkService {
       if (selectedNodeGuid) {
         const node = network.network.nodes[selectedNodeGuid];
         const name = prompt("Переименование", node.meta.name);
-        if (name) {
-          const chunkedName = chunkString(name, nameChunkSize).join("\n");
-          socketClient.send(new UpdateMetaRequest(node.meta.guid, { name: chunkedName }));
-        }
+        if (name) socketClient.send(new UpdateMetaRequest(node.meta.guid, { name }));
       }
     });
 

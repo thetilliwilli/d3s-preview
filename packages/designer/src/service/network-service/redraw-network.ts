@@ -4,6 +4,14 @@ import { bindingService } from "../binding-service";
 import { NodeElement } from "./node-element";
 
 const strokeColor = "grey";
+const nameChunkSize = 22;
+function chunkString(str: string, n: number) {
+  const substrings = [];
+  for (let i = 0; i < str.length; i += n) {
+    substrings.push(str.slice(i, i + n));
+  }
+  return substrings;
+}
 
 export function redrawNetwork(graph: dia.Graph) {
   const network = store.getState().network.network;
@@ -23,6 +31,8 @@ export function redrawNetwork(graph: dia.Graph) {
 
     const typeText = node.meta.nodeUri.split(".")[1];
     const typeFontSize = typeText.length * 20 < 200 ? "20" : `calc(1.4*w/${typeText.length})`;
+    const chunkedNodeName = chunkString(node.meta.name, nameChunkSize).join("\n");
+    const nameText = node.active ? chunkedNodeName : `(deactivated)\n${chunkedNodeName}`;
     rect.attr({
       body: {
         stroke: strokeColor,
@@ -33,7 +43,7 @@ export function redrawNetwork(graph: dia.Graph) {
         fontSize: typeFontSize,
       },
       name: {
-        text: node.active ? node.meta.name : `(deactivated)\n${node.meta.name}`,
+        text: nameText,
         textDecoration: node.active ? undefined : "line-through",
         fill: node.active ? undefined : "grey",
       },

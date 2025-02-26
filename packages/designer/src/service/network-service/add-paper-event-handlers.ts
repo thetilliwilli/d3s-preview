@@ -1,4 +1,4 @@
-import { AddNodeRequest } from "@d3s/event";
+import { AddNodeRequest, UpdateMetaRequest } from "@d3s/event";
 import { PositionState } from "@d3s/state";
 import { dia } from "@joint/core";
 import { store } from "../../app/store";
@@ -6,16 +6,37 @@ import { networkSlice } from "../../slice/network-slice";
 import { uiSlice } from "../../slice/ui-slice";
 import { socketClient } from "../socket-client-service";
 import { ImportService } from "./import-service";
+import { nodeSize } from "../../domain/consts";
+
+let lastClickTime = Date.now();
+const doubleClickThreshold = 400;
+function isDoubleClick() {
+  const result = Date.now() - lastClickTime <= doubleClickThreshold;
+  lastClickTime = Date.now();
+  return result;
+}
 
 export function addPaperEventHandlers(paper: dia.Paper) {
   paper.on({
+    // all: (...args: any[]) => {
+    //   console.log(...args);
+    // },
     // createPropertyEditor - создаем проперти эдитор и показываем свойства выделенного нода
     "element:pointerclick": (elementView) => {
       store.dispatch(uiSlice.actions.hideOmnibox());
       const nodeGuid = elementView.model.attributes.id;
       store.dispatch(networkSlice.actions.selectNode(nodeGuid));
+      if (isDoubleClick()) {
+        // console.log(`double click`);
+        const network = store.getState().network;
+        const selectedNodeGuid = network.selectedNodes[0];
+        if (selectedNodeGuid) {
+          const node = network.network.nodes[selectedNodeGuid];
+          const name = prompt("Переименование", node.meta.name);
+          if (name) socketClient.send(new UpdateMetaRequest(node.meta.guid, { name }));
+        }
+      }
     },
-
     // открываем редактор байндингов: где можно удалить байдинги
     "link:pointerclick": (link) => {
       store.dispatch(uiSlice.actions.hideOmnibox());
@@ -111,7 +132,7 @@ export function addPaperEventHandlers(paper: dia.Paper) {
 
     if (request) {
       const { x, y } = paper.clientToLocalPoint(e.clientX, e.clientY);
-      (request as AddNodeRequest).position = new PositionState(x, y);
+      (request as AddNodeRequest).position = new PositionState(x - nodeSize.width/2, y - nodeSize.height/2);
       console.log(request);
       if (
         request.type === "AddNodeRequest" &&
