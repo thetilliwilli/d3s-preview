@@ -36,6 +36,7 @@ export function EditViewWindow() {
       y={0}
       background="grey"
       title={title}
+      noMin
       onClose={() => {
         dispatch(uiSlice.actions.destroyEditViewWindow());
       }}
