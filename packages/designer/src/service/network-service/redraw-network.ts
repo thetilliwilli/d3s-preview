@@ -13,6 +13,10 @@ function chunkString(str: string, n: number) {
   return substrings;
 }
 
+function tokenizeString(str: string, n: number){
+  return str.split("\n").map(s=>chunkString(s,n)).flat().join("\n");
+}
+
 export function redrawNetwork(graph: dia.Graph) {
   const network = store.getState().network.network;
   const selectedNodeGuid = store.getState().network.selectedNodes[0];
@@ -31,7 +35,7 @@ export function redrawNetwork(graph: dia.Graph) {
 
     const typeText = node.meta.nodeUri.split(".")[1];
     const typeFontSize = typeText.length * 20 < 200 ? "20" : `calc(1.4*w/${typeText.length})`;
-    const chunkedNodeName = chunkString(node.meta.name, nameChunkSize).join("\n");
+    const chunkedNodeName = tokenizeString(node.meta.name, nameChunkSize);
     const nameText = node.active ? chunkedNodeName : `(deactivated)\n${chunkedNodeName}`;
     rect.attr({
       body: {
