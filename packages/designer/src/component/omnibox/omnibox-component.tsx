@@ -103,7 +103,7 @@ export const OmniboxComponent = () => {
             }}
             title="Сгенерировать с помощью ИИ"
             onClick={async () => {
-              const prompt = search;
+              const prompt = search.trim();
               setIsAiGeneration(true);
               try {
                 const response = await socketClient.sendWait(new AddAiNodeRequest(prompt));

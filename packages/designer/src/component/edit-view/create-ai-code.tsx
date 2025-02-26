@@ -32,7 +32,7 @@ export function CreateAiCode(props: {
             onClick={async () => {
               setIsLoading(true);
               try {
-                const response = await socketClient.sendWait(new GenerateAiCodeRequest(prompt, props.language));
+                const response = await socketClient.sendWait(new GenerateAiCodeRequest(prompt.trim(), props.language));
                 console.log("aicodegen.result:", response);
                 if (response.error) setError(response.error);
                 else {
