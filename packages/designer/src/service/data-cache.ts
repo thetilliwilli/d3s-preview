@@ -42,7 +42,7 @@ export class DataCache {
 
     const missedDataKeys = dataKeys.filter((x) => !this.entries.has(x));
 
-    const missedValues = await socketClient.getDatakeyValues(missedDataKeys);
+    const missedValues = missedDataKeys.length > 0 ? await socketClient.getDatakeyValues(missedDataKeys) : [];
 
     missedValues.forEach(({ dataKey, value }) => this.entries.set(dataKey, value));
 

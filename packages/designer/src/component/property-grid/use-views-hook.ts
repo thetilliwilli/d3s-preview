@@ -14,14 +14,25 @@ export function useViews(viewableInputs: { name: string; dataKey: DataKey }[]) {
   useEffect(() => {
     const viewDataKeys = viewableInputs.map((x) => x.dataKey);
 
-    dataCache.getDatakeyValuesAsync(viewDataKeys).then((viewContents) => {
-      const newViews = viewContents.map((viewContent) => ({
-        ...viewContent,
-        name: viewableInputs.find((x) => x.dataKey === viewContent.dataKey)!.name,
-      }));
+    function updateAllViews() {
+      dataCache.getDatakeyValuesAsync(viewDataKeys).then((viewContents) => {
+        const newViews = viewContents.map((viewContent) => ({
+          ...viewContent,
+          name: viewableInputs.find((x) => x.dataKey === viewContent.dataKey)!.name,
+        }));
 
-      setViews(newViews);
-    });
+        setViews(newViews);
+      });
+    }
+
+    updateAllViews();
+
+    // hack
+    viewDataKeys.forEach((dataKey) => dataCache.on(dataKey, updateAllViews));
+
+    return () => {
+      viewDataKeys.forEach((dataKey) => dataCache.off(dataKey, updateAllViews));
+    };
   }, [viewableInputs]);
 
   return views;
