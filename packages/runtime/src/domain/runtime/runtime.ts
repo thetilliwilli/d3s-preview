@@ -149,6 +149,7 @@ export class Runtime extends EventEmitter {
       body: JSON.stringify({
         model: "deepseek-chat",
         stream: false,
+        temperature: 0,
         messages: [
           // { role: "system", content: "You are a helpful assistant." },
           { role: "user", content: prompt },
@@ -171,6 +172,7 @@ export class Runtime extends EventEmitter {
       body: JSON.stringify({
         model: "deepseek-chat",
         stream: false,
+        temperature: 0,
         messages: [
           { role: "user", content: prompt },
           { role: "assistant", content: "```" + `${language}\n`, prefix: true },

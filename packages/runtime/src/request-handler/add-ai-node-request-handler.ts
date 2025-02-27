@@ -45,8 +45,8 @@ export class AddAiNodeRequestHandler implements AbstractRequestHandler<AddAiNode
       .join("\n");
 
     const parametersPromptResult = await Promise.all([
-      app.promptAi(inputParametersPrompt),
-      app.promptAi(outputParametersPrompt),
+      app.promptAiCode(inputParametersPrompt, "json"),
+      app.promptAiCode(outputParametersPrompt, "json"),
     ]);
 
     const parameters = {
@@ -64,7 +64,7 @@ export class AddAiNodeRequestHandler implements AbstractRequestHandler<AddAiNode
       .map((x) => x.trim())
       .join("\n");
 
-    const nodeCode = await app.promptAi(getNodeCodePromptFilled);
+    const nodeCode = await app.promptAiCode(getNodeCodePromptFilled, "javascript");
 
     const codeWithOriginalPrompt = `/** ${event.prompt} */` + nodeCode;
 
