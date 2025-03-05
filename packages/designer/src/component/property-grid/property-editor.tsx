@@ -176,7 +176,7 @@ export const PropertyEditorInner = (props: { node: NodeState }) => {
 
   return (
     <WinBox
-      width={window.innerWidth / 2}
+      width={window.innerWidth * 0.4}
       right={0}
       x="right"
       height="100%"

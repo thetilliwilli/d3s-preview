@@ -38,6 +38,8 @@ export const InputLabel = ({
 
   //HACK for TagType = "action"
   const typeLabel = value === null ? "act" : `${type.slice(0, 3)}`;
+  const bindingNotPossible =
+    bindingStart && (bindType !== "output" || nodeGuid === bindingStart.nodeGuid);
 
   return (
     <label
@@ -45,7 +47,7 @@ export const InputLabel = ({
         display: "inline-block",
         width: "45%",
         textAlign: "left",
-        color: name.startsWith("@") ? "dodgerblue" : "black"
+        color: name.startsWith("@") ? "dodgerblue" : "black",
       }}
     >
       <button
@@ -56,10 +58,7 @@ export const InputLabel = ({
           borderRadius: "0px",
           border: "1px solid lightgrey",
           backgroundColor: isBound ? boundColor : unboundColor,
-          visibility:
-            bindingStart && (bindType !== "output" || type != bindingStart.type || nodeGuid === bindingStart.nodeGuid)
-              ? "hidden"
-              : "initial",
+          visibility: bindingNotPossible ? "hidden" : "initial",
         }}
         title={bindingStart ? "Связать с этим параметром" : "Нажмите чтобы начать привязку этого параметра к другому"}
         onPointerEnter={(e) => {
@@ -70,9 +69,11 @@ export const InputLabel = ({
         }}
         onClick={() => {
           if (bindingStart) {
-            const request = new AddBindingRequest(nodeGuid, name, bindingStart.nodeGuid, bindingStart.name);
-            socketClient.send(request);
-            store.dispatch(bindingSlice.actions.endBinding());
+            if (bindingNotPossible === false) {
+              const request = new AddBindingRequest(nodeGuid, name, bindingStart.nodeGuid, bindingStart.name);
+              socketClient.send(request);
+              store.dispatch(bindingSlice.actions.endBinding());
+            }
           } else {
             if (bindType === "input") {
               store.dispatch(

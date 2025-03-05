@@ -30,7 +30,7 @@ export function EditViewWindow() {
   return (
     <WinBox
       id="edit-view-window"
-      width={600}
+      width={window.innerWidth * 0.4}
       height={600}
       x={0}
       y={0}
