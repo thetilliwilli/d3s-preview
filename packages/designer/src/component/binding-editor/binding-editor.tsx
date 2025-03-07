@@ -27,8 +27,11 @@ const titleStyles: React.CSSProperties = {
 };
 
 export function BindingEditor() {
-  const selectedBindings = useAppSelector((state) =>
-    state.ui.selectedBindings.map((guid) => state.network.network.bindings[guid])
+  const selectedBindings = useAppSelector(
+    function getSelectedBindings(state) {
+      return state.ui.selectedBindings.map((guid) => state.network.network.bindings[guid]);
+    },
+    (old, newValue) => old.map((x) => x.guid).join() === newValue.map((x) => x.guid).join()
   );
 
   const isSelected = selectedBindings.filter((x) => x !== undefined).length > 0;

@@ -182,15 +182,14 @@ export const PropertyEditorInner = (props: { node: NodeState }) => {
       height="100%"
       background="grey"
       title={`PropertyEditor <${node.meta.name}>`}
-      noClose={true}
+      noClose
       noAnimation
       noMax
       noMin
       noFull
       customControls={[
         {
-          index: 1,
-          class: "d",
+          class: "wb-icon",
           image: moreIconUrl,
           click: () => {
             setShowContextMenu(!showContextMenu);
